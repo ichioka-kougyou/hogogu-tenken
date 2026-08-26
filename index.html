@@ -2807,6 +2807,11 @@ seasonNote();
 updateSummary();
 updateConnStatus();
 flushPending();
+
+// 圏外でも開けるように、アプリ一式を端末に覚えさせる（公開ページでのみ動く）
+if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{ /* 覚えられない環境でもアプリ自体は動く */ });
+}
 </script>
 </body>
 </html>
