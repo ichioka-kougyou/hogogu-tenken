@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./hogogu-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="保護具点検">
+<meta name="theme-color" content="#15150E">
+<meta name="robots" content="noindex, nofollow">
+<title>保護具点検チェック｜市岡工業</title>
+<style>
+  /* 現場で見る画面。日光の下でも読めるよう、淡い色は使わず罫線と判定色を濃くしています。
+     明るい場所での視認性と、全員が同じ見え方になることを優先し、ライト固定にしています。 */
+  :root{
+    --ground:#E4E4DE;
+    --surface:#FFFFFF;
+    --ink:#15150E;
+    --ink-2:#4B4B41;
+    --line:#B5B5A9;
+    --hazard:#F5B301;
+    --hazard-ink:#6B4C00;
+    --ok:#146F38;
+    --caution:#A85F00;
+    --ng:#B81F12;
+    --on-color:#FFFFFF;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    -webkit-text-size-adjust:100%;
+    -webkit-tap-highlight-color:transparent;
+  }
+  :where(button,input,select,textarea):focus-visible{
+    outline:3px solid var(--hazard-ink);
+    outline-offset:2px;
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+
+  .stripe{
+    height:12px;
+    background:repeating-linear-gradient(45deg,var(--hazard) 0 18px,var(--ink) 18px 36px);
+  }
+  header{
+    padding:20px 18px 16px;
+    border-bottom:2px solid var(--ink);
+    background:var(--surface);
+  }
+  header .eyebrow{
+    display:inline-block;
+    font-size:12px;
+    letter-spacing:.12em;
+    color:var(--ink);
+    font-weight:800;
+    border:2px solid var(--hazard-ink);
+    border-radius:999px;
+    padding:3px 12px;
+    margin-bottom:9px;
+  }
+  header h1{
+    margin:4px 0 4px;
+    font-size:27px;
+    font-weight:800;
+    letter-spacing:.01em;
+    text-wrap:balance;
+    position:relative;
+    display:inline-block;
+    padding-bottom:9px;
+  }
+  header h1::after{
+    content:"";
+    position:absolute;
+    left:0;bottom:0;
+    width:54px;
+    height:5px;
+    background:repeating-linear-gradient(45deg,var(--hazard) 0 5px,var(--ink) 5px 10px);
+    border-radius:2px;
+  }
+  header p.sub{
+    margin:0;
+    font-size:14px;
+    color:var(--ink-2);
+  }
+  .double-check-banner{
+    margin-top:15px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    background:var(--ink);
+    color:var(--surface);
+    border-radius:9px;
+    padding:13px 15px;
+  }
+  .double-check-banner .dc-icon{
+    flex:none;
+    font-weight:800;
+    font-size:13px;
+    letter-spacing:.04em;
+    background:var(--hazard);
+    color:var(--ink);
+    padding:5px 10px;
+    border-radius:5px;
+    white-space:nowrap;
+  }
+  .double-check-banner .dc-text{
+    font-size:14px;
+    font-weight:700;
+    line-height:1.5;
+  }
+  .double-check-banner .dc-text strong{
+    font-weight:800;
+    color:var(--hazard);
+  }
+
+  main{
+    max-width:680px;
+    margin:0 auto;
+    padding:16px 14px 130px;
+  }
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin:14px 0 18px;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:13px 6px;
+    border-radius:999px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink-2);
+    cursor:pointer;
+  }
+  .tab.active{
+    background:var(--ink);
+    color:var(--surface);
+    border-color:var(--ink);
+  }
+  section.view{display:none;}
+  section.view.active{display:block;}
+
+  /* 入力欄 */
+  .field-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:11px;
+  }
+  .field{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .field label{
+    font-size:13px;
+    font-weight:800;
+    color:var(--ink-2);
+  }
+  .field input, .field select{
+    padding:12px 11px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    font-size:16px;
+    font-weight:600;
+    background:var(--surface);
+    color:var(--ink);
+    font-family:inherit;
+  }
+  /* 日付は桁が切れないよう、縮まない幅を確保する */
+  .field.date-field{
+    flex:0 0 auto;
+    min-width:172px;
+  }
+  .field.date-field input{
+    font-variant-numeric:tabular-nums;
+  }
+  @media (max-width:420px){
+    .field.date-field{flex:1 1 100%;}
+  }
+  .field select:disabled{
+    background:var(--ground);
+    color:var(--ink-2);
+  }
+
+  /* 点検項目のカード */
+  .item-card{
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-left-width:9px;
+    border-radius:var(--radius);
+    padding:15px;
+    margin-bottom:11px;
+  }
+  .item-card.judged-ok{border-left-color:var(--ok);}
+  .item-card.judged-caution{border-left-color:var(--caution);border-color:var(--caution);border-left-color:var(--caution);}
+  .item-card.judged-ng{border-color:var(--ng);}
+  .item-card .item-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .item-card .item-no{
+    font-size:12px;
+    font-weight:800;
+    color:var(--hazard-ink);
+    letter-spacing:.08em;
+  }
+  .item-card h3{
+    margin:2px 0 6px;
+    font-size:19px;
+    font-weight:800;
+    text-wrap:balance;
+  }
+  .item-card .desc{
+    margin:0 0 13px;
+    font-size:14px;
+    color:var(--ink-2);
+    line-height:1.7;
+  }
+  .item-card .desc b{color:var(--ink);}
+  /* 複数の部品を点検する項目は、部品ごとに縦に並べる */
+  .desc-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .desc-list li{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .desc-list .part{
+    flex:none;
+    width:6.2em;
+    text-align:center;
+    font-size:13px;
+    font-weight:800;
+    color:var(--ink);
+    background:var(--ground);
+    border:2px solid var(--line);
+    border-radius:6px;
+    padding:3px 4px;
+    line-height:1.5;
+  }
+  .item-card .desc .desc-highlight{
+    background:var(--ng);
+    color:var(--on-color);
+    font-weight:800;
+    padding:2px 8px;
+    border-radius:5px;
+    display:inline-block;
+    line-height:1.7;
+  }
+
+  /* 良好・要注意・使用不可のボタン */
+  .status-btns{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .status-btn{
+    flex:1 1 30%;
+    min-width:30%;
+    padding:15px 6px;
+    border-radius:9px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink-2);
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .status-btn.ok.selected{background:var(--ok);border-color:var(--ok);color:var(--on-color);}
+  .status-btn.caution.selected{background:var(--caution);border-color:var(--caution);color:var(--on-color);}
+  .status-btn.ng.selected{background:var(--ng);border-color:var(--ng);color:var(--on-color);}
+
+  .memo-wrap{display:none;margin-top:12px;}
+  .memo-wrap.show{display:block;}
+  .memo-wrap textarea{
+    width:100%;
+    min-height:52px;
+    padding:10px 11px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    font-size:15px;
+    font-family:inherit;
+    color:var(--ink);
+    background:var(--surface);
+    resize:vertical;
+  }
+
+  /* 写真 */
+  .photo-wrap{display:none;margin-top:12px;}
+  .photo-wrap.show{display:block;}
+  .photo-wrap .photo-label{
+    font-size:13px;
+    font-weight:800;
+    color:var(--ink-2);
+    display:block;
+    margin-bottom:8px;
+  }
+  .photo-btns{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .photo-btn{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    padding:13px 17px;
+    border-radius:9px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .photo-btn.primary{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--surface);
+  }
+  .photo-btn input[type=file]{
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+    pointer-events:none;
+  }
+  .photo-btn:focus-within{
+    outline:3px solid var(--hazard-ink);
+    outline-offset:2px;
+  }
+  .photo-hint{
+    font-size:12px;
+    color:var(--ink-2);
+    margin:8px 0 0;
+    line-height:1.6;
+  }
+  .photo-preview{
+    margin-top:10px;
+    max-width:100%;
+    max-height:240px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    display:none;
+  }
+  .photo-remove{
+    display:none;
+    margin-top:8px;
+    background:none;
+    border:none;
+    color:var(--ng);
+    font-size:14px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+    padding:0;
+    text-decoration:underline;
+  }
+
+  .season-note{
+    background:var(--surface);
+    border:2px dashed var(--hazard-ink);
+    border-radius:var(--radius);
+    padding:13px 15px;
+    font-size:14px;
+    color:var(--ink);
+    margin-bottom:15px;
+  }
+
+  /* 警告の帯 */
+  .alert-banner{
+    display:none;
+    background:var(--ng);
+    border:2px solid var(--ng);
+    color:var(--on-color);
+    border-radius:var(--radius);
+    padding:14px 15px;
+    font-size:15px;
+    font-weight:800;
+    line-height:1.6;
+    margin-bottom:15px;
+  }
+  .alert-banner.show{display:block;}
+  .storage-warn,
+  .same-person-warn{
+    display:none;
+    background:var(--caution);
+    border:2px solid var(--caution);
+    color:var(--on-color);
+    border-radius:var(--radius);
+    padding:13px 15px;
+    font-size:14px;
+    font-weight:800;
+    line-height:1.7;
+    margin-bottom:15px;
+  }
+  .storage-warn.show,
+  .same-person-warn.show{display:block;}
+  .same-person-warn b{color:var(--hazard);}
+
+  /* 下の固定バー */
+  .bottom-bar{
+    position:fixed;
+    left:0;right:0;bottom:0;
+    background:var(--surface);
+    border-top:3px solid var(--ink);
+    padding:13px 14px calc(13px + env(safe-area-inset-bottom));
+    display:flex;
+    align-items:center;
+    gap:12px;
+    max-width:680px;
+    margin:0 auto;
+  }
+  .bottom-bar .summary{
+    flex:1;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink-2);
+    line-height:1.5;
+  }
+  .bottom-bar .summary b{
+    color:var(--ink);
+    font-size:16px;
+  }
+  .bottom-bar .summary .flag{
+    color:var(--ng);
+    font-weight:800;
+  }
+  #submitBtn{
+    padding:15px 24px;
+    border-radius:9px;
+    border:none;
+    background:var(--ink);
+    color:var(--surface);
+    font-size:16px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  #submitBtn:disabled{
+    background:var(--ground);
+    color:var(--ink-2);
+    cursor:not-allowed;
+  }
+
+  /* 記録タブの切り替え */
+  .subtabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:15px;
+  }
+  .subtab{
+    flex:1;
+    padding:12px 6px;
+    border-radius:9px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    font-size:14px;
+    font-weight:800;
+    color:var(--ink-2);
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .subtab.active{
+    background:var(--ink);
+    color:var(--surface);
+    border-color:var(--ink);
+  }
+
+  /* 月の切り替え */
+  .month-nav{
+    display:flex;
+    gap:8px;
+    align-items:stretch;
+    margin-bottom:12px;
+  }
+  .month-nav button{
+    flex:none;
+    width:56px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    border-radius:9px;
+    font-size:17px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .month-nav button:disabled{
+    color:var(--line);
+    cursor:not-allowed;
+  }
+  .month-nav select{
+    flex:1;
+    min-width:0;
+    padding:12px 10px;
+    border-radius:9px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:16px;
+    font-weight:800;
+    font-family:inherit;
+    text-align:center;
+  }
+  /* その月の中身を数字で出す。遡って見るときの入口になる場所 */
+  .month-summary{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
+    margin-bottom:16px;
+  }
+  @media (max-width:400px){
+    .month-summary{grid-template-columns:repeat(2, 1fr);}
+  }
+  .ms-stat{
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-radius:9px;
+    padding:10px 5px 9px;
+    text-align:center;
+    line-height:1.1;
+  }
+  .ms-stat b{
+    display:block;
+    font-size:28px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  .ms-stat span{
+    display:block;
+    font-size:12px;
+    font-weight:800;
+    color:var(--ink-2);
+    margin-top:4px;
+  }
+  .ms-stat.quiet b{color:var(--line);}
+  .ms-stat.ng{background:var(--ng);border-color:var(--ng);}
+  .ms-stat.caution{background:var(--caution);border-color:var(--caution);}
+  .ms-stat.ng b, .ms-stat.ng span,
+  .ms-stat.caution b, .ms-stat.caution span{color:var(--on-color);}
+
+  /* 現場ごとの表 */
+  .site-group{
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-radius:var(--radius);
+    padding:15px;
+    margin-bottom:13px;
+  }
+  .site-group.has-ng{border-color:var(--ng);}
+  .site-date{
+    font-size:13px;
+    font-weight:800;
+    color:var(--hazard-ink);
+    letter-spacing:.06em;
+    font-variant-numeric:tabular-nums;
+  }
+  .site-name{
+    font-size:19px;
+    font-weight:800;
+    margin-top:2px;
+    text-wrap:balance;
+  }
+  .site-meta{
+    font-size:13px;
+    color:var(--ink-2);
+    margin-top:4px;
+    margin-bottom:13px;
+  }
+  .site-tally{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-bottom:12px;
+  }
+  .tally{
+    font-size:13px;
+    font-weight:800;
+    padding:5px 11px;
+    border-radius:999px;
+    border:2px solid var(--line);
+    color:var(--ink-2);
+    background:var(--surface);
+  }
+  .tally.ok{border-color:var(--ok);color:var(--ok);}
+  .tally.caution{background:var(--caution);border-color:var(--caution);color:var(--on-color);}
+  .tally.ng{background:var(--ng);border-color:var(--ng);color:var(--on-color);}
+
+  .matrix-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    border:2px solid var(--line);
+    border-radius:8px;
+  }
+  table.matrix{
+    border-collapse:collapse;
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.matrix th,
+  table.matrix td{
+    border-bottom:2px solid var(--line);
+    border-right:1px solid var(--line);
+    padding:0;
+    white-space:nowrap;
+    text-align:center;
+  }
+  table.matrix thead th{
+    background:var(--ink);
+    color:var(--surface);
+    font-size:12px;
+    font-weight:800;
+    padding:10px 8px;
+    line-height:1.3;
+  }
+  table.matrix .name-col{
+    text-align:left;
+    position:sticky;
+    left:0;
+    background:var(--surface);
+    font-weight:800;
+    font-size:15px;
+    padding:11px 14px 11px 12px;
+    border-right:2px solid var(--ink);
+  }
+  table.matrix thead .name-col{background:var(--ink);color:var(--surface);}
+  table.matrix tbody tr.has-ng .name-col{color:var(--ng);}
+  table.matrix tbody tr:last-child th,
+  table.matrix tbody tr:last-child td{border-bottom:none;}
+  table.matrix tbody td:last-child{border-right:none;}
+  .mark{
+    font-weight:800;
+    font-size:19px;
+    line-height:1;
+    padding:12px 10px;
+    color:var(--ink-2);
+  }
+  .mark.ok{color:var(--ok);}
+  .mark.caution{background:var(--caution);color:var(--on-color);}
+  .mark.ng{background:var(--ng);color:var(--on-color);}
+  .legend{
+    font-size:13px;
+    color:var(--ink-2);
+    margin-top:10px;
+    font-weight:700;
+  }
+  .site-notes{
+    margin-top:13px;
+    font-size:15px;
+    line-height:1.8;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .site-notes .note-ng,
+  .site-notes .note-caution{
+    font-weight:800;
+    border-radius:7px;
+    padding:8px 11px;
+    color:var(--on-color);
+  }
+  .site-notes .note-ng{background:var(--ng);}
+  .site-notes .note-caution{background:var(--caution);}
+  .site-actions{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:2px solid var(--line);
+  }
+  .site-actions button{
+    padding:13px 18px;
+    border-radius:9px;
+    border:2px solid var(--ink);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:15px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+
+  /* 1件ずつの記録カード */
+  .history-empty{
+    text-align:center;
+    color:var(--ink-2);
+    font-size:15px;
+    font-weight:700;
+    line-height:1.9;
+    padding:44px 12px;
+    background:var(--surface);
+    border:2px dashed var(--line);
+    border-radius:var(--radius);
+  }
+  .record-card{
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-radius:var(--radius);
+    padding:15px;
+    margin-bottom:11px;
+  }
+  .record-card .rc-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:7px;
+  }
+  .record-card .rc-date{
+    font-weight:800;
+    font-size:17px;
+    font-variant-numeric:tabular-nums;
+  }
+  .record-card .rc-badge{
+    font-size:13px;
+    font-weight:800;
+    padding:5px 11px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .record-card .rc-badge.ok{border:2px solid var(--ok);color:var(--ok);background:var(--surface);}
+  .record-card .rc-badge.ng{background:var(--ng);color:var(--on-color);}
+  .record-card .rc-meta{
+    font-size:13px;
+    color:var(--ink-2);
+    margin-bottom:10px;
+    line-height:1.6;
+  }
+  .record-card .rc-items{
+    font-size:15px;
+    color:var(--ink);
+    line-height:1.8;
+  }
+  .record-card .rc-items .ng-line{
+    color:var(--on-color);
+    background:var(--ng);
+    font-weight:800;
+    border-radius:7px;
+    padding:8px 11px;
+    margin-bottom:5px;
+  }
+  .rc-photo{
+    max-width:220px;
+    max-height:220px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    display:block;
+    margin:8px 0 12px;
+  }
+  .rc-actions{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:2px solid var(--line);
+  }
+  .rc-actions button{
+    padding:12px 17px;
+    border-radius:9px;
+    border:2px solid var(--ink);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:15px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .note-share{
+    font-size:13px;
+    color:var(--ink-2);
+    text-align:center;
+    margin-top:10px;
+    line-height:1.7;
+  }
+
+  /* 設定 */
+  .setting-block{
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-radius:var(--radius);
+    padding:15px;
+    margin-bottom:13px;
+  }
+  .setting-block h2{
+    margin:0 0 5px;
+    font-size:19px;
+    font-weight:800;
+  }
+  .setting-block .setting-help{
+    margin:0 0 13px;
+    font-size:13px;
+    color:var(--ink-2);
+    line-height:1.7;
+  }
+  .add-row{
+    display:flex;
+    gap:8px;
+    align-items:stretch;
+  }
+  .add-row input{
+    flex:1;
+    min-width:0;
+    padding:12px 11px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    font-size:16px;
+    font-family:inherit;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .add-row button{
+    flex:none;
+    padding:12px 19px;
+    border-radius:8px;
+    border:none;
+    background:var(--ink);
+    color:var(--surface);
+    font-size:15px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .roster-input{
+    width:100%;
+    min-height:120px;
+    margin-top:10px;
+    padding:11px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:15px;
+    font-family:inherit;
+    line-height:1.7;
+    resize:vertical;
+  }
+  .chip-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:13px;
+  }
+  .chip-list:empty{margin-top:0;}
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-radius:999px;
+    padding:7px 8px 7px 14px;
+    font-size:15px;
+    font-weight:800;
+  }
+  .chip button{
+    border:none;
+    background:none;
+    color:var(--ink-2);
+    font-size:18px;
+    line-height:1;
+    padding:2px 5px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .chip button:hover{color:var(--ng);}
+  .chip-empty{
+    font-size:13px;
+    color:var(--ink-2);
+    margin-top:11px;
+    font-weight:700;
+  }
+
+  /* 支店と営業所 */
+  .branch-item{
+    border:2px solid var(--line);
+    border-radius:9px;
+    background:var(--surface);
+    padding:12px 13px;
+    margin-top:11px;
+  }
+  .branch-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+  .branch-name{
+    font-size:16px;
+    font-weight:800;
+  }
+  .branch-head button{
+    flex:none;
+    border:none;
+    background:none;
+    color:var(--ink-2);
+    font-size:18px;
+    line-height:1;
+    padding:2px 5px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .branch-head button:hover{color:var(--ng);}
+  .office-add{
+    display:flex;
+    gap:7px;
+    margin-top:10px;
+  }
+  .office-add input{
+    flex:1;
+    min-width:0;
+    padding:9px 10px;
+    font-size:15px;
+    border-radius:7px;
+    border:2px solid var(--line);
+    font-family:inherit;
+    background:var(--surface);
+    color:var(--ink);
+  }
+  .office-add button{
+    flex:none;
+    padding:9px 14px;
+    font-size:14px;
+    font-weight:800;
+    border-radius:7px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    color:var(--ink);
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .office-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-top:10px;
+  }
+  .office-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--ground);
+    border:2px solid var(--line);
+    border-radius:999px;
+    padding:5px 7px 5px 12px;
+    font-size:14px;
+    font-weight:800;
+  }
+  .office-chip button{
+    border:none;
+    background:none;
+    color:var(--ink-2);
+    font-size:16px;
+    line-height:1;
+    padding:1px 3px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .office-chip button:hover{color:var(--ng);}
+
+  .toast{
+    position:fixed;
+    top:18px;left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:var(--surface);
+    padding:13px 22px;
+    border-radius:999px;
+    font-size:15px;
+    font-weight:800;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s;
+    z-index:50;
+    max-width:92vw;
+    text-align:center;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="stripe"></div>
+<header>
+  <div class="eyebrow">株式会社市岡工業</div>
+  <h1>保護具点検チェック</h1>
+  <p class="sub">作業開始前の点検を、その場でチェック・記録します</p>
+  <div class="double-check-banner">
+    <span class="dc-icon">CHECK ✓✓</span>
+    <span class="dc-text">使用者と点検者による<strong>ダブルチェック</strong>を行うこと</span>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <div class="tab active" data-tab="check">今日の点検</div>
+    <div class="tab" data-tab="history">点検の記録</div>
+    <div class="tab" data-tab="settings">設定</div>
+  </div>
+
+
+  <!-- CHECK VIEW -->
+  <section class="view active" id="view-check">
+    <div class="field-row">
+      <div class="field">
+        <label for="siteName">現場名</label>
+        <input type="text" id="siteName" placeholder="例：郡上市白鳥町 法面工事">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="projectName">工事名</label>
+        <input type="text" id="projectName" placeholder="例：市道鍛冶屋洞線災害復旧工事">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="clientBranchSelect">元請支店名</label>
+        <select id="clientBranchSelect"></select>
+        <input type="text" id="clientBranch" placeholder="支店名を入力" style="display:none;">
+      </div>
+      <div class="field">
+        <label for="clientOfficeSelect">営業所名</label>
+        <select id="clientOfficeSelect"></select>
+        <input type="text" id="clientOffice" placeholder="営業所名を入力" style="display:none;">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="userNameSelect">使用者名（保護具を使う人）</label>
+        <select id="userNameSelect"></select>
+        <input type="text" id="userName" placeholder="氏名を入力" style="display:none;">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="workerNameSelect">点検者名（一緒に確認する人）</label>
+        <select id="workerNameSelect"></select>
+        <input type="text" id="workerName" placeholder="氏名を入力" style="display:none;">
+      </div>
+      <div class="field date-field">
+        <label for="checkDate">日付</label>
+        <input type="date" id="checkDate">
+      </div>
+    </div>
+
+    <div class="same-person-warn" id="samePersonWarn">
+      ⚠ 使用者と点検者が同じ人になっています。ダブルチェックは<b>別の人</b>と行ってください。
+    </div>
+
+    <div class="alert-banner" id="alertBanner"></div>
+
+    <div id="itemList"></div>
+
+    <div class="season-note" id="seasonNote"></div>
+  </section>
+
+  <!-- HISTORY VIEW -->
+  <section class="view" id="view-history">
+    <div class="subtabs">
+      <button type="button" class="subtab active" data-mode="site">現場ごとの表</button>
+      <button type="button" class="subtab" data-mode="card">1件ずつ見る</button>
+    </div>
+
+    <div class="storage-warn" id="storageWarn">
+      ⚠ この端末では記録が保存されません。画面を閉じると消えます。
+    </div>
+
+    <div class="month-nav" id="monthNav">
+      <button type="button" id="prevMonth" aria-label="前の月へ">◀</button>
+      <select id="monthSelect" aria-label="表示する月"></select>
+      <button type="button" id="nextMonth" aria-label="次の月へ">▶</button>
+    </div>
+    <div class="month-summary" id="monthSummary"></div>
+
+    <div id="siteTable"></div>
+    <div id="historyList" style="display:none;"></div>
+  </section>
+
+  <!-- SETTINGS VIEW -->
+  <section class="view" id="view-settings">
+    <div class="setting-block">
+      <h2>使用者（社員名簿）</h2>
+      <p class="setting-help">保護具を使う人です。作業員名簿の全員をここに登録すると、点検画面のプルダウンから選べます。</p>
+      <div class="add-row">
+        <input type="text" id="newUserInput" placeholder="例：市岡 竜樹">
+        <button type="button" id="addUserBtn">追加</button>
+      </div>
+      <div class="chip-list" id="userChips"></div>
+    </div>
+
+    <div class="setting-block">
+      <h2>点検者（職長）</h2>
+      <p class="setting-help">一緒に確認する職長です。使用者とは別の人が点検する決まりなので、名簿を分けてあります。</p>
+      <div class="add-row">
+        <input type="text" id="newInspectorInput" placeholder="例：原 直子">
+        <button type="button" id="addInspectorBtn">追加</button>
+      </div>
+      <div class="chip-list" id="inspectorChips"></div>
+    </div>
+
+    <div class="setting-block">
+      <h2>元請の支店・営業所</h2>
+      <p class="setting-help">日特建設の支店と営業所を入れてあります。他の元請や支店も、ここから足せます。支店名の下の欄から営業所を追加してください。</p>
+      <div class="add-row">
+        <input type="text" id="newBranchInput" placeholder="例：大阪支店">
+        <button type="button" id="addBranchBtn">支店を追加</button>
+      </div>
+      <div id="branchList"></div>
+    </div>
+
+    <div class="setting-block">
+      <h2>名簿の読み込み・書き出し</h2>
+      <p class="setting-help">名簿をまとめて入れ替えるときに使います。新しいスマホに同じ名簿を入れたいときや、会社から配られた名簿を読み込むときに。</p>
+      <div class="add-row">
+        <button type="button" id="exportRosterBtn">いまの名簿をコピー</button>
+      </div>
+      <textarea id="rosterInput" class="roster-input" placeholder="配られた名簿をここに貼り付けて、下の「名簿を読み込む」を押してください"></textarea>
+      <div class="add-row">
+        <button type="button" id="importRosterBtn">名簿を読み込む</button>
+      </div>
+    </div>
+
+    <div class="setting-block">
+      <h2>記録をまとめて渡す</h2>
+      <p class="setting-help">この端末に残っている点検の記録を、まとめて文字にしてコピーします。事務所へ渡すときは、LINEやメールに貼り付けてください。</p>
+      <div class="add-row">
+        <button type="button" id="exportAllBtn">記録をまとめてコピー</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="bottom-bar" id="bottomBar">
+  <div class="summary" id="summaryText">0 / 0 項目 確認済み</div>
+  <button id="submitBtn" disabled>記録する</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ITEMS = [
+  {
+    id: "helmet",
+    no: "01",
+    short: "ヘルメット",
+    name: "ヘルメット",
+    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認</span>。内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。"
+  },
+  {
+    id: "harness",
+    no: "02",
+    short: "ハーネス",
+    name: "法面用フルハーネス",
+    desc: "<span class=\"desc-highlight\">⚠ ベルト全体の擦り切れ・セメントなどによる汚れ</span>・毛羽立ち・薬品汚れ・焼け焦げを確認。バックル・D環に変形やガタつきがないか。裏側も見る。"
+  },
+  {
+    id: "twin_lanyard",
+    no: "03",
+    short: "2丁掛け",
+    name: "2丁掛け安全帯",
+    desc: "移動時にフックを掛け替える際、無胴綱状態（体が構造物とつながっていない状態）を作らないため2丁掛けとしている。ランヤード、ショックアブソーバーの傷みを全長確認し、ショックアブソーバーが伸びていたら即交換する。フックは外れ止めがバネで自動的に閉じるか数回動かして確認し、変形・摩耗がないか確認する。2丁掛けのため、<span class=\"desc-highlight\">⚠ 両方のランヤードとフックを点検</span>する。"
+  },
+  {
+    id: "rollip",
+    no: "04",
+    short: "ロリップ",
+    name: "ロリップ",
+    desc: "ライフラインに正しくセットされているか確認。ロック解除レバーがスムーズに動き、確実にロックするかを確認。<span class=\"desc-highlight\">⚠ 爪が2ミリ以下になっていないか確認</span>。本体の摩耗・変形がないか確認。"
+  },
+  {
+    id: "airconwear",
+    no: "05",
+    short: "空調服",
+    name: "空調服 / ファン / バッテリー",
+    desc: "<ul class=\"desc-list\">"
+        + "<li><span class=\"part\">空調服</span><span>服の破れ・汚れがないか確認する。</span></li>"
+        + "<li><span class=\"part\">ファン</span><span><span class=\"desc-highlight\">⚠ 正常に回転するか確認</span>し、取付部のゆるみを確認する。</span></li>"
+        + "<li><span class=\"part\">バッテリー</span><span>充電状態を確認する。ケーブル・コネクター部に破損がないか確認する。</span></li>"
+        + "</ul>"
+  },
+  {
+    id: "boots",
+    no: "06",
+    short: "安全靴",
+    name: "安全長靴 / 安全靴 / 安全地下足袋",
+    desc: "現場指定のものを着用。ソールの摩耗・破損がないか確認。"
+  },
+  {
+    id: "goggles",
+    no: "07",
+    short: "保護メガネ",
+    name: "保護メガネ",
+    desc: "吹付・穿孔作業時は必須。傷やくもりで視界を妨げないか確認。<span class=\"desc-highlight\">⚠ 薬剤などを使用する際にはゴーグル型を着用</span>。"
+  },
+  {
+    id: "mask",
+    no: "08",
+    short: "防じんマスク",
+    name: "防じんマスク",
+    desc: "<span class=\"desc-highlight\">規格はDS2・DL2</span>。吹付・穿孔作業・はつり作業時に使用。フィルターの汚れ、顔への密着を確認。"
+  },
+];
+
+const state = {}; // id -> {status: 'ok'|'caution'|'ng'|null, memo: '', photo: null}
+ITEMS.forEach(i => state[i.id] = {status: null, memo: '', photo: null});
+
+// toISOString() は協定世界時なので、朝9時前だと前日の日付になる。必ず現地時間で作る。
+function todayStr(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function isSummer(){
+  const m = new Date().getMonth()+1;
+  return m>=6 && m<=9;
+}
+
+function renderItems(){
+  const list = document.getElementById('itemList');
+  list.innerHTML = '';
+  ITEMS.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.innerHTML = `
+      <div class="item-head">
+        <div>
+          <div class="item-no">${item.no}</div>
+          <h3>${item.name}</h3>
+        </div>
+      </div>
+      <div class="desc">${item.desc}</div>
+      <div class="status-btns">
+        <button type="button" class="status-btn ok" data-id="${item.id}" data-status="ok">良好</button>
+        <button type="button" class="status-btn caution" data-id="${item.id}" data-status="caution">要注意</button>
+        <button type="button" class="status-btn ng" data-id="${item.id}" data-status="ng">使用不可・交換</button>
+      </div>
+      <div class="memo-wrap" id="memo-${item.id}">
+        <textarea placeholder="内容をメモ（例：あご紐の縫い目がほつれている／ベルトの糸が切れている）" data-id="${item.id}"></textarea>
+      </div>
+      <div class="photo-wrap" id="photo-${item.id}">
+        <span class="photo-label">現物の写真（使用不可・交換の記録用）</span>
+        <div class="photo-btns">
+          <label class="photo-btn primary">
+            カメラで撮る
+            <input type="file" accept="image/*" capture="environment" class="photo-input" data-id="${item.id}">
+          </label>
+          <label class="photo-btn">
+            保存済みの写真から選ぶ
+            <input type="file" accept="image/*" class="photo-input" data-id="${item.id}">
+          </label>
+        </div>
+        <p class="photo-hint">スマホは「カメラで撮る」でその場のカメラが開きます。パソコンにはカメラがつながらないため、どちらもファイル選択になります。</p>
+        <img class="photo-preview" id="photo-preview-${item.id}" alt="">
+        <button type="button" class="photo-remove" id="photo-remove-${item.id}" data-id="${item.id}">写真を削除</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  list.querySelectorAll('.status-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      const status = btn.dataset.status;
+      state[id].status = status;
+      // update button visuals for this item
+      list.querySelectorAll(`.status-btn[data-id="${id}"]`).forEach(b=>{
+        b.classList.toggle('selected', b.dataset.status === status);
+      });
+      // カードの枠にも判定を出す（スクロール中に赤が目に入るように）
+      const card = btn.closest('.item-card');
+      card.classList.remove('judged-ok', 'judged-caution', 'judged-ng');
+      card.classList.add('judged-' + status);
+
+      const memoWrap = document.getElementById(`memo-${id}`);
+      memoWrap.classList.toggle('show', status === 'ng' || status === 'caution');
+
+      const photoWrap = document.getElementById(`photo-${id}`);
+      photoWrap.classList.toggle('show', status === 'ng');
+      if(status !== 'ng'){
+        clearPhoto(id);
+      }
+      updateSummary();
+    });
+  });
+
+  list.querySelectorAll('textarea').forEach(ta=>{
+    ta.addEventListener('input', ()=>{
+      state[ta.dataset.id].memo = ta.value;
+    });
+  });
+
+  list.querySelectorAll('.photo-input').forEach(input=>{
+    input.addEventListener('change', async (e)=>{
+      const id = input.dataset.id;
+      const file = e.target.files[0];
+      if(!file) return;
+      try{
+        const dataUrl = await compressImage(file);
+        state[id].photo = dataUrl;
+        const pv = document.getElementById(`photo-preview-${id}`);
+        pv.src = dataUrl;
+        pv.style.display = 'block';
+        document.getElementById(`photo-remove-${id}`).style.display = 'inline-block';
+      }catch(err){
+        console.error(err);
+        showToast('写真の読み込みに失敗しました');
+      }
+    });
+  });
+
+  list.querySelectorAll('.photo-remove').forEach(btn=>{
+    btn.addEventListener('click', ()=> clearPhoto(btn.dataset.id));
+  });
+}
+
+function clearPhoto(id){
+  state[id].photo = null;
+  const pv = document.getElementById(`photo-preview-${id}`);
+  const rm = document.getElementById(`photo-remove-${id}`);
+  if(pv){ pv.style.display = 'none'; pv.src = ''; }
+  if(rm){ rm.style.display = 'none'; }
+  // カメラ用と写真選択用、両方の入力欄を空にする
+  document.querySelectorAll(`.photo-input[data-id="${id}"]`).forEach(input=>{ input.value = ''; });
+}
+
+function compressImage(file, maxWidth=900, quality=0.7){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxWidth){
+          h = Math.round(h * maxWidth / w);
+          w = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function updateSummary(){
+  const total = ITEMS.length;
+  const done = ITEMS.filter(i=>state[i.id].status).length;
+  const cautionCount = ITEMS.filter(i=>state[i.id].status === 'caution').length;
+  const unusableCount = ITEMS.filter(i=>state[i.id].status === 'ng').length;
+  const summaryEl = document.getElementById('summaryText');
+  let flagText = '';
+  if(unusableCount>0) flagText += ` ・ <span class="flag">使用不可 ${unusableCount}件</span>`;
+  if(cautionCount>0) flagText += ` ・ <span class="flag">要注意 ${cautionCount}件</span>`;
+  summaryEl.innerHTML = `<b>${done} / ${total}</b> 項目 確認済み` + flagText;
+
+  const banner = document.getElementById('alertBanner');
+  if(unusableCount>0){
+    banner.textContent = '⚠ 「使用不可・交換」の項目があります。その保護具は絶対に使わず、職長へ報告してください。';
+    banner.classList.add('show');
+  }else if(cautionCount>0){
+    banner.textContent = '⚠ 「要注意」の項目があります。作業前に職長へ相談してください。';
+    banner.classList.add('show');
+  }else{
+    banner.classList.remove('show');
+  }
+  document.getElementById('submitBtn').disabled = done < total;
+}
+
+function seasonNote(){
+  const el = document.getElementById('seasonNote');
+  if(isSummer()){
+    el.style.display = 'block';
+    el.textContent = '夏季追加：冷却タオル・塩分タブレット・水分の準備も忘れずに確認してください。';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ---- storage ----
+// 記録はこの端末（スマホ／PC）のブラウザ内に保存されます。
+const STORE_PREFIX = 'hogogu:record:';
+
+// ブラウザによっては保存がブロックされる。その場合は画面を開いている間だけ覚えておく。
+const memStore = new Map();
+const canStore = (()=>{
+  try{
+    const k = '__hogogu_test';
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+    return true;
+  }catch(e){
+    return false;
+  }
+})();
+
+const backing = {
+  keys(){ return canStore ? Object.keys(localStorage) : Array.from(memStore.keys()); },
+  get(k){ return canStore ? localStorage.getItem(k) : (memStore.has(k) ? memStore.get(k) : null); },
+  set(k, v){ if(canStore){ localStorage.setItem(k, v); } else { memStore.set(k, v); } },
+  remove(k){ if(canStore){ localStorage.removeItem(k); } else { memStore.delete(k); } }
+};
+
+// 保存されている記録のキーを古い順に返す
+function allRecordKeys(){
+  return backing.keys().filter(k => k && k.startsWith(STORE_PREFIX)).sort();
+}
+
+// 新しい順で記録を読み出す
+function readRecords(){
+  const recs = [];
+  allRecordKeys().forEach(k=>{
+    try{
+      const r = JSON.parse(backing.get(k));
+      if(r) recs.push(r);
+    }catch(e){ /* 壊れた記録は飛ばす */ }
+  });
+  return recs.sort((a,b)=> b.ts - a.ts);
+}
+
+// 保存。容量がいっぱいなら古い記録の写真から順に捨てて空きを作る
+function saveRecord(record){
+  const key = STORE_PREFIX + record.ts;
+  const json = JSON.stringify(record);
+  try{
+    backing.set(key, json);
+    return true;
+  }catch(e){
+    for(const k of allRecordKeys()){
+      if(k === key) continue;
+      try{
+        const r = JSON.parse(backing.get(k));
+        if(r && r.items && r.items.some(i=>i.photo)){
+          r.items.forEach(i=> i.photo = null);
+          r.photoTrimmed = true;
+          backing.set(k, JSON.stringify(r));
+        }else{
+          backing.remove(k);
+        }
+      }catch(err){
+        backing.remove(k);
+      }
+      try{
+        backing.set(key, json);
+        return true;
+      }catch(err2){ /* まだ足りないので次の記録へ */ }
+    }
+    return false;
+  }
+}
+
+// ---- 設定（作業員名・現場名の登録） ----
+const SETTINGS_KEY = 'hogogu:settings';
+const MANUAL = '__manual__';
+const NO_OFFICE = '__none__';
+
+// 日特建設の支店・営業所（公式の事業所一覧より）。設定画面で足し引きできます。
+const DEFAULT_BRANCHES = [
+  {name: "名古屋支店", offices: ["岐阜営業所", "静岡営業所", "三重営業所"]},
+  {name: "北陸支店",   offices: ["富山営業所", "金沢営業所", "能登出張所", "福井営業所", "佐渡工事所", "上越営業所"]},
+  {name: "東京支店",   offices: ["群馬営業所", "宇都宮営業所", "水戸営業所", "埼玉営業所", "千葉営業所", "横浜営業所", "長野営業所"]}
+];
+
+// 使用者（社員名簿）。設定画面で足し引きできます。
+const DEFAULT_USERS = []; // 公開版は空。設定の「名簿を読み込む」で入れる
+
+// 点検者（職長）。設定画面で足し引きできます。
+const DEFAULT_INSPECTORS = []; // 公開版は空。設定の「名簿を読み込む」で入れる
+
+function loadSettings(){
+  let s = null;
+  try{ s = JSON.parse(backing.get(SETTINGS_KEY)); }catch(e){ s = null; }
+  const branches = (s && Array.isArray(s.branches))
+    ? s.branches.filter(b => b && b.name).map(b => ({
+        name: b.name,
+        offices: Array.isArray(b.offices) ? b.offices : []
+      }))
+    : DEFAULT_BRANCHES.map(b => ({name: b.name, offices: b.offices.slice()}));
+  return {
+    // 保存領域が消えたり空になったりしても、埋め込みの名簿で立ち上がる
+    users:      (s && Array.isArray(s.users)      && s.users.length)      ? s.users      : DEFAULT_USERS.slice(),
+    inspectors: (s && Array.isArray(s.inspectors) && s.inspectors.length) ? s.inspectors : DEFAULT_INSPECTORS.slice(),
+    branches: branches
+  };
+}
+
+function findBranch(settings, name){
+  return settings.branches.filter(b => b.name === name)[0] || null;
+}
+
+function saveSettings(s){
+  try{
+    backing.set(SETTINGS_KEY, JSON.stringify(s));
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+function addSetting(key, raw){
+  const v = (raw || '').trim();
+  if(!v){ return false; }
+  const s = loadSettings();
+  if(s[key].includes(v)){
+    showToast('すでに登録されています');
+    return false;
+  }
+  s[key].push(v);
+  if(!saveSettings(s)){
+    showToast('登録を保存できませんでした');
+    return false;
+  }
+  renderSettings();
+  refreshSelects();
+  return true;
+}
+
+function removeSetting(key, value){
+  const s = loadSettings();
+  s[key] = s[key].filter(v => v !== value);
+  saveSettings(s);
+  renderSettings();
+  refreshSelects();
+}
+
+function renderChips(elId, values, key){
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  if(values.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'chip-empty';
+    empty.textContent = 'まだ登録がありません。上の欄から追加してください。';
+    el.appendChild(empty);
+    return;
+  }
+  values.forEach(v=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    const label = document.createElement('span');
+    label.textContent = v;
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.textContent = '×';
+    del.setAttribute('aria-label', v + ' を削除');
+    del.addEventListener('click', ()=> removeSetting(key, v));
+    chip.appendChild(label);
+    chip.appendChild(del);
+    el.appendChild(chip);
+  });
+}
+
+function renderSettings(){
+  const s = loadSettings();
+  renderChips('userChips', s.users, 'users');
+  renderChips('inspectorChips', s.inspectors, 'inspectors');
+  renderBranches();
+}
+
+// ---- 支店と営業所 ----
+function addBranch(raw){
+  const v = (raw || '').trim();
+  if(!v) return false;
+  const s = loadSettings();
+  if(findBranch(s, v)){
+    showToast('すでに登録されています');
+    return false;
+  }
+  s.branches.push({name: v, offices: []});
+  if(!saveSettings(s)){
+    showToast('登録を保存できませんでした');
+    return false;
+  }
+  renderSettings();
+  refreshSelects();
+  return true;
+}
+
+function removeBranch(name){
+  const s = loadSettings();
+  s.branches = s.branches.filter(b => b.name !== name);
+  saveSettings(s);
+  renderSettings();
+  refreshSelects();
+}
+
+function addOffice(branchName, raw){
+  const v = (raw || '').trim();
+  if(!v) return false;
+  const s = loadSettings();
+  const b = findBranch(s, branchName);
+  if(!b) return false;
+  if(b.offices.includes(v)){
+    showToast('すでに登録されています');
+    return false;
+  }
+  b.offices.push(v);
+  if(!saveSettings(s)){
+    showToast('登録を保存できませんでした');
+    return false;
+  }
+  renderSettings();
+  refreshSelects();
+  return true;
+}
+
+function removeOffice(branchName, office){
+  const s = loadSettings();
+  const b = findBranch(s, branchName);
+  if(!b) return;
+  b.offices = b.offices.filter(o => o !== office);
+  saveSettings(s);
+  renderSettings();
+  refreshSelects();
+}
+
+function renderBranches(){
+  const wrap = document.getElementById('branchList');
+  const s = loadSettings();
+  wrap.innerHTML = '';
+  if(s.branches.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'chip-empty';
+    empty.textContent = 'まだ登録がありません。上の欄から支店を追加してください。';
+    wrap.appendChild(empty);
+    return;
+  }
+  s.branches.forEach(b=>{
+    const item = document.createElement('div');
+    item.className = 'branch-item';
+
+    const head = document.createElement('div');
+    head.className = 'branch-head';
+    const nm = document.createElement('div');
+    nm.className = 'branch-name';
+    nm.textContent = b.name;
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.textContent = '×';
+    del.setAttribute('aria-label', b.name + ' を削除');
+    del.addEventListener('click', ()=> removeBranch(b.name));
+    head.appendChild(nm);
+    head.appendChild(del);
+    item.appendChild(head);
+
+    const addWrap = document.createElement('div');
+    addWrap.className = 'office-add';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = '営業所を追加';
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.textContent = '追加';
+    const doAdd = ()=>{ if(addOffice(b.name, inp.value)) inp.value = ''; };
+    addBtn.addEventListener('click', doAdd);
+    inp.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); doAdd(); } });
+    addWrap.appendChild(inp);
+    addWrap.appendChild(addBtn);
+    item.appendChild(addWrap);
+
+    if(b.offices.length){
+      const chips = document.createElement('div');
+      chips.className = 'office-chips';
+      b.offices.forEach(o=>{
+        const chip = document.createElement('span');
+        chip.className = 'office-chip';
+        const label = document.createElement('span');
+        label.textContent = o;
+        const x = document.createElement('button');
+        x.type = 'button';
+        x.textContent = '×';
+        x.setAttribute('aria-label', o + ' を削除');
+        x.addEventListener('click', ()=> removeOffice(b.name, o));
+        chip.appendChild(label);
+        chip.appendChild(x);
+        chips.appendChild(chip);
+      });
+      item.appendChild(chips);
+    }
+
+    wrap.appendChild(item);
+  });
+}
+
+function fillSelect(selectEl, values, placeholder){
+  const current = selectEl.value;
+  selectEl.innerHTML = '';
+  const blank = document.createElement('option');
+  blank.value = '';
+  blank.textContent = placeholder;
+  selectEl.appendChild(blank);
+  values.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v;
+    o.textContent = v;
+    selectEl.appendChild(o);
+  });
+  const manual = document.createElement('option');
+  manual.value = MANUAL;
+  manual.textContent = '＋ 直接入力';
+  selectEl.appendChild(manual);
+  if(current && (values.includes(current) || current === MANUAL)){
+    selectEl.value = current;
+  }
+}
+
+function refreshSelects(){
+  const s = loadSettings();
+  fillSelect(document.getElementById('userNameSelect'), s.users, '選んでください');
+  fillSelect(document.getElementById('workerNameSelect'), s.inspectors, '選んでください');
+  fillSelect(document.getElementById('clientBranchSelect'), s.branches.map(b=>b.name), '選んでください');
+  refreshOfficeSelect();
+}
+
+// 営業所は、選ばれた支店にぶら下がるものだけ出す
+function refreshOfficeSelect(){
+  const branchSel = document.getElementById('clientBranchSelect');
+  const officeSel = document.getElementById('clientOfficeSelect');
+  const officeInp = document.getElementById('clientOffice');
+  const s = loadSettings();
+  const branch = findBranch(s, branchSel.value);
+  const manualBranch = branchSel.value === MANUAL;
+  const current = officeSel.value;
+
+  officeSel.innerHTML = '';
+  if(!branch && !manualBranch){
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = '先に支店を選んでください';
+    officeSel.appendChild(blank);
+    officeSel.disabled = true;
+    officeInp.style.display = 'none';
+    officeInp.value = '';
+    return;
+  }
+  officeSel.disabled = false;
+
+  const none = document.createElement('option');
+  none.value = NO_OFFICE;
+  none.textContent = '支店直轄（営業所なし）';
+  officeSel.appendChild(none);
+  const offices = branch ? branch.offices : [];
+  offices.forEach(o=>{
+    const opt = document.createElement('option');
+    opt.value = o;
+    opt.textContent = o;
+    officeSel.appendChild(opt);
+  });
+  const manual = document.createElement('option');
+  manual.value = MANUAL;
+  manual.textContent = '＋ 直接入力';
+  officeSel.appendChild(manual);
+
+  if(current && (offices.includes(current) || current === MANUAL || current === NO_OFFICE)){
+    officeSel.value = current;
+  }else{
+    officeSel.value = NO_OFFICE;
+    officeInp.style.display = 'none';
+    officeInp.value = '';
+  }
+}
+
+// 営業所は「支店直轄」を選べるので、値の取り方が他と少し違う
+function officeValue(){
+  const sel = document.getElementById('clientOfficeSelect');
+  if(sel.disabled || sel.value === NO_OFFICE || sel.value === '') return '';
+  if(sel.value === MANUAL) return document.getElementById('clientOffice').value.trim();
+  return sel.value.trim();
+}
+
+// プルダウンと「直接入力」欄をひと組で扱う
+function pairValue(selectId, inputId){
+  const sel = document.getElementById(selectId);
+  const inp = document.getElementById(inputId);
+  return (sel.value === MANUAL ? inp.value : sel.value).trim();
+}
+
+function bindPair(selectId, inputId){
+  const sel = document.getElementById(selectId);
+  const inp = document.getElementById(inputId);
+  sel.addEventListener('change', ()=>{
+    const manual = sel.value === MANUAL;
+    inp.style.display = manual ? 'block' : 'none';
+    if(manual){ inp.focus(); } else { inp.value = ''; }
+    checkSamePerson();
+  });
+  inp.addEventListener('input', checkSamePerson);
+}
+
+function resetPair(selectId, inputId){
+  const sel = document.getElementById(selectId);
+  const inp = document.getElementById(inputId);
+  sel.value = '';
+  inp.value = '';
+  inp.style.display = 'none';
+}
+
+// 使用者と点検者が同じ人ならダブルチェックにならない
+function checkSamePerson(){
+  const u = pairValue('userNameSelect', 'userName');
+  const w = pairValue('workerNameSelect', 'workerName');
+  document.getElementById('samePersonWarn').classList.toggle('show', !!(u && w && u === w));
+}
+
+// ---- 名簿の読み込み・書き出し ----
+// 公開ページには名前を入れない方針のため、名簿は各端末にこの形で配る。
+function rosterToText(){
+  const s = loadSettings();
+  return '#使用者\n' + s.users.join('\n') + '\n\n#点検者\n' + s.inspectors.join('\n');
+}
+
+function importRoster(text){
+  const users = [];
+  const inspectors = [];
+  let mode = null;
+  (text || '').split(/\r?\n/).forEach(raw=>{
+    const line = raw.trim();
+    if(!line) return;
+    if(line === '#使用者'){ mode = 'users'; return; }
+    if(line === '#点検者'){ mode = 'inspectors'; return; }
+    if(line.charAt(0) === '#'){ mode = null; return; }
+    if(mode === 'users' && users.indexOf(line) < 0) users.push(line);
+    if(mode === 'inspectors' && inspectors.indexOf(line) < 0) inspectors.push(line);
+  });
+
+  if(users.length === 0 && inspectors.length === 0){
+    showToast('名簿を読み取れませんでした');
+    return false;
+  }
+  const s = loadSettings();
+  if(users.length) s.users = users;
+  if(inspectors.length) s.inspectors = inspectors;
+  if(!saveSettings(s)){
+    showToast('名簿を保存できませんでした');
+    return false;
+  }
+  renderSettings();
+  refreshSelects();
+  showToast('使用者' + users.length + '名・点検者' + inspectors.length + '名を読み込みました');
+  return true;
+}
+
+// ---- 記録を文字にする（LINE・メールへの貼り付け用） ----
+function recordToText(rec){
+  const lines = [];
+  lines.push('【保護具点検】' + rec.date);
+  lines.push('現場：' + rec.site);
+  if(rec.projectName) lines.push('工事名：' + rec.projectName);
+  const client = [rec.clientBranch, rec.clientOffice].filter(Boolean).join(' ');
+  if(client) lines.push('元請：' + client);
+  lines.push('使用者：' + rec.userName);
+  lines.push('点検者：' + rec.worker);
+  lines.push('');
+
+  const ng = rec.items.filter(i=>i.status==='ng');
+  const caution = rec.items.filter(i=>i.status==='caution');
+  if(ng.length === 0 && caution.length === 0){
+    lines.push('全' + rec.items.length + '項目 良好');
+  }else{
+    ng.forEach(i=> lines.push('【使用不可・交換】' + i.name + (i.memo ? '（' + i.memo + '）' : '')));
+    caution.forEach(i=> lines.push('【要注意】' + i.name + (i.memo ? '（' + i.memo + '）' : '')));
+    const ok = rec.items.filter(i=>i.status==='ok').map(i=>i.name);
+    if(ok.length) lines.push('良好：' + ok.join('、'));
+  }
+  if(rec.samePerson) lines.push('※ 使用者と点検者が同じ人です');
+  if(rec.items.some(i=>i.photo)) lines.push('※ 写真あり（アプリの「点検の記録」で見られます）');
+  return lines.join('\n');
+}
+
+function copyText(text, okMsg){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(
+      ()=> showToast(okMsg),
+      ()=> fallbackCopy(text, okMsg)
+    );
+  }else{
+    fallbackCopy(text, okMsg);
+  }
+}
+
+function fallbackCopy(text, okMsg){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.style.position = 'fixed';
+  ta.style.top = '0';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  let ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  showToast(ok ? okMsg : 'コピーできませんでした');
+}
+
+async function shareRecord(rec){
+  const text = recordToText(rec);
+  if(navigator.share){
+    try{
+      await navigator.share({text: text});
+      return;
+    }catch(e){
+      if(e && e.name === 'AbortError') return; // 本人が閉じただけ
+    }
+  }
+  copyText(text, 'コピーしました。LINEに貼り付けてください');
+}
+
+function exportAll(){
+  const records = readRecords();
+  if(records.length === 0){
+    showToast('書き出す記録がありません');
+    return;
+  }
+  // 月ごとに区切って書き出す（どの月の分か分かるように）
+  const blocks = [];
+  monthsWithRecords().forEach(x=>{
+    const recs = recordsForMonth(x.month);
+    blocks.push('■ ' + monthLabel(x.month) + '（' + recs.length + '件）\n\n'
+      + recs.map(recordToText).join('\n\n──────────\n\n'));
+  });
+  copyText(blocks.join('\n\n\n'), records.length + '件コピーしました');
+}
+
+async function submitRecord(){
+  const site = document.getElementById('siteName').value.trim() || '（現場名未記入）';
+  const clientBranch = pairValue('clientBranchSelect', 'clientBranch');
+  const clientOffice = officeValue();
+  const projectName = document.getElementById('projectName').value.trim();
+  const userNameRaw = pairValue('userNameSelect', 'userName');
+  const workerRaw = pairValue('workerNameSelect', 'workerName');
+  const userName = userNameRaw || '（使用者未記入）';
+  const worker = workerRaw || '（点検者未記入）';
+  const samePerson = !!(userNameRaw && workerRaw && userNameRaw === workerRaw);
+  const date = document.getElementById('checkDate').value || todayStr();
+
+  const items = ITEMS.map(i => ({
+    id: i.id, name: i.name,
+    status: state[i.id].status,
+    memo: state[i.id].memo || '',
+    photo: state[i.id].photo || null
+  }));
+  const unusableCount = items.filter(i=>i.status==='ng').length;
+  const cautionCount = items.filter(i=>i.status==='caution').length;
+
+  const record = {
+    ts: Date.now(),
+    date, site, clientBranch, clientOffice, projectName, userName, worker, samePerson, items, unusableCount, cautionCount
+  };
+
+  if(!saveRecord(record)){
+    showToast('保存できませんでした（端末の空き容量不足）');
+    return;
+  }
+  showToast((unusableCount>0 || cautionCount>0) ? '記録しました（職長への報告を忘れずに）' : '記録しました');
+  selectedMonth = monthOf(record); // 記録した月をそのまま見られるように
+  resetForm();
+  refreshRecordViews();
+}
+
+// 記録タブは「現場ごとの表」と「1件ずつ」の2つある。開いている方を描き直す
+function refreshRecordViews(){
+  renderMonthNav();
+  const siteMode = document.querySelector('.subtab.active').dataset.mode === 'site';
+  if(siteMode){ renderSiteTable(); } else { loadHistory(); }
+}
+
+function resetForm(){
+  document.getElementById('siteName').value = '';
+  document.getElementById('projectName').value = '';
+  resetPair('clientBranchSelect', 'clientBranch');
+  resetPair('clientOfficeSelect', 'clientOffice');
+  refreshOfficeSelect();
+  resetPair('userNameSelect', 'userName');
+  resetPair('workerNameSelect', 'workerName');
+  document.getElementById('samePersonWarn').classList.remove('show');
+  document.getElementById('checkDate').value = todayStr();
+  ITEMS.forEach(i => state[i.id] = {status: null, memo: '', photo: null});
+  renderItems();
+  seasonNote();
+  updateSummary();
+}
+
+function loadHistory(){
+  const listEl = document.getElementById('historyList');
+  try{
+    const records = selectedMonth ? recordsForMonth(selectedMonth) : [];
+    if(records.length === 0){
+      listEl.innerHTML = canStore
+        ? '<div class="history-empty">まだ記録がありません。<br>「今日の点検」から最初の記録を残しましょう。</div>'
+        : '<div class="history-empty">この画面では記録が残せません。<br>閉じると消えるため、一覧にも出ません。<br>スマホのSafari／Chromeで開くと残ります。</div>';
+      return;
+    }
+    const top = records.slice(0, 200);
+    listEl.innerHTML = '';
+    top.forEach(rec=>{
+      const card = document.createElement('div');
+      card.className = 'record-card';
+      const unusableCount = rec.unusableCount ?? rec.items.filter(i=>i.status==='ng').length;
+      const cautionCount = rec.cautionCount ?? rec.items.filter(i=>i.status==='caution').length;
+      const unusableLines = rec.items.filter(i=>i.status==='ng')
+        .map(i=>`<div class="ng-line">・${i.name}：使用不可・交換${i.memo? '（'+i.memo+'）':''}</div>${i.photo ? `<img class="rc-photo" src="${i.photo}" alt="${i.name}の写真">` : ''}`).join('');
+      const cautionLines = rec.items.filter(i=>i.status==='caution')
+        .map(i=>`<div class="ng-line">・${i.name}：要注意${i.memo? '（'+i.memo+'）':''}</div>`).join('');
+      const okNames = rec.items.filter(i=>i.status==='ok').map(i=>i.name).join('、');
+      const clientText = [rec.clientBranch, rec.clientOffice].filter(Boolean).join(' ');
+
+      let badgeClass = 'ok', badgeText = '全項目良好';
+      if(unusableCount>0){ badgeClass='ng'; badgeText = `使用不可 ${unusableCount}件`; }
+      else if(cautionCount>0){ badgeClass='ng'; badgeText = `要注意 ${cautionCount}件`; }
+
+      card.innerHTML = `
+        <div class="rc-head">
+          <div class="rc-date">${rec.date}</div>
+          <div class="rc-badge ${badgeClass}">${badgeText}</div>
+        </div>
+        <div class="rc-meta">${rec.site}${rec.projectName ? ' ／ ' + rec.projectName : ''}${clientText ? '（' + clientText + '）' : ''} ／ 使用者：${rec.userName || '（記載なし）'} ／ 点検者：${rec.worker}</div>
+        <div class="rc-items">
+          ${unusableLines}
+          ${cautionLines}
+          ${okNames ? `<div>良好：${okNames}</div>` : ''}
+          ${rec.samePerson ? '<div class="ng-line">※ 使用者と点検者が同じ人です</div>' : ''}
+        </div>
+        <div class="rc-actions">
+          <button type="button" class="share-btn">この記録を送る・コピー</button>
+        </div>
+      `;
+      card.querySelector('.share-btn').addEventListener('click', ()=> shareRecord(rec));
+      listEl.appendChild(card);
+    });
+
+    const note = document.createElement('div');
+    note.className = 'note-share';
+    note.textContent = '文字だけが送られます。写真はこの画面を直接見せてください。';
+    listEl.appendChild(note);
+  }catch(e){
+    console.error(e);
+    listEl.innerHTML = '<div class="history-empty">記録の読み込みに失敗しました</div>';
+  }
+}
+
+// ---- 月の切り替え ----
+// 記録は月ごとに分けて見る。全部を縦に積むと、月が増えたときに追えなくなるため。
+let selectedMonth = null; // 'YYYY-MM'
+
+function monthOf(rec){
+  return (rec.date || '').slice(0, 7);
+}
+
+// 記録がある月を新しい順に返す
+function monthsWithRecords(){
+  const counts = {};
+  readRecords().forEach(r=>{
+    const m = monthOf(r);
+    if(m) counts[m] = (counts[m] || 0) + 1;
+  });
+  return Object.keys(counts).sort().reverse().map(m => ({month: m, count: counts[m]}));
+}
+
+function monthLabel(m){
+  const parts = m.split('-');
+  return Number(parts[0]) + '年' + Number(parts[1]) + '月';
+}
+
+function recordsForMonth(m){
+  return readRecords().filter(r => monthOf(r) === m);
+}
+
+function renderMonthNav(){
+  const nav = document.getElementById('monthNav');
+  const sel = document.getElementById('monthSelect');
+  const summary = document.getElementById('monthSummary');
+  const months = monthsWithRecords();
+
+  if(months.length === 0){
+    nav.style.display = 'none';
+    summary.style.display = 'none';
+    selectedMonth = null;
+    return;
+  }
+  nav.style.display = 'flex';
+  summary.style.display = 'grid';
+
+  // 選んでいた月が無くなったら、いちばん新しい月に戻す
+  if(!selectedMonth || !months.some(x => x.month === selectedMonth)){
+    const thisMonth = todayStr().slice(0, 7);
+    selectedMonth = months.some(x => x.month === thisMonth) ? thisMonth : months[0].month;
+  }
+
+  sel.innerHTML = '';
+  months.forEach(x=>{
+    const o = document.createElement('option');
+    o.value = x.month;
+    o.textContent = monthLabel(x.month) + '（' + x.count + '件）';
+    sel.appendChild(o);
+  });
+  sel.value = selectedMonth;
+
+  // 一覧は新しい順なので、前の月＝配列の後ろ
+  const i = months.map(x=>x.month).indexOf(selectedMonth);
+  document.getElementById('prevMonth').disabled = (i >= months.length - 1);
+  document.getElementById('nextMonth').disabled = (i <= 0);
+
+  const recs = recordsForMonth(selectedMonth);
+  const sites = groupBySite(recs).length;
+  const ng = recs.filter(r => r.items.some(i=>i.status==='ng')).length;
+  const caution = recs.filter(r => r.items.some(i=>i.status==='caution') && !r.items.some(i=>i.status==='ng')).length;
+
+  summary.innerHTML = '';
+  summary.appendChild(statTile(sites, '現場'));
+  summary.appendChild(statTile(recs.length, 'のべ人数'));
+  summary.appendChild(statTile(ng, '使用不可', ng ? 'ng' : 'quiet'));
+  summary.appendChild(statTile(caution, '要注意', caution ? 'caution' : 'quiet'));
+}
+
+// 0件のときは色を落とす。件数があるときだけ赤・山吹で塗る
+function statTile(num, label, mod){
+  const d = document.createElement('div');
+  d.className = 'ms-stat' + (mod ? ' ' + mod : '');
+  const b = document.createElement('b');
+  b.textContent = num;
+  const s = document.createElement('span');
+  s.textContent = label;
+  d.appendChild(b);
+  d.appendChild(s);
+  return d;
+}
+
+function stepMonth(dir){
+  const months = monthsWithRecords().map(x=>x.month);
+  const i = months.indexOf(selectedMonth);
+  const next = i + (dir === 'prev' ? 1 : -1);
+  if(next < 0 || next >= months.length) return;
+  selectedMonth = months[next];
+  refreshRecordViews();
+}
+
+// ---- 現場ごとの表 ----
+const MARK = {ok: '○', caution: '△', ng: '×'};
+
+// 同じ日・同じ現場の記録をひとまとめにする
+function groupBySite(records){
+  const groups = [];
+  const index = {};
+  records.forEach(r=>{
+    const key = r.date + ' ' + r.site;
+    if(!(key in index)){
+      index[key] = groups.length;
+      groups.push({
+        date: r.date,
+        site: r.site,
+        clientBranch: r.clientBranch || '',
+        clientOffice: r.clientOffice || '',
+        projectName: r.projectName || '',
+        rows: []
+      });
+    }
+    groups[index[key]].rows.push(r);
+  });
+  return groups;
+}
+
+function siteGroupToText(g){
+  const lines = [];
+  lines.push('【保護具点検】' + g.date);
+  lines.push('現場：' + g.site);
+  if(g.projectName) lines.push('工事名：' + g.projectName);
+  const client = [g.clientBranch, g.clientOffice].filter(Boolean).join(' ');
+  if(client) lines.push('元請：' + client);
+  lines.push('点検 ' + g.rows.length + '名');
+  lines.push('');
+
+  const allOk = g.rows.filter(r => !r.items.some(i=>i.status==='ng' || i.status==='caution'));
+  const hasNg = g.rows.filter(r => r.items.some(i=>i.status==='ng'));
+  const hasCaution = g.rows.filter(r => r.items.some(i=>i.status==='caution'));
+
+  if(allOk.length){
+    lines.push('○ 全項目良好（' + allOk.length + '名）：' + allOk.map(r=>r.userName).join('、'));
+  }
+  if(hasNg.length){
+    lines.push('× 使用不可・交換（' + hasNg.length + '名）');
+    hasNg.forEach(r=>{
+      r.items.filter(i=>i.status==='ng').forEach(i=>{
+        lines.push('・' + r.userName + '／' + i.name + (i.memo ? '：' + i.memo : ''));
+      });
+    });
+  }
+  if(hasCaution.length){
+    lines.push('△ 要注意（' + hasCaution.length + '名）');
+    hasCaution.forEach(r=>{
+      r.items.filter(i=>i.status==='caution').forEach(i=>{
+        lines.push('・' + r.userName + '／' + i.name + (i.memo ? '：' + i.memo : ''));
+      });
+    });
+  }
+  const same = g.rows.filter(r=>r.samePerson);
+  if(same.length){
+    lines.push('※ 使用者と点検者が同じ：' + same.map(r=>r.userName).join('、'));
+  }
+  return lines.join('\n');
+}
+
+function renderSiteTable(){
+  const wrap = document.getElementById('siteTable');
+  wrap.innerHTML = '';
+  const records = selectedMonth ? recordsForMonth(selectedMonth) : [];
+  if(records.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'history-empty';
+    empty.innerHTML = canStore
+      ? 'まだ記録がありません。<br>「今日の点検」から最初の記録を残しましょう。'
+      : 'この画面では記録が残せません。<br>閉じると消えるため、表にも出ません。<br>スマホのSafari／Chromeで開くと残ります。';
+    wrap.appendChild(empty);
+    return;
+  }
+
+  groupBySite(records).forEach(g=>{
+    const box = document.createElement('div');
+    box.className = 'site-group';
+
+    const d = document.createElement('div');
+    d.className = 'site-date';
+    d.textContent = g.date;
+    const n = document.createElement('div');
+    n.className = 'site-name';
+    n.textContent = g.site;
+    const m = document.createElement('div');
+    m.className = 'site-meta';
+    const client = [g.clientBranch, g.clientOffice].filter(Boolean).join(' ');
+    m.textContent = [g.projectName, client, g.rows.length + '名'].filter(Boolean).join(' ／ ');
+    box.appendChild(d);
+    box.appendChild(n);
+    box.appendChild(m);
+
+    // 何人が引っかかっているかを先に出す
+    const ngPeople = g.rows.filter(r => r.items.some(i=>i.status==='ng'));
+    const cautionPeople = g.rows.filter(r => r.items.some(i=>i.status==='caution') && !r.items.some(i=>i.status==='ng'));
+    const okPeople = g.rows.filter(r => !r.items.some(i=>i.status==='ng' || i.status==='caution'));
+    if(ngPeople.length) box.classList.add('has-ng');
+
+    const tally = document.createElement('div');
+    tally.className = 'site-tally';
+    if(ngPeople.length){
+      const t = document.createElement('span');
+      t.className = 'tally ng';
+      t.textContent = '× 使用不可 ' + ngPeople.length + '名';
+      tally.appendChild(t);
+    }
+    if(cautionPeople.length){
+      const t = document.createElement('span');
+      t.className = 'tally caution';
+      t.textContent = '△ 要注意 ' + cautionPeople.length + '名';
+      tally.appendChild(t);
+    }
+    const t3 = document.createElement('span');
+    t3.className = 'tally ok';
+    t3.textContent = '○ 全項目良好 ' + okPeople.length + '名';
+    tally.appendChild(t3);
+    box.appendChild(tally);
+
+    // 行＝人、列＝点検項目
+    const tw = document.createElement('div');
+    tw.className = 'matrix-wrap';
+    const table = document.createElement('table');
+    table.className = 'matrix';
+
+    const thead = document.createElement('thead');
+    const hr = document.createElement('tr');
+    const corner = document.createElement('th');
+    corner.className = 'name-col';
+    corner.scope = 'col';
+    corner.textContent = '使用者';
+    hr.appendChild(corner);
+    ITEMS.forEach(item=>{
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.textContent = item.short || item.name;
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    g.rows.forEach(r=>{
+      const tr = document.createElement('tr');
+      if(r.items.some(i=>i.status==='ng')) tr.className = 'has-ng';
+      const nameTh = document.createElement('th');
+      nameTh.className = 'name-col';
+      nameTh.scope = 'row';
+      nameTh.textContent = r.userName;
+      tr.appendChild(nameTh);
+      ITEMS.forEach(item=>{
+        const td = document.createElement('td');
+        const found = r.items.filter(i=>i.id === item.id)[0];
+        const st = found ? found.status : null;
+        td.className = 'mark' + (st ? ' ' + st : '');
+        td.textContent = st ? MARK[st] : '−';
+        if(found && found.memo) td.title = found.memo;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    tw.appendChild(table);
+    box.appendChild(tw);
+
+    const legend = document.createElement('div');
+    legend.className = 'legend';
+    legend.textContent = '○ 良好　△ 要注意　× 使用不可・交換　− 未記入';
+    box.appendChild(legend);
+
+    // ○以外は中身をメモとして下に出す
+    const notes = document.createElement('div');
+    notes.className = 'site-notes';
+    g.rows.forEach(r=>{
+      r.items.filter(i=>i.status==='ng' || i.status==='caution').forEach(i=>{
+        const line = document.createElement('div');
+        line.className = i.status === 'ng' ? 'note-ng' : 'note-caution';
+        line.textContent = (i.status === 'ng' ? '× ' : '△ ') + r.userName + '／' + i.name + (i.memo ? '：' + i.memo : '');
+        notes.appendChild(line);
+      });
+      if(r.samePerson){
+        const line = document.createElement('div');
+        line.className = 'note-caution';
+        line.textContent = '※ ' + r.userName + '：使用者と点検者が同じ人です';
+        notes.appendChild(line);
+      }
+    });
+    if(notes.childNodes.length) box.appendChild(notes);
+
+    const actions = document.createElement('div');
+    actions.className = 'site-actions';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'この現場の分をまとめて送る';
+    btn.addEventListener('click', ()=>{
+      const text = siteGroupToText(g);
+      if(navigator.share){
+        navigator.share({text: text}).catch(e=>{
+          if(!e || e.name !== 'AbortError') copyText(text, 'コピーしました。LINEに貼り付けてください');
+        });
+      }else{
+        copyText(text, 'コピーしました。LINEに貼り付けてください');
+      }
+    });
+    actions.appendChild(btn);
+    box.appendChild(actions);
+
+    wrap.appendChild(box);
+  });
+}
+
+// 表と1件ずつの切り替え
+document.querySelectorAll('.subtab').forEach(sub=>{
+  sub.addEventListener('click', ()=>{
+    document.querySelectorAll('.subtab').forEach(s=>s.classList.remove('active'));
+    sub.classList.add('active');
+    const siteMode = sub.dataset.mode === 'site';
+    document.getElementById('siteTable').style.display = siteMode ? 'block' : 'none';
+    document.getElementById('historyList').style.display = siteMode ? 'none' : 'block';
+    if(siteMode){ renderSiteTable(); } else { loadHistory(); }
+  });
+});
+
+// ---- tabs ----
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(`view-${tab.dataset.tab}`).classList.add('active');
+    document.getElementById('bottomBar').style.display = tab.dataset.tab === 'check' ? 'flex' : 'none';
+    if(tab.dataset.tab === 'history') refreshRecordViews();
+    if(tab.dataset.tab === 'settings') renderSettings();
+  });
+});
+
+document.getElementById('submitBtn').addEventListener('click', submitRecord);
+document.getElementById('checkDate').value = todayStr();
+
+// ---- 設定画面の操作 ----
+function bindAdd(inputId, btnId, fn){
+  const inp = document.getElementById(inputId);
+  const add = ()=>{ if(fn(inp.value)) inp.value = ''; };
+  document.getElementById(btnId).addEventListener('click', add);
+  inp.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); add(); } });
+}
+bindAdd('newUserInput', 'addUserBtn', v => addSetting('users', v));
+bindAdd('newInspectorInput', 'addInspectorBtn', v => addSetting('inspectors', v));
+bindAdd('newBranchInput', 'addBranchBtn', v => addBranch(v));
+document.getElementById('exportAllBtn').addEventListener('click', exportAll);
+document.getElementById('exportRosterBtn').addEventListener('click', ()=>{
+  copyText(rosterToText(), '名簿をコピーしました');
+});
+document.getElementById('importRosterBtn').addEventListener('click', ()=>{
+  const ta = document.getElementById('rosterInput');
+  if(importRoster(ta.value)) ta.value = '';
+});
+
+document.getElementById('prevMonth').addEventListener('click', ()=> stepMonth('prev'));
+document.getElementById('nextMonth').addEventListener('click', ()=> stepMonth('next'));
+document.getElementById('monthSelect').addEventListener('change', e=>{
+  selectedMonth = e.target.value;
+  refreshRecordViews();
+});
+
+bindPair('userNameSelect', 'userName');
+bindPair('workerNameSelect', 'workerName');
+bindPair('clientBranchSelect', 'clientBranch');
+bindPair('clientOfficeSelect', 'clientOffice');
+document.getElementById('clientBranchSelect').addEventListener('change', refreshOfficeSelect);
+
+if(!canStore){
+  document.getElementById('storageWarn').classList.add('show');
+}
+
+refreshSelects();
+renderSettings();
+renderItems();
+seasonNote();
+updateSummary();
+</script>
+</body>
+</html>
