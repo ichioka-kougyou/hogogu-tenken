@@ -844,6 +844,41 @@
     font-family:inherit;
     cursor:pointer;
   }
+  .login-block{
+    background:var(--ink);
+    color:var(--surface);
+    border-radius:var(--radius);
+    padding:15px;
+    margin-bottom:15px;
+  }
+  .login-block .login-title{
+    font-size:16px;
+    font-weight:800;
+    margin-bottom:4px;
+  }
+  .login-block .login-help{
+    font-size:13px;
+    line-height:1.6;
+    margin-bottom:11px;
+    opacity:.9;
+  }
+  .login-block input{
+    border-color:var(--surface);
+  }
+  .login-block .add-row button{
+    background:var(--hazard);
+    color:var(--ink);
+  }
+  .conn-status{
+    font-size:14px;
+    font-weight:800;
+    padding:10px 12px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    margin-bottom:11px;
+  }
+  .conn-status.on{border-color:var(--ok);color:var(--ok);}
+  .conn-status.off{border-color:var(--caution);color:var(--caution);}
   .roster-input{
     width:100%;
     min-height:120px;
@@ -1024,6 +1059,15 @@
 
   <!-- CHECK VIEW -->
   <section class="view active" id="view-check">
+    <div class="login-block" id="loginBlock">
+      <div class="login-title">合言葉を入れてください（最初の1回だけ）</div>
+      <div class="login-help">会社から配られた合言葉です。入れると、点検の記録が職長全員で共有されます。</div>
+      <div class="add-row">
+        <input type="password" id="aikotobaInput" placeholder="合言葉" autocomplete="off">
+        <button type="button" id="aikotobaBtn">つなぐ</button>
+      </div>
+    </div>
+
     <div class="field-row">
       <div class="field">
         <label for="siteName">現場名</label>
@@ -1130,6 +1174,15 @@
         <button type="button" id="addBranchBtn">支店を追加</button>
       </div>
       <div id="branchList"></div>
+    </div>
+
+    <div class="setting-block">
+      <h2>記録の共有</h2>
+      <p class="setting-help">合言葉でつなぐと、点検の記録が職長全員・事務所と共有されます。</p>
+      <div class="conn-status" id="connStatus">確認中…</div>
+      <div class="add-row">
+        <button type="button" id="relinkBtn">合言葉を入れ直す</button>
+      </div>
     </div>
 
     <div class="setting-block">
@@ -1486,6 +1539,175 @@ function saveRecord(record){
     }
     return false;
   }
+}
+
+// ---- 記録の共有（会社のデータベースとやり取り） ----
+const SB_URL = 'https://sqpodqbaujoanqjzfvbo.supabase.co';
+const SB_KEY = 'sb_publishable_uds6_DPJKp0QUeBHOJG7Yg_1IojUAGn'; // 公開用の鍵（秘密ではない）
+const SB_EMAIL = 'genba@i-kougyou.co.jp';
+const AIKOTOBA_KEY = 'hogogu:aikotoba';
+const PENDING_KEY = 'hogogu:pending';
+const DEVICE_KEY = 'hogogu:device';
+
+let sbToken = null;          // つながっている間だけ持つ通行証
+let remote = { ok: false, months: null, month: null, rows: [] };
+
+function deviceId(){
+  let d = backing.get(DEVICE_KEY);
+  if(!d){
+    d = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    backing.set(DEVICE_KEY, d);
+  }
+  return d;
+}
+
+function aikotoba(){ return backing.get(AIKOTOBA_KEY) || ''; }
+
+async function sbSignIn(pw){
+  try{
+    const r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { apikey: SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: SB_EMAIL, password: pw })
+    });
+    if(!r.ok) return false;
+    const j = await r.json();
+    sbToken = j.access_token || null;
+    return !!sbToken;
+  }catch(e){
+    return false;
+  }
+}
+
+async function ensureAuth(){
+  if(sbToken) return true;
+  const pw = aikotoba();
+  if(!pw) return false;
+  return sbSignIn(pw);
+}
+
+// 通行証が切れていたら一度だけ取り直す
+async function sbFetch(path, opts, retry){
+  if(!(await ensureAuth())) return null;
+  let r;
+  try{
+    r = await fetch(SB_URL + path, Object.assign({}, opts, {
+      headers: Object.assign(
+        { apikey: SB_KEY, Authorization: 'Bearer ' + sbToken, 'Content-Type': 'application/json' },
+        (opts && opts.headers) || {}
+      )
+    }));
+  }catch(e){
+    return null;
+  }
+  if(r.status === 401 && retry !== false){
+    sbToken = null;
+    return sbFetch(path, opts, false);
+  }
+  return r;
+}
+
+// 送る形に直す（写真は大きいので送らない。撮った端末にだけ残る）
+function recToRow(rec){
+  return {
+    ts: rec.ts, date: rec.date, site: rec.site,
+    client_branch: rec.clientBranch || '', client_office: rec.clientOffice || '',
+    project_name: rec.projectName || '',
+    user_name: rec.userName, worker: rec.worker, same_person: !!rec.samePerson,
+    items: rec.items.map(i => ({ id: i.id, name: i.name, status: i.status, memo: i.memo || '' })),
+    unusable_count: rec.unusableCount, caution_count: rec.cautionCount,
+    device_id: deviceId()
+  };
+}
+
+function rowToRec(row){
+  return {
+    ts: row.ts, date: row.date, site: row.site,
+    clientBranch: row.client_branch, clientOffice: row.client_office,
+    projectName: row.project_name,
+    userName: row.user_name, worker: row.worker, samePerson: row.same_person,
+    items: row.items || [],
+    unusableCount: row.unusable_count, cautionCount: row.caution_count,
+    fromServer: true
+  };
+}
+
+// まだ送れていない記録の控え
+function pendingList(){
+  try{ const p = JSON.parse(backing.get(PENDING_KEY)); return Array.isArray(p) ? p : []; }
+  catch(e){ return []; }
+}
+function setPending(list){ try{ backing.set(PENDING_KEY, JSON.stringify(list)); }catch(e){} }
+
+async function pushRecord(rec){
+  const r = await sbFetch('/rest/v1/records?on_conflict=device_id,ts', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=ignore-duplicates' },
+    body: JSON.stringify([recToRow(rec)])
+  });
+  return !!(r && r.ok);
+}
+
+// たまっている分を送る（圏外だった分など）
+async function flushPending(){
+  const list = pendingList();
+  if(list.length === 0) return;
+  const remain = [];
+  for(const ts of list){
+    let rec = null;
+    try{ rec = JSON.parse(backing.get(STORE_PREFIX + ts)); }catch(e){}
+    if(!rec){ continue; }
+    if(!(await pushRecord(rec))) remain.push(ts);
+  }
+  setPending(remain);
+}
+
+// 共有側の月一覧と、選んだ月の記録を読み込む
+async function loadRemote(){
+  remote.ok = false;
+  const r = await sbFetch('/rest/v1/records?select=date&order=date.desc&limit=5000', {});
+  if(!r || !r.ok) return;
+  let rows;
+  try{ rows = await r.json(); }catch(e){ return; }
+  const counts = {};
+  rows.forEach(x => { const m = (x.date || '').slice(0, 7); if(m) counts[m] = (counts[m] || 0) + 1; });
+  remote.months = Object.keys(counts).sort().reverse().map(m => ({ month: m, count: counts[m] }));
+  remote.ok = true;
+
+  // 表示する月を確定させてから、その月の分だけ取り寄せる
+  const months = monthsWithRecords().map(x => x.month);
+  if(months.length && (!selectedMonth || months.indexOf(selectedMonth) < 0)){
+    const thisMonth = todayStr().slice(0, 7);
+    selectedMonth = months.indexOf(thisMonth) >= 0 ? thisMonth : months[0];
+  }
+  remote.month = null;
+  remote.rows = [];
+  if(selectedMonth){
+    const rr = await sbFetch('/rest/v1/records?select=*&date=like.' + selectedMonth + '*&order=ts.desc&limit=1000', {});
+    if(rr && rr.ok){
+      try{
+        remote.rows = (await rr.json()).map(rowToRec);
+        remote.month = selectedMonth;
+      }catch(e){}
+    }
+  }
+}
+
+function updateConnStatus(){
+  const el = document.getElementById('connStatus');
+  if(!el) return;
+  if(!aikotoba()){
+    el.textContent = '未接続（合言葉が入っていません）';
+    el.className = 'conn-status off';
+  }else if(remote.ok){
+    el.textContent = 'つながっています（記録は全員で共有）';
+    el.className = 'conn-status on';
+  }else{
+    el.textContent = 'いまはつながっていません（電波が戻れば自動で送られます）';
+    el.className = 'conn-status off';
+  }
+  const lb = document.getElementById('loginBlock');
+  if(lb) lb.style.display = aikotoba() ? 'none' : 'block';
 }
 
 // ---- 設定（作業員名・現場名の登録） ----
@@ -1993,15 +2215,40 @@ async function submitRecord(){
   }
   showToast((unusableCount>0 || cautionCount>0) ? '記録しました（職長への報告を忘れずに）' : '記録しました');
   selectedMonth = monthOf(record); // 記録した月をそのまま見られるように
+
+  // 共有へ送る。送れなければ控えに積んで、つながったときに送る
+  const pend = pendingList();
+  pend.push(record.ts);
+  setPending(pend);
+  pushRecord(record).then(ok=>{
+    if(ok){ setPending(pendingList().filter(t => t !== record.ts)); }
+  });
+
   resetForm();
   refreshRecordViews();
 }
 
 // 記録タブは「現場ごとの表」と「1件ずつ」の2つある。開いている方を描き直す
-function refreshRecordViews(){
+let refreshBusy = false;
+async function refreshRecordViews(){
+  // まず手元の分をすぐ描く（通信待ちで画面を止めない）
   renderMonthNav();
   const siteMode = document.querySelector('.subtab.active').dataset.mode === 'site';
   if(siteMode){ renderSiteTable(); } else { loadHistory(); }
+
+  if(refreshBusy) return;
+  refreshBusy = true;
+  try{
+    await flushPending();
+    await loadRemote();
+  }finally{
+    refreshBusy = false;
+  }
+  updateConnStatus();
+  // 共有の分が読めたら描き直す
+  renderMonthNav();
+  const sm = document.querySelector('.subtab.active').dataset.mode === 'site';
+  if(sm){ renderSiteTable(); } else { loadHistory(); }
 }
 
 function resetForm(){
@@ -2023,7 +2270,7 @@ function resetForm(){
 function loadHistory(){
   const listEl = document.getElementById('historyList');
   try{
-    const records = selectedMonth ? recordsForMonth(selectedMonth) : [];
+    const records = selectedMonth ? displayRecordsForMonth(selectedMonth) : [];
     if(records.length === 0){
       listEl.innerHTML = canStore
         ? '<div class="history-empty">まだ記録がありません。<br>「今日の点検」から最初の記録を残しましょう。</div>'
@@ -2086,14 +2333,27 @@ function monthOf(rec){
   return (rec.date || '').slice(0, 7);
 }
 
-// 記録がある月を新しい順に返す
+// 記録がある月を新しい順に返す（つながっていれば共有側、だめなら端末内）
 function monthsWithRecords(){
+  if(remote.ok && remote.months){
+    return remote.months;
+  }
   const counts = {};
   readRecords().forEach(r=>{
     const m = monthOf(r);
     if(m) counts[m] = (counts[m] || 0) + 1;
   });
   return Object.keys(counts).sort().reverse().map(m => ({month: m, count: counts[m]}));
+}
+
+// 画面に出す記録：共有側＋この端末でまだ送れていない分
+function displayRecordsForMonth(m){
+  if(remote.ok && remote.month === m){
+    const pend = pendingList();
+    const local = readRecords().filter(r => monthOf(r) === m && pend.indexOf(r.ts) >= 0);
+    return local.concat(remote.rows).sort((a,b)=> b.ts - a.ts);
+  }
+  return recordsForMonth(m);
 }
 
 function monthLabel(m){
@@ -2140,7 +2400,7 @@ function renderMonthNav(){
   document.getElementById('prevMonth').disabled = (i >= months.length - 1);
   document.getElementById('nextMonth').disabled = (i <= 0);
 
-  const recs = recordsForMonth(selectedMonth);
+  const recs = displayRecordsForMonth(selectedMonth);
   const sites = groupBySite(recs).length;
   const ng = recs.filter(r => r.items.some(i=>i.status==='ng')).length;
   const caution = recs.filter(r => r.items.some(i=>i.status==='caution') && !r.items.some(i=>i.status==='ng')).length;
@@ -2242,7 +2502,7 @@ function siteGroupToText(g){
 function renderSiteTable(){
   const wrap = document.getElementById('siteTable');
   wrap.innerHTML = '';
-  const records = selectedMonth ? recordsForMonth(selectedMonth) : [];
+  const records = selectedMonth ? displayRecordsForMonth(selectedMonth) : [];
   if(records.length === 0){
     const empty = document.createElement('div');
     empty.className = 'history-empty';
@@ -2436,6 +2696,33 @@ document.getElementById('importRosterBtn').addEventListener('click', ()=>{
   if(importRoster(ta.value)) ta.value = '';
 });
 
+// ---- 合言葉 ----
+document.getElementById('aikotobaBtn').addEventListener('click', async ()=>{
+  const pw = document.getElementById('aikotobaInput').value.trim();
+  if(!pw){ showToast('合言葉を入れてください'); return; }
+  showToast('確認しています…');
+  const ok = await sbSignIn(pw);
+  if(ok){
+    backing.set(AIKOTOBA_KEY, pw);
+    document.getElementById('aikotobaInput').value = '';
+    showToast('つながりました。記録が全員で共有されます');
+    updateConnStatus();
+    refreshRecordViews();
+  }else{
+    showToast('合言葉が違うか、電波がありません');
+  }
+});
+document.getElementById('relinkBtn').addEventListener('click', ()=>{
+  backing.remove(AIKOTOBA_KEY);
+  sbToken = null;
+  remote = { ok: false, months: null, month: null, rows: [] };
+  updateConnStatus();
+  document.querySelector('.tab[data-tab="check"]').click();
+  showToast('合言葉を入れ直してください');
+});
+// 電波が戻ったら、たまっている分を送る
+window.addEventListener('online', ()=>{ flushPending(); });
+
 document.getElementById('prevMonth').addEventListener('click', ()=> stepMonth('prev'));
 document.getElementById('nextMonth').addEventListener('click', ()=> stepMonth('next'));
 document.getElementById('monthSelect').addEventListener('change', e=>{
@@ -2458,6 +2745,8 @@ renderSettings();
 renderItems();
 seasonNote();
 updateSummary();
+updateConnStatus();
+flushPending();
 </script>
 </body>
 </html>
