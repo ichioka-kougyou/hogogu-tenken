@@ -778,6 +778,7 @@
     padding-top:14px;
     border-top:2px solid var(--line);
   }
+  .rc-actions{flex-wrap:wrap;}
   .rc-actions button{
     padding:12px 17px;
     border-radius:9px;
@@ -788,6 +789,17 @@
     font-weight:800;
     font-family:inherit;
     cursor:pointer;
+  }
+  .rc-actions button:disabled{
+    border-color:var(--line);
+    color:var(--ink-2);
+    cursor:wait;
+  }
+  .photo-cap{
+    font-size:13px;
+    font-weight:800;
+    color:var(--ink-2);
+    margin-top:10px;
   }
   .note-share{
     font-size:13px;
@@ -1607,8 +1619,13 @@ async function sbFetch(path, opts, retry){
   return r;
 }
 
-// 送る形に直す（写真は大きいので送らない。撮った端末にだけ残る）
+// 送る形に直す。写真は別の置き場所（photos）に入れ、一覧では枚数だけ持つ
 function recToRow(rec){
+  const photos = {};
+  let photoCount = 0;
+  rec.items.forEach(i => {
+    if(i.photo){ photos[i.id] = i.photo; photoCount++; }
+  });
   return {
     ts: rec.ts, date: rec.date, site: rec.site,
     client_branch: rec.clientBranch || '', client_office: rec.clientOffice || '',
@@ -1616,7 +1633,8 @@ function recToRow(rec){
     user_name: rec.userName, worker: rec.worker, same_person: !!rec.samePerson,
     items: rec.items.map(i => ({ id: i.id, name: i.name, status: i.status, memo: i.memo || '' })),
     unusable_count: rec.unusableCount, caution_count: rec.cautionCount,
-    device_id: deviceId()
+    device_id: deviceId(),
+    photos: photos, photo_count: photoCount
   };
 }
 
@@ -1628,8 +1646,22 @@ function rowToRec(row){
     userName: row.user_name, worker: row.worker, samePerson: row.same_person,
     items: row.items || [],
     unusableCount: row.unusable_count, cautionCount: row.caution_count,
+    photoCount: row.photo_count || 0,
+    deviceId: row.device_id || '',
     fromServer: true
   };
+}
+
+// 一覧は写真抜きで軽く取り、見たいときだけその記録の写真を取り寄せる
+const MONTH_COLS = 'ts,date,site,client_branch,client_office,project_name,user_name,worker,same_person,items,unusable_count,caution_count,photo_count,device_id';
+
+async function fetchPhotos(rec){
+  const r = await sbFetch('/rest/v1/records?select=photos&ts=eq.' + rec.ts + '&device_id=eq.' + encodeURIComponent(rec.deviceId), {});
+  if(!r || !r.ok) return null;
+  try{
+    const rows = await r.json();
+    return (rows[0] && rows[0].photos) || null;
+  }catch(e){ return null; }
 }
 
 // まだ送れていない記録の控え
@@ -1683,7 +1715,7 @@ async function loadRemote(){
   remote.month = null;
   remote.rows = [];
   if(selectedMonth){
-    const rr = await sbFetch('/rest/v1/records?select=*&date=like.' + selectedMonth + '*&order=ts.desc&limit=1000', {});
+    const rr = await sbFetch('/rest/v1/records?select=' + MONTH_COLS + '&date=like.' + selectedMonth + '*&order=ts.desc&limit=1000', {});
     if(rr && rr.ok){
       try{
         remote.rows = (await rr.json()).map(rowToRec);
@@ -1723,10 +1755,10 @@ const DEFAULT_BRANCHES = [
 ];
 
 // 使用者（社員名簿）。設定画面で足し引きできます。
-const DEFAULT_USERS = []; // 公開版は空。設定の「名簿を読み込む」で入れる
+const DEFAULT_USERS = []; // 公開版は空
 
 // 点検者（職長）。設定画面で足し引きできます。
-const DEFAULT_INSPECTORS = []; // 公開版は空。設定の「名簿を読み込む」で入れる
+const DEFAULT_INSPECTORS = []; // 公開版は空
 
 function loadSettings(){
   let s = null;
@@ -2123,7 +2155,7 @@ function recordToText(rec){
     if(ok.length) lines.push('良好：' + ok.join('、'));
   }
   if(rec.samePerson) lines.push('※ 使用者と点検者が同じ人です');
-  if(rec.items.some(i=>i.photo)) lines.push('※ 写真あり（アプリの「点検の記録」で見られます）');
+  if(rec.items.some(i=>i.photo) || rec.photoCount > 0) lines.push('※ 写真あり（アプリの「点検の記録」で見られます）');
   return lines.join('\n');
 }
 
@@ -2307,17 +2339,45 @@ function loadHistory(){
           ${okNames ? `<div>良好：${okNames}</div>` : ''}
           ${rec.samePerson ? '<div class="ng-line">※ 使用者と点検者が同じ人です</div>' : ''}
         </div>
+        <div class="photo-box"></div>
         <div class="rc-actions">
           <button type="button" class="share-btn">この記録を送る・コピー</button>
+          ${rec.fromServer && rec.photoCount > 0 ? `<button type="button" class="photo-btn2">写真を見る（${rec.photoCount}枚）</button>` : ''}
         </div>
       `;
       card.querySelector('.share-btn').addEventListener('click', ()=> shareRecord(rec));
+      const pb = card.querySelector('.photo-btn2');
+      if(pb){
+        pb.addEventListener('click', async ()=>{
+          pb.disabled = true;
+          pb.textContent = '取り寄せ中…';
+          const photos = await fetchPhotos(rec);
+          if(!photos || Object.keys(photos).length === 0){
+            pb.textContent = '写真を取り寄せられませんでした';
+            return;
+          }
+          const box = card.querySelector('.photo-box');
+          Object.keys(photos).forEach(id=>{
+            const item = rec.items.filter(i=>i.id === id)[0];
+            const cap = document.createElement('div');
+            cap.className = 'photo-cap';
+            cap.textContent = item ? item.name : '';
+            const img = document.createElement('img');
+            img.className = 'rc-photo';
+            img.src = photos[id];
+            img.alt = cap.textContent + 'の写真';
+            box.appendChild(cap);
+            box.appendChild(img);
+          });
+          pb.style.display = 'none';
+        });
+      }
       listEl.appendChild(card);
     });
 
     const note = document.createElement('div');
     note.className = 'note-share';
-    note.textContent = '文字だけが送られます。写真はこの画面を直接見せてください。';
+    note.textContent = 'LINEには文字だけが送られます。写真は各記録の「写真を見る」で開けます。';
     listEl.appendChild(note);
   }catch(e){
     console.error(e);
