@@ -1,4 +1,4 @@
-const CACHE = 'shiori-2026-08-29-1';
+const CACHE = 'shiori-2026-08-29-2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function(e){
