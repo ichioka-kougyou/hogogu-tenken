@@ -22,8 +22,8 @@
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;}
 body{font-size:16px;line-height:1.45;padding-bottom:env(safe-area-inset-bottom);}
-header{position:sticky;top:0;z-index:20;background:var(--band);color:#fff;
-  padding:calc(env(safe-area-inset-top) + 8px) 12px 0;}
+header{position:sticky;top:0;z-index:20;background:var(--band);color:#fff;}
+header .hwrap{max-width:820px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 8px) 12px 0;}
 header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.08em;}
 header .co{font-size:12px;opacity:.85;margin-top:2px;}
 nav{display:flex;gap:0;margin-top:8px;}
@@ -90,18 +90,40 @@ button.sub{appearance:none;font-family:inherit;font-size:14px;font-weight:700;pa
 hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 .state{font-size:13px;font-weight:700;padding:6px 9px;border:1.5px solid var(--line);margin-bottom:10px;}
 .state.on{background:var(--okbg);} .state.off{background:#ffe9b8;}
+
+/* ── パソコンで開いたとき ──────────────────────────────
+   スマホは画面いっぱいで良いが、広い画面だと横に間延びして読みにくい。
+   紙の出荷点検票と同じ見え方（グレーの地に白い紙）に揃える。 */
+@media screen and (min-width:820px){
+  body{background:#5f5f5f;}
+  header{box-shadow:0 2px 8px rgba(0,0,0,.35);}
+  main{background:var(--bg);border:1px solid #3a3a3a;padding:18px 22px 24px;
+       margin:14px auto 22px;box-shadow:0 3px 12px rgba(0,0,0,.4);}
+}
+/* 判定ボタンは項目の右にまとめる。全幅に伸ばすと押しにくく、間延びして見える。 */
+@media screen and (min-width:720px){
+  .item{display:grid;grid-template-columns:1fr 288px;column-gap:16px;align-items:center;
+        padding:7px 2px;}
+  .item .nm{grid-column:1;grid-row:1;}
+  .item .cr{grid-column:1;grid-row:2;margin:1px 0 0 1.9em;}
+  .item .seg{grid-column:2;grid-row:1 / span 2;margin-left:0;}
+  .item .memo{grid-column:1 / -1;grid-row:3;margin:6px 0 0 1.9em;}
+  .seg button{padding:7px 0;}
+}
 @media print{ nav,button,.state{display:none;} }
 </style>
 </head>
 <body>
 <header>
-  <h1>出 荷 点 検 チ ェ ッ ク</h1>
-  <div class="co" id="coName"></div>
-  <nav>
-    <button id="tabCheck" class="on">点検する</button>
-    <button id="tabList">記録</button>
-    <button id="tabSet">設定</button>
-  </nav>
+  <div class="hwrap">
+    <h1>出 荷 点 検 チ ェ ッ ク</h1>
+    <div class="co" id="coName"></div>
+    <nav>
+      <button id="tabCheck" class="on">点検する</button>
+      <button id="tabList">記録</button>
+      <button id="tabSet">設定</button>
+    </nav>
+  </div>
 </header>
 <main id="main"></main>
 
