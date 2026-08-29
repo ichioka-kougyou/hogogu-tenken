@@ -1,0 +1,17 @@
+{
+  "name": "出荷点検チェック｜市岡工業",
+  "short_name": "出荷点検",
+  "description": "自社機械を現場へ出す前の出荷点検を、その場でチェック・記録する工場用ツール",
+  "lang": "ja",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "./index.html",
+  "scope": "./",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    { "src": "./shukka-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./shukka-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./shukka-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

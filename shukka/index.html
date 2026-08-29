@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1a1a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="出荷点検">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./shukka-icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>出荷点検チェック｜市岡工業</title>
+<style>
+/* 屋外の日光下で読むため、淡い色は使わない。ライト固定。 */
+:root{
+  --line:#101010; --ink:#101010; --sub:#4a4a4a; --bg:#ffffff; --band:#1a1a1a;
+  --head:#e6e6e6; --stripe:#f2f2f2; --ok:#0b6b2f; --ng:#b3140c; --na:#5a5a5a;
+  --ngbg:#ffe1de; --okbg:#dff3e4; --nabg:#eeeeee; --warn:#b3140c;
+}
+*{box-sizing:border-box;-webkit-text-size-adjust:100%;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;}
+body{font-size:16px;line-height:1.45;padding-bottom:env(safe-area-inset-bottom);}
+header{position:sticky;top:0;z-index:20;background:var(--band);color:#fff;
+  padding:calc(env(safe-area-inset-top) + 8px) 12px 0;}
+header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.08em;}
+header .co{font-size:12px;opacity:.85;margin-top:2px;}
+nav{display:flex;gap:0;margin-top:8px;}
+nav button{flex:1;appearance:none;border:none;background:#3a3a3a;color:#ddd;
+  font-size:15px;font-weight:700;padding:11px 0;cursor:pointer;border-bottom:3px solid transparent;}
+nav button.on{background:#fff;color:#101010;border-bottom-color:#101010;}
+main{padding:12px;max-width:820px;margin:0 auto;}
+.card{border:1.5px solid var(--line);margin-bottom:12px;}
+.card > h2{margin:0;background:var(--band);color:#fff;font-size:14px;font-weight:700;
+  padding:7px 10px;letter-spacing:.06em;}
+.card .body{padding:10px;}
+label.f{display:block;margin-bottom:10px;}
+label.f > span{display:block;font-size:13px;font-weight:700;color:var(--sub);margin-bottom:3px;}
+input,select,textarea{width:100%;font-size:16px;font-family:inherit;color:var(--ink);
+  border:1.5px solid var(--line);background:#fff;padding:9px 8px;border-radius:0;}
+textarea{min-height:70px;resize:vertical;}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#101010 50%),
+  linear-gradient(135deg,#101010 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 12px) 50%;
+  background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:34px;}
+.row2{display:flex;gap:8px;} .row2 > *{flex:1;min-width:0;}
+.item{border-top:1px solid #bdbdbd;padding:9px 2px;}
+.item:first-child{border-top:none;}
+.item.na{opacity:.55;}
+.item .nm{font-size:15px;font-weight:700;display:flex;gap:6px;align-items:baseline;}
+.item .nm .no{font-size:12px;color:var(--sub);font-weight:700;min-width:1.6em;}
+.item.na .nm .t{text-decoration:line-through;}
+.item .cr{font-size:12.5px;color:var(--sub);margin:2px 0 7px 1.9em;}
+.seg{display:flex;gap:6px;margin-left:1.9em;}
+.seg button{flex:1;appearance:none;font-family:inherit;font-size:15px;font-weight:700;
+  padding:9px 0;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+.seg button.on[data-v="ok"]{background:var(--ok);border-color:var(--ok);color:#fff;}
+.seg button.on[data-v="ng"]{background:var(--ng);border-color:var(--ng);color:#fff;}
+.seg button.on[data-v="na"]{background:var(--na);border-color:var(--na);color:#fff;}
+.memo{margin:7px 0 0 1.9em;}
+.memo input{border-color:var(--ng);}
+table.meas{width:100%;border-collapse:collapse;}
+table.meas th,table.meas td{border:1px solid var(--line);padding:6px 7px;font-size:13px;vertical-align:middle;}
+table.meas th{background:var(--head);font-size:12.5px;}
+table.meas td.std{font-size:12px;color:var(--sub);}
+table.meas input{padding:7px 6px;font-size:15px;}
+.sum{display:flex;gap:8px;margin-bottom:10px;}
+.sum div{flex:1;border:1.5px solid var(--line);padding:7px 4px;text-align:center;}
+.sum .n{font-size:22px;font-weight:700;line-height:1.1;}
+.sum .l{font-size:11.5px;color:var(--sub);font-weight:700;}
+.sum .ng .n{color:var(--ng);}
+.alert{border:2px solid var(--warn);background:var(--ngbg);color:var(--warn);
+  font-weight:700;padding:9px 10px;margin-bottom:10px;font-size:14px;}
+.note{background:var(--stripe);border:1px solid #bdbdbd;padding:8px 10px;font-size:12.5px;color:var(--sub);}
+button.big{display:block;width:100%;appearance:none;font-family:inherit;font-size:17px;font-weight:700;
+  padding:15px 0;border:none;background:var(--band);color:#fff;cursor:pointer;margin-bottom:10px;}
+button.big[disabled]{background:#9a9a9a;cursor:default;}
+button.sub{appearance:none;font-family:inherit;font-size:14px;font-weight:700;padding:10px 12px;
+  border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+.rec{border:1.5px solid var(--line);margin-bottom:10px;}
+.rec .h{display:flex;justify-content:space-between;gap:8px;background:var(--head);padding:7px 9px;font-size:13px;font-weight:700;}
+.rec .b{padding:8px 9px;font-size:13.5px;}
+.rec .jd{font-weight:700;}
+.rec .jd.ng{color:var(--ng);}
+.badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 6px;border:1px solid var(--line);}
+.badge.wait{background:#ffe9b8;}
+.badge.sent{background:var(--okbg);}
+.muted{color:var(--sub);font-size:13px;}
+hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
+.state{font-size:13px;font-weight:700;padding:6px 9px;border:1.5px solid var(--line);margin-bottom:10px;}
+.state.on{background:var(--okbg);} .state.off{background:#ffe9b8;}
+@media print{ nav,button,.state{display:none;} }
+</style>
+</head>
+<body>
+<header>
+  <h1>出 荷 点 検 チ ェ ッ ク</h1>
+  <div class="co" id="coName"></div>
+  <nav>
+    <button id="tabCheck" class="on">点検する</button>
+    <button id="tabList">記録</button>
+    <button id="tabSet">設定</button>
+  </nav>
+</header>
+<main id="main"></main>
+
+<script>
+/* ---------------------------------------------------------------
+   点検項目のマスタは data.py から自動で埋め込んでいる。
+   ここを直接書き換えないこと。data.py を直して buildapp.mjs を回す。
+--------------------------------------------------------------- */
+const MASTER = /*__MASTER__*/{
+ "COMPANY": "株式会社　市岡工業",
+ "COMMON": [
+  [
+   "外観（フレーム・本体）",
+   "変形・亀裂・破損・著しい腐食がないか"
+  ],
+  [
+   "銘板・管理番号の表示",
+   "機械名・型式・製造番号・自社管理番号が読めるか"
+  ],
+  [
+   "ボルト・ナット類",
+   "緩み・脱落がないか（増締めをしたか）"
+  ],
+  [
+   "油漏れ・水漏れ・エア漏れ",
+   "各接合部・ホース継手から漏れていないか"
+  ],
+  [
+   "給油・給脂",
+   "決められた箇所にグリスアップをしたか"
+  ],
+  [
+   "回転部・伝動部の覆い、囲い",
+   "取付いているか。脱落・破損がないか"
+  ],
+  [
+   "危険表示・注意ラベル",
+   "貼ってあるか。読めるか（剥がれは貼替済か）"
+  ],
+  [
+   "清掃状態",
+   "泥・モルタル・粉じんを落としてあるか"
+  ],
+  [
+   "前回の不具合箇所",
+   "前回の指摘・修理が終わっているか"
+  ]
+ ],
+ "ATTACH": [
+  [
+   "取扱説明書",
+   "機械に添付したか"
+  ],
+  [
+   "点検・整備記録",
+   "直近の記録を添付したか"
+  ],
+  [
+   "付属工具・予備部品",
+   "員数どおり揃っているか"
+  ],
+  [
+   "油脂・燃料・消耗品",
+   "決められた量を同送するか"
+  ]
+ ],
+ "MACHINES": [
+  {
+   "name": "吹付機",
+   "model": "NLS-11Lショット",
+   "items": [
+    [
+     "圧送タンク本体",
+     "内外面の摩耗・変形・亀裂がないか"
+    ],
+    [
+     "タンク蓋・パッキン",
+     "密閉できるか。パッキンの劣化・切れがないか"
+    ],
+    [
+     "安全弁・圧力計",
+     "安全弁が作動するか。圧力計のゼロ点・指示は正常か"
+    ],
+    [
+     "ロータ・ライナープレート",
+     "摩耗が使用限度内か"
+    ],
+    [
+     "撹拌翼・ホッパ",
+     "摩耗・変形がないか。上部の受材網があるか"
+    ],
+    [
+     "材料吐出口・エルボ",
+     "偏摩耗・穴あきがないか"
+    ],
+    [
+     "減速機・チェーン",
+     "油量は適正か。チェーンの張り・給油はよいか"
+    ],
+    [
+     "電動機／エアモータ",
+     "空運転で異音・振動・過熱がないか"
+    ],
+    [
+     "操作スイッチ・非常停止装置",
+     "確実に作動するか"
+    ],
+    [
+     "アース線・漏電遮断器",
+     "接地してあるか。テストボタンで切れるか"
+    ]
+   ],
+   "meas": [
+    [
+     "絶縁抵抗（三相200V）",
+     "0.2 MΩ 以上（現場運用の目安 1 MΩ 以上）",
+     "MΩ"
+    ],
+    [
+     "試運転圧力（圧送エア）",
+     "参考 0.3〜0.5 MPa　※取説の値で確定すること",
+     "MPa"
+    ],
+    [
+     "ロータ・ライナー摩耗",
+     "取説の使用限度以内（限度　　　　mm）",
+     "mm"
+    ]
+   ],
+   "skip_common": [],
+   "skip_attach": []
+  },
+  {
+   "name": "吊下式削孔機",
+   "model": "",
+   "items": [
+    [
+     "吊り金具・アイボルト",
+     "変形・摩耗・亀裂がないか。定格荷重の表示があるか"
+    ],
+    [
+     "吊りワイヤロープ・チェーン",
+     "素線切れ・キンク・伸び・変形がないか"
+    ],
+    [
+     "ロープ端末（クリップ・圧着）",
+     "本数・向き・締付けが正しいか。緩みがないか"
+    ],
+    [
+     "介錯ロープ",
+     "取付いているか。損傷・ほつれがないか"
+    ],
+    [
+     "本体フレーム・ガイドセル",
+     "変形・亀裂・溶接部の割れがないか"
+    ],
+    [
+     "さく岩機（ドリフタ）",
+     "打撃・回転が正常か。油漏れがないか"
+    ],
+    [
+     "フィード（送り）機構",
+     "作動が円滑か。摺動部に給脂したか"
+    ],
+    [
+     "油圧ホース・継手",
+     "損傷・漏れがないか。抜け止めがあるか"
+    ],
+    [
+     "送水・送気ホース",
+     "破れがないか。カップリングに抜け止めピンがあるか"
+    ],
+    [
+     "ロッド・ビット・シャンク",
+     "摩耗・曲がり・ねじ部の傷みがないか"
+    ],
+    [
+     "操作レバー・非常停止装置",
+     "確実に作動するか。中立に戻るか"
+    ]
+   ],
+   "meas": [
+    [
+     "吊りワイヤロープ",
+     "1よりの間の素線切れ10％未満・直径の減少7％以内・キンクなし（クレーン則第215条）",
+     "素線切れ　　本／径　　mm"
+    ],
+    [
+     "定格荷重（銘板値）",
+     "銘板値以内（銘板　　　　kN）",
+     "kN"
+    ],
+    [
+     "油圧作動圧",
+     "参考 10〜17 MPa　※取説の値で確定すること",
+     "MPa"
+    ]
+   ],
+   "skip_common": [],
+   "skip_attach": []
+  },
+  {
+   "name": "アタッチメントドリル",
+   "model": "",
+   "items": [
+    [
+     "母機との適合",
+     "質量・油圧流量・圧力が母機の仕様に合っているか"
+    ],
+    [
+     "取付ブラケット・ピン",
+     "摩耗・亀裂がないか。止め具（割ピン等）が入っているか"
+    ],
+    [
+     "フレーム・溶接部",
+     "変形・亀裂がないか"
+    ],
+    [
+     "油圧ホース・カップラ",
+     "損傷・漏れがないか。確実に嵌合し抜け止めがあるか"
+    ],
+    [
+     "ドリフタ（削岩部）",
+     "打撃・回転が正常か。油漏れ・異音がないか"
+    ],
+    [
+     "ガイドセル・スライド部",
+     "摩耗が限度内か。給脂したか"
+    ],
+    [
+     "フィードシリンダ・チェーン",
+     "張りは適正か。損傷・伸びがないか"
+    ],
+    [
+     "ロッド・ビット・シャンクロッド",
+     "摩耗・曲がり・ねじ部の傷みがないか"
+    ],
+    [
+     "セントライザ・ロッドホルダ",
+     "確実に開閉・保持するか"
+    ],
+    [
+     "安全弁・逆止弁",
+     "作動するか。設定に異常がないか"
+    ],
+    [
+     "潤滑装置（ルブリケータ）",
+     "油量は適正か。作動しているか"
+    ],
+    [
+     "誤作動防止・安全ピン",
+     "輸送時の固定・安全ピンが入っているか"
+    ]
+   ],
+   "meas": [
+    [
+     "必要油量",
+     "母機の吐出量以内（参考 40〜100 L/min）※取説の値で確定",
+     "L/min"
+    ],
+    [
+     "設定圧",
+     "参考 10〜17 MPa　※取説の値で確定すること",
+     "MPa"
+    ],
+    [
+     "質量",
+     "母機の許容アタッチメント質量以内（許容　　　　kg）",
+     "kg"
+    ]
+   ],
+   "skip_common": [],
+   "skip_attach": []
+  },
+  {
+   "name": "種子吹付機（シーダー）",
+   "model": "",
+   "items": [
+    [
+     "タンク（ホッパ）",
+     "内外面の摩耗・変形がないか。洗浄してあるか"
+    ],
+    [
+     "撹拌翼・軸・軸受",
+     "摩耗がないか。回転が円滑か"
+    ],
+    [
+     "撹拌駆動部（減速機・チェーン）",
+     "油量は適正か。張り・給油はよいか"
+    ],
+    [
+     "ポンプ（羽根車・ケーシング）",
+     "摩耗・異物の噛み込みがないか"
+    ],
+    [
+     "配管・バルブ",
+     "前回材料の残留・固着・詰まりがないか"
+    ],
+    [
+     "ストレーナ・吸込フィルタ",
+     "詰まり・破れがないか"
+    ],
+    [
+     "吐出ホース・カップリング",
+     "摩耗・破れがないか。抜け止めがあるか"
+    ],
+    [
+     "ノズル・スプレーガン",
+     "摩耗・詰まりがないか"
+    ],
+    [
+     "圧力計・安全弁",
+     "指示は正常か。安全弁が作動するか"
+    ],
+    [
+     "給水装置・水位計",
+     "作動するか。表示が読めるか"
+    ],
+    [
+     "エンジン／電動機",
+     "オイル・燃料の量は適正か。始動性はよいか"
+    ],
+    [
+     "アース線・漏電遮断器（電動式）",
+     "接地してあるか。テストボタンで切れるか"
+    ],
+    [
+     "清水での試運転",
+     "吐出が正常か。異音・漏れがないか"
+    ]
+   ],
+   "meas": [
+    [
+     "タンク容量",
+     "銘板値（銘板　　　　L）",
+     "L"
+    ],
+    [
+     "試運転圧力",
+     "参考 0.3〜0.7 MPa　※取説の値で確定すること",
+     "MPa"
+    ],
+    [
+     "絶縁抵抗（電動式）",
+     "0.2 MΩ 以上（現場運用の目安 1 MΩ 以上）",
+     "MΩ"
+    ]
+   ],
+   "skip_common": [],
+   "skip_attach": []
+  },
+  {
+   "name": "仮設分電盤",
+   "model": "のり分くん　ほか",
+   "items": [
+    [
+     "外箱・扉",
+     "変形・破損・穴あきがないか。確実に施錠できるか"
+    ],
+    [
+     "扉パッキン・雨よけ",
+     "劣化・切れがないか。雨水が入らないか"
+    ],
+    [
+     "定格・回路の表示",
+     "定格電圧・電流・回路名の表示が読めるか"
+    ],
+    [
+     "責任者・連絡先の表示",
+     "取扱責任者と連絡先が明示されているか"
+    ],
+    [
+     "主幹ブレーカ",
+     "開閉が確実か。焼損・変色・異臭がないか"
+    ],
+    [
+     "漏電遮断器",
+     "テストボタンで動作するか。感度電流の表示があるか"
+    ],
+    [
+     "分岐ブレーカ",
+     "員数どおりあるか。開閉が確実か"
+    ],
+    [
+     "コンセント・接続器具",
+     "破損・焼損がないか。防雨カバーがあるか"
+    ],
+    [
+     "端子・圧着部の締付",
+     "緩み・変色・素線のはみ出しがないか"
+    ],
+    [
+     "引込・引出ケーブル",
+     "被覆の損傷がないか。引込口にブッシングがあるか"
+    ],
+    [
+     "接地端子・アース線",
+     "確実に接続されているか。接地抵抗を測ったか"
+    ],
+    [
+     "充電部の囲い・感電注意表示",
+     "充電部が露出していないか（安衛則第329条）"
+    ],
+    [
+     "内部の清掃・据付",
+     "粉じん・水分がないか。転倒防止の措置ができるか"
+    ]
+   ],
+   "meas": [
+    [
+     "絶縁抵抗",
+     "三相200V：0.2 MΩ 以上／単相100V：0.1 MΩ 以上（電技省令第58条）",
+     "MΩ"
+    ],
+    [
+     "接地抵抗（Ｄ種）",
+     "100 Ω 以下（0.5秒以内に動作する漏電遮断器付は 500 Ω 以下）",
+     "Ω"
+    ],
+    [
+     "漏電遮断器の動作",
+     "定格感度電流 30 mA・動作時間 0.1 秒以内（高感度高速形）",
+     "mA ／ 　　ms"
+    ]
+   ],
+   "skip_common": [
+    "油漏れ・水漏れ・エア漏れ",
+    "給油・給脂",
+    "回転部・伝動部の覆い、囲い"
+   ],
+   "skip_attach": [
+    "油脂・燃料・消耗品"
+   ]
+  },
+  {
+   "name": "砂計量機",
+   "model": "",
+   "items": [
+    [
+     "計量ホッパ・受台",
+     "変形・亀裂がないか。付着した砂を落としてあるか"
+    ],
+    [
+     "ゲート（開閉扉）",
+     "開閉が確実か。締切りで漏れがないか"
+    ],
+    [
+     "ロードセル・計量機構",
+     "損傷・引っ掛かり・異物の噛み込みがないか"
+    ],
+    [
+     "信号ケーブル・コネクタ",
+     "被覆の損傷・接続の緩みがないか"
+    ],
+    [
+     "表示器",
+     "全桁点灯するか。屋外でも判読できるか"
+    ],
+    [
+     "ゼロ点調整",
+     "無負荷でゼロを指示するか"
+    ],
+    [
+     "基準分銅による精度確認",
+     "既知荷重に対する誤差が社内基準内か"
+    ],
+    [
+     "校正の記録",
+     "実施日と次回予定が記録されているか"
+    ],
+    [
+     "水平の確認",
+     "水準器で水平が出ているか"
+    ],
+    [
+     "振動フィーダ・搬送部",
+     "作動が正常か。異音・詰まりがないか"
+    ],
+    [
+     "防塵カバー・シール",
+     "取付いているか。破れがないか"
+    ],
+    [
+     "電源・アース・漏電遮断器",
+     "接地してあるか。テストボタンで切れるか"
+    ],
+    [
+     "架台・輸送用固定具",
+     "変形がないか。輸送時に固定できるか"
+    ]
+   ],
+   "meas": [
+    [
+     "ゼロ点",
+     "無負荷でゼロを指示すること",
+     ""
+    ],
+    [
+     "精度確認",
+     "基準分銅による誤差　社内基準 ±1％ 以内　※社内基準を確定すること",
+     "kg（誤差　　％）"
+    ],
+    [
+     "絶縁抵抗（電動式）",
+     "0.2 MΩ 以上（現場運用の目安 1 MΩ 以上）",
+     "MΩ"
+    ]
+   ],
+   "skip_common": [],
+   "skip_attach": []
+  }
+ ]
+}/*__MASTER_END__*/;
+
+const COMPANY = MASTER.COMPANY;
+const MACHINES = MASTER.MACHINES;
+document.getElementById('coName').textContent = COMPANY;
+
+/* ---- 端末保存（ブラウザが拒む場合は画面を開いている間だけ覚える） ---- */
+const P = 'shukka:';
+const memStore = new Map();
+const canStore = (()=>{ try{ localStorage.setItem(P+'__t','1'); localStorage.removeItem(P+'__t'); return true; }catch(e){ return false; } })();
+const st = {
+  keys(){ return canStore ? Object.keys(localStorage) : Array.from(memStore.keys()); },
+  get(k){ return canStore ? localStorage.getItem(k) : (memStore.has(k)?memStore.get(k):null); },
+  set(k,v){ if(canStore){ try{ localStorage.setItem(k,v); }catch(e){} } else { memStore.set(k,v); } },
+  remove(k){ if(canStore){ localStorage.removeItem(k); } else { memStore.delete(k); } }
+};
+const REC_PREFIX = P+'record:';
+
+// 日付は必ず現地時間で作る。toISOString() はUTCなので朝9時前だと前日になる。
+function todayStr(d){
+  const x = d ? new Date(d) : new Date();
+  const p = n => String(n).padStart(2,'0');
+  return x.getFullYear()+'-'+p(x.getMonth()+1)+'-'+p(x.getDate());
+}
+function jpDate(s){ if(!s) return ''; const a=s.split('-'); return a[0]+'年'+Number(a[1])+'月'+Number(a[2])+'日'; }
+
+function readRecords(){
+  const out = [];
+  st.keys().filter(k=>k && k.startsWith(REC_PREFIX)).forEach(k=>{
+    try{ const r = JSON.parse(st.get(k)); if(r) out.push(r); }catch(e){}
+  });
+  return out.sort((a,b)=> b.ts - a.ts);
+}
+function saveRecord(rec){ st.set(REC_PREFIX+rec.ts, JSON.stringify(rec)); }
+
+/* ---- 会社のデータベース（Supabase）とのやり取り ---- */
+const SB_URL = 'https://sqpodqbaujoanqjzfvbo.supabase.co';
+const SB_KEY = 'sb_publishable_uds6_DPJKp0QUeBHOJG7Yg_1IojUAGn'; // 公開用の鍵（秘密ではない）
+const SB_EMAIL = 'genba@i-kougyou.co.jp';
+const AIKOTOBA_KEY = P+'aikotoba';
+const PENDING_KEY  = P+'pending';
+const DEVICE_KEY   = P+'device';
+const TABLE = 'shukka_records';
+
+let sbToken = null;
+let remote = { ok:false, rows:[], loaded:false };
+
+function deviceId(){
+  let d = st.get(DEVICE_KEY);
+  if(!d){ d = 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); st.set(DEVICE_KEY,d); }
+  return d;
+}
+function aikotoba(){ return st.get(AIKOTOBA_KEY) || ''; }
+
+async function sbSignIn(pw){
+  try{
+    const r = await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST', headers:{ apikey:SB_KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify({ email:SB_EMAIL, password:pw })
+    });
+    if(!r.ok) return false;
+    const j = await r.json();
+    sbToken = j.access_token || null;
+    return !!sbToken;
+  }catch(e){ return false; }
+}
+async function ensureAuth(){
+  if(sbToken) return true;
+  const pw = aikotoba();
+  if(!pw) return false;
+  return sbSignIn(pw);
+}
+async function sbFetch(path, opts, retry){
+  if(!(await ensureAuth())) return null;
+  let r;
+  try{
+    r = await fetch(SB_URL+path, Object.assign({}, opts, {
+      headers: Object.assign({ apikey:SB_KEY, Authorization:'Bearer '+sbToken, 'Content-Type':'application/json' }, (opts&&opts.headers)||{})
+    }));
+  }catch(e){ return null; }
+  if(r.status === 401 && retry !== false){ sbToken = null; return sbFetch(path, opts, false); }
+  return r;
+}
+
+function recToRow(rec){
+  return {
+    ts: rec.ts, date: rec.date, form_no: rec.formNo,
+    machine: rec.machine, model: rec.model, mgmt_no: rec.mgmtNo,
+    site: rec.site, client: rec.client,
+    ship_date: rec.shipDate || null, return_date: rec.returnDate || null,
+    items: rec.items, meas: rec.meas, remark: rec.remark,
+    judge: rec.judge, judge_date: rec.judgeDate || null,
+    inspector: rec.inspector, foreman: rec.foreman, shipper: rec.shipper,
+    ng_count: rec.ngCount, na_count: rec.naCount,
+    device_id: deviceId()
+  };
+}
+function rowToRec(row){
+  return {
+    ts: row.ts, date: row.date, formNo: row.form_no,
+    machine: row.machine, model: row.model, mgmtNo: row.mgmt_no,
+    site: row.site, client: row.client, shipDate: row.ship_date||'', returnDate: row.return_date||'',
+    items: row.items||[], meas: row.meas||[], remark: row.remark||'',
+    judge: row.judge, judgeDate: row.judge_date||'',
+    inspector: row.inspector||'', foreman: row.foreman||'', shipper: row.shipper||'',
+    ngCount: row.ng_count||0, naCount: row.na_count||0,
+    deviceId: row.device_id||'', fromServer: true
+  };
+}
+
+function pendingList(){ try{ const p = JSON.parse(st.get(PENDING_KEY)); return Array.isArray(p)?p:[]; }catch(e){ return []; } }
+function setPending(l){ st.set(PENDING_KEY, JSON.stringify(l)); }
+
+async function pushRecord(rec){
+  const r = await sbFetch('/rest/v1/'+TABLE+'?on_conflict=device_id,ts', {
+    method:'POST', headers:{ Prefer:'resolution=ignore-duplicates' },
+    body: JSON.stringify([recToRow(rec)])
+  });
+  return !!(r && r.ok);
+}
+async function flushPending(){
+  const list = pendingList();
+  if(!list.length) return;
+  const remain = [];
+  for(const ts of list){
+    let rec=null;
+    try{ rec = JSON.parse(st.get(REC_PREFIX+ts)); }catch(e){}
+    if(!rec) continue;
+    if(!(await pushRecord(rec))) remain.push(ts);
+  }
+  setPending(remain);
+  if(tab==='list') render();
+}
+async function loadRemote(){
+  remote.ok = false; remote.loaded = true;
+  const r = await sbFetch('/rest/v1/'+TABLE+'?select=*&order=ts.desc&limit=500', {});
+  if(!r || !r.ok) return;
+  try{ remote.rows = (await r.json()).map(rowToRec); remote.ok = true; }catch(e){}
+}
+
+/* ---- 画面の状態 ---- */
+let tab = 'check';
+let mi = 0;                  // 選んでいる機械の番号
+let form = null;             // 記入中の内容
+
+function commonFor(m){ const s = m.skip_common||[]; return MASTER.COMMON.filter(x=>s.indexOf(x[0])<0); }
+function attachFor(m){ const s = m.skip_attach||[]; return MASTER.ATTACH.filter(x=>s.indexOf(x[0])<0); }
+
+function newForm(idx){
+  const m = MACHINES[idx];
+  const items = [];
+  let n = 1;
+  commonFor(m).forEach(([nm,cr])=> items.push({sec:'共通', no:n++, name:nm, cr:cr, status:'', memo:''}));
+  m.items.forEach(([nm,cr])=> items.push({sec:'機種別', no:n++, name:nm, cr:cr, status:'', memo:''}));
+  attachFor(m).forEach(([nm,cr])=> items.push({sec:'付属品', no:n++, name:nm, cr:cr, status:'', memo:''}));
+  return {
+    formNo: 'SK-'+String(idx+1).padStart(2,'0'),
+    machine: m.name, model: m.model, mgmtNo:'', site:'', client:'',
+    shipDate:'', returnDate:'',
+    items: items,
+    meas: m.meas.map(([nm,std,unit])=>({name:nm, std:std, unit:unit, value:''})),
+    remark:'', judge:'', judgeDate: todayStr(),
+    inspector: st.get(P+'lastInspector')||'', foreman: st.get(P+'lastForeman')||'', shipper: st.get(P+'lastShipper')||''
+  };
+}
+function counts(){
+  const ng = form.items.filter(i=>i.status==='ng').length;
+  const na = form.items.filter(i=>i.status==='na').length;
+  const ok = form.items.filter(i=>i.status==='ok').length;
+  const rest = form.items.length - ng - na - ok;
+  return {ng, na, ok, rest};
+}
+
+/* ---- 描画 ---- */
+const main = document.getElementById('main');
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;'}[c]));
+
+function setTab(t){
+  tab = t;
+  document.getElementById('tabCheck').className = t==='check'?'on':'';
+  document.getElementById('tabList').className  = t==='list'?'on':'';
+  document.getElementById('tabSet').className   = t==='set'?'on':'';
+  if(t==='list' && !remote.loaded){ loadRemote().then(render); }
+  render();
+}
+document.getElementById('tabCheck').onclick = ()=>setTab('check');
+document.getElementById('tabList').onclick  = ()=>setTab('list');
+document.getElementById('tabSet').onclick   = ()=>setTab('set');
+
+function render(){
+  if(tab==='check') renderCheck();
+  else if(tab==='list') renderList();
+  else renderSet();
+}
+
+function renderCheck(){
+  if(!form) form = newForm(mi);
+  const c = counts();
+  const secs = ['共通','機種別','付属品'];
+  const secTitle = {共通:'Ⅰ．共通点検項目（全機種）', 機種別:'Ⅱ．機種別点検項目　―　'+form.machine, 付属品:'Ⅲ．付属品・書類'};
+
+  let h = '';
+  h += '<label class="f"><span>機械を選ぶ</span><select id="mSel">'
+     + MACHINES.map((m,k)=>'<option value="'+k+'"'+(k===mi?' selected':'')+'>SK-'+String(k+1).padStart(2,'0')+'　'+esc(m.name)+'</option>').join('')
+     + '</select></label>';
+
+  h += '<div class="card"><h2>出荷の内容</h2><div class="body">'
+     + '<div class="row2">'
+     +   '<label class="f"><span>型式・規格</span><input id="f_model" value="'+esc(form.model)+'"></label>'
+     +   '<label class="f"><span>管理番号</span><input id="f_mgmtNo" value="'+esc(form.mgmtNo)+'"></label>'
+     + '</div>'
+     + '<label class="f"><span>出荷先現場名</span><input id="f_site" value="'+esc(form.site)+'"></label>'
+     + '<label class="f"><span>元請・一次会社</span><input id="f_client" value="'+esc(form.client)+'"></label>'
+     + '<div class="row2">'
+     +   '<label class="f"><span>出荷予定日</span><input type="date" id="f_shipDate" value="'+esc(form.shipDate)+'"></label>'
+     +   '<label class="f"><span>返却予定日</span><input type="date" id="f_returnDate" value="'+esc(form.returnDate)+'"></label>'
+     + '</div></div></div>';
+
+  h += '<div class="sum">'
+     + '<div><div class="n">'+c.ok+'</div><div class="l">良</div></div>'
+     + '<div class="ng"><div class="n">'+c.ng+'</div><div class="l">否</div></div>'
+     + '<div><div class="n">'+c.na+'</div><div class="l">該当なし</div></div>'
+     + '<div><div class="n">'+c.rest+'</div><div class="l">未</div></div>'
+     + '</div>';
+  if(c.ng>0) h += '<div class="alert">「否」が'+c.ng+'件あります。この機械は出荷しないこと。「要整備」で出す場合は出荷責任者の承認をもらう。</div>';
+
+  secs.forEach(sec=>{
+    const list = form.items.filter(i=>i.sec===sec);
+    if(!list.length) return;
+    h += '<div class="card"><h2>'+esc(secTitle[sec])+'</h2><div class="body">';
+    list.forEach(i=>{
+      const idx = form.items.indexOf(i);
+      h += '<div class="item'+(i.status==='na'?' na':'')+'">'
+         +   '<div class="nm"><span class="no">'+i.no+'</span><span class="t">'+esc(i.name)+'</span></div>'
+         +   '<div class="cr">'+esc(i.cr)+'</div>'
+         +   '<div class="seg" data-i="'+idx+'">'
+         +     '<button data-v="ok" class="'+(i.status==='ok'?'on':'')+'">良</button>'
+         +     '<button data-v="ng" class="'+(i.status==='ng'?'on':'')+'">否</button>'
+         +     '<button data-v="na" class="'+(i.status==='na'?'on':'')+'">該当なし</button>'
+         +   '</div>';
+      if(i.status==='ng'){
+        h += '<div class="memo"><input data-memo="'+idx+'" placeholder="何がどう悪いか／どう直したか" value="'+esc(i.memo)+'"></div>';
+      }
+      h += '</div>';
+    });
+    h += '</div></div>';
+  });
+
+  h += '<div class="card"><h2>Ⅳ．測定値（数字で記入すること）</h2><div class="body">'
+     + '<table class="meas"><tr><th style="width:30%">測定項目</th><th>基準値・判定基準</th><th style="width:28%">実測値</th></tr>';
+  form.meas.forEach((m,k)=>{
+    h += '<tr><td>'+esc(m.name)+'</td><td class="std">'+esc(m.std)+'</td>'
+       + '<td><input data-meas="'+k+'" value="'+esc(m.value)+'" placeholder="'+esc(m.unit)+'"></td></tr>';
+  });
+  h += '</table></div></div>';
+
+  h += '<div class="card"><h2>特記事項・総合判定</h2><div class="body">'
+     + '<label class="f"><span>特記事項／不具合と処置</span><textarea id="f_remark">'+esc(form.remark)+'</textarea></label>'
+     + '<label class="f"><span>総合判定</span><select id="f_judge">'
+     +   ['','合格','要整備','出荷不可'].map(v=>'<option value="'+v+'"'+(form.judge===v?' selected':'')+'>'+(v||'選んでください')+'</option>').join('')
+     + '</select></label>'
+     + '<label class="f"><span>判定年月日</span><input type="date" id="f_judgeDate" value="'+esc(form.judgeDate)+'"></label>'
+     + '<label class="f"><span>点検者</span><input id="f_inspector" value="'+esc(form.inspector)+'"></label>'
+     + '<div class="row2">'
+     +   '<label class="f"><span>確認者（職長）</span><input id="f_foreman" value="'+esc(form.foreman)+'"></label>'
+     +   '<label class="f"><span>出荷責任者</span><input id="f_shipper" value="'+esc(form.shipper)+'"></label>'
+     + '</div></div></div>';
+
+  h += '<button class="big" id="saveBtn">この内容で記録する</button>'
+     + '<button class="sub" id="clearBtn" style="width:100%">記入をやめて最初から</button>'
+     + '<div class="note" style="margin-top:12px">記録は端末に残り、電波があれば会社のデータベースへ送られます。圏外のときは端末に控えて、つながったときに自動で送ります。保存期間は出荷後3年。</div>';
+
+  main.innerHTML = h;
+
+  document.getElementById('mSel').onchange = e=>{
+    const k = Number(e.target.value);
+    const c2 = counts();
+    if(c2.ok+c2.ng+c2.na > 0 && !confirm('機械を変えると、いま記入した点検の内容は消えます。よろしいですか。')){
+      e.target.value = mi; return;
+    }
+    mi = k; form = newForm(mi); render();
+  };
+  [['f_model','model'],['f_mgmtNo','mgmtNo'],['f_site','site'],['f_client','client'],
+   ['f_shipDate','shipDate'],['f_returnDate','returnDate'],['f_remark','remark'],
+   ['f_judgeDate','judgeDate'],['f_inspector','inspector'],['f_foreman','foreman'],['f_shipper','shipper']
+  ].forEach(([id,key])=>{
+    const el = document.getElementById(id);
+    if(el) el.oninput = ()=>{ form[key] = el.value; };
+  });
+  const jd = document.getElementById('f_judge');
+  jd.onchange = ()=>{ form.judge = jd.value; };
+
+  main.querySelectorAll('.seg').forEach(seg=>{
+    const idx = Number(seg.dataset.i);
+    seg.querySelectorAll('button').forEach(b=>{
+      b.onclick = ()=>{
+        const v = b.dataset.v;
+        form.items[idx].status = (form.items[idx].status===v) ? '' : v;
+        if(form.items[idx].status!=='ng') form.items[idx].memo = '';
+        render();
+      };
+    });
+  });
+  main.querySelectorAll('[data-memo]').forEach(inp=>{
+    inp.oninput = ()=>{ form.items[Number(inp.dataset.memo)].memo = inp.value; };
+  });
+  main.querySelectorAll('[data-meas]').forEach(inp=>{
+    inp.oninput = ()=>{ form.meas[Number(inp.dataset.meas)].value = inp.value; };
+  });
+  document.getElementById('saveBtn').onclick = doSave;
+  document.getElementById('clearBtn').onclick = ()=>{
+    if(confirm('記入をやめて最初からにします。よろしいですか。')){ form = newForm(mi); render(); }
+  };
+}
+
+async function doSave(){
+  const c = counts();
+  if(c.rest > 0 && !confirm('まだ判定していない項目が'+c.rest+'件あります。このまま記録しますか。')) return;
+  if(!form.judge){ alert('総合判定を選んでください。'); return; }
+  if(!form.inspector.trim()){ alert('点検者の名前を入れてください。'); return; }
+  if(c.ng>0 && form.judge==='合格' && !confirm('「否」があるのに合格になっています。このまま記録しますか。')) return;
+
+  st.set(P+'lastInspector', form.inspector);
+  st.set(P+'lastForeman', form.foreman);
+  st.set(P+'lastShipper', form.shipper);
+
+  const rec = {
+    ts: Date.now(), date: todayStr(),
+    formNo: form.formNo, machine: form.machine, model: form.model, mgmtNo: form.mgmtNo,
+    site: form.site, client: form.client, shipDate: form.shipDate, returnDate: form.returnDate,
+    items: form.items.map(i=>({no:i.no, sec:i.sec, name:i.name, status:i.status, memo:i.memo||''})),
+    meas: form.meas.map(m=>({name:m.name, std:m.std, unit:m.unit, value:m.value})),
+    remark: form.remark, judge: form.judge, judgeDate: form.judgeDate,
+    inspector: form.inspector, foreman: form.foreman, shipper: form.shipper,
+    ngCount: c.ng, naCount: c.na
+  };
+  saveRecord(rec);
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '送っています…';
+  const ok = await pushRecord(rec);
+  if(!ok){ const l = pendingList(); l.push(rec.ts); setPending(l); }
+  remote.loaded = false;
+  alert(ok ? '記録しました。会社のデータベースへ送りました。'
+           : '記録しました。いま送れなかったので端末に控えました。電波のあるところで自動的に送ります。');
+  form = newForm(mi);
+  setTab('list');
+}
+
+function renderList(){
+  const local = readRecords();
+  const pend = pendingList();
+  const seen = {};
+  const all = [];
+  local.forEach(r=>{ seen[r.ts]=true; all.push(Object.assign({}, r, {waiting: pend.indexOf(r.ts)>=0})); });
+  remote.rows.forEach(r=>{ if(!seen[r.ts]) all.push(r); });
+  all.sort((a,b)=> b.ts - a.ts);
+
+  let h = '';
+  h += '<div class="state '+(remote.ok?'on':'off')+'">'
+     + (remote.ok ? '会社のデータベースにつながっています（全'+remote.rows.length+'件）'
+                  : (aikotoba() ? 'いまつながっていません。この端末の記録だけ表示しています。'
+                                : '設定タブで合言葉を入れると、みんなの記録が見られます。'))
+     + '</div>';
+  if(pend.length) h += '<div class="alert">まだ送れていない記録が'+pend.length+'件あります。電波のあるところで自動的に送ります。</div>';
+  h += '<button class="sub" id="reload" style="width:100%;margin-bottom:12px">最新を読み込む</button>';
+
+  if(!all.length){ h += '<div class="note">記録はまだありません。</div>'; }
+  all.forEach(r=>{
+    const bad = r.judge==='出荷不可' || r.ngCount>0;
+    h += '<div class="rec">'
+       + '<div class="h"><span>'+esc(r.formNo)+'　'+esc(r.machine)+'</span><span>'+esc(jpDate(r.date))+'</span></div>'
+       + '<div class="b">'
+       +   '<div>管理番号：'+esc(r.mgmtNo||'—')+'　／　出荷先：'+esc(r.site||'—')+'</div>'
+       +   '<div class="jd'+(bad?' ng':'')+'">総合判定：'+esc(r.judge||'—')+'　否 '+(r.ngCount||0)+'件</div>'
+       +   '<div class="muted">点検者：'+esc(r.inspector||'—')+'　確認：'+esc(r.foreman||'—')+'　出荷責任者：'+esc(r.shipper||'—')+'</div>'
+       +   (r.remark? '<div class="muted">特記：'+esc(r.remark)+'</div>':'')
+       +   '<div style="margin-top:6px">'
+       +     (r.waiting? '<span class="badge wait">送り待ち</span>' : '<span class="badge sent">送信済</span>')
+       +     ' <button class="sub" data-detail="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">中身を見る</button>'
+       +   '</div>'
+       + '</div></div>';
+  });
+  main.innerHTML = h;
+  document.getElementById('reload').onclick = ()=>{ remote.loaded=false; loadRemote().then(render); };
+  main.querySelectorAll('[data-detail]').forEach(b=>{
+    b.onclick = ()=>{
+      const r = all.find(x=>String(x.ts)===b.dataset.detail);
+      if(!r) return;
+      const ng = (r.items||[]).filter(i=>i.status==='ng');
+      const na = (r.items||[]).filter(i=>i.status==='na');
+      let t = r.formNo+' '+r.machine+'（'+jpDate(r.date)+'）\n\n';
+      t += '否：'+(ng.length? ng.map(i=>'・'+i.name+(i.memo?'／'+i.memo:'')).join('\n') : 'なし')+'\n\n';
+      t += '該当なし：'+(na.length? na.map(i=>i.name).join('、') : 'なし')+'\n\n';
+      t += '測定値：\n'+(r.meas||[]).map(m=>'・'+m.name+'　'+(m.value||'（未記入）')).join('\n');
+      alert(t);
+    };
+  });
+}
+
+function renderSet(){
+  let h = '';
+  h += '<div class="card"><h2>会社のデータベースへつなぐ</h2><div class="body">'
+     + '<label class="f"><span>合言葉</span><input type="password" id="pw" value="'+esc(aikotoba())+'" placeholder="事務所で聞いてください"></label>'
+     + '<button class="sub" id="tryConn" style="width:100%">つないでみる</button>'
+     + '<div id="connMsg" class="muted" style="margin-top:8px"></div>'
+     + '<div class="note" style="margin-top:10px">合言葉はこの端末に保存され、次からは自動でつながります。合言葉はLINEで送らず、口頭か紙で受け取ってください。</div>'
+     + '</div></div>';
+  h += '<div class="card"><h2>この端末</h2><div class="body">'
+     + '<div class="muted">端末の記録：'+readRecords().length+'件　／　送り待ち：'+pendingList().length+'件</div>'
+     + '<div class="muted">端末ID：'+esc(deviceId())+'</div>'
+     + '<div class="muted">保存の可否：'+(canStore?'保存できます':'このブラウザでは保存できません（画面を閉じると消えます）')+'</div>'
+     + '<hr class="sep"><button class="sub" id="sendAll" style="width:100%">送り待ちをいま送る</button>'
+     + '</div></div>';
+  h += '<div class="card"><h2>この様式について</h2><div class="body">'
+     + '<div class="muted">'+MACHINES.map((m,k)=>'SK-'+String(k+1).padStart(2,'0')+'　'+esc(m.name)).join('<br>')+'</div>'
+     + '<hr class="sep">'
+     + '<div class="note">判定は「良」「否」「該当なし」の3つ。<b>「否」が1つでも残る機械は出荷しない。</b>'
+     + '「要整備」で出す場合は出荷責任者の承認をもらうこと。現場搬入時は、この結果を「持込機械等使用届（安衛則第329条）」の点検表に転記する。</div>'
+     + '</div></div>';
+  main.innerHTML = h;
+  document.getElementById('tryConn').onclick = async ()=>{
+    const pw = document.getElementById('pw').value.trim();
+    const msg = document.getElementById('connMsg');
+    if(!pw){ msg.textContent = '合言葉を入れてください。'; return; }
+    msg.textContent = 'つないでいます…';
+    sbToken = null;
+    const ok = await sbSignIn(pw);
+    if(ok){ st.set(AIKOTOBA_KEY, pw); msg.textContent = 'つながりました。'; remote.loaded=false; flushPending(); }
+    else { msg.textContent = 'つながりませんでした。合言葉と電波を確かめてください。'; }
+  };
+  document.getElementById('sendAll').onclick = async ()=>{ await flushPending(); renderSet(); };
+}
+
+window.addEventListener('online', ()=>{ flushPending(); });
+if('serviceWorker' in navigator){ try{ navigator.serviceWorker.register('./sw.js'); }catch(e){} }
+flushPending();
+render();
+</script>
+</body>
+</html>
