@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="広島しおり">
+<meta name="theme-color" content="#F2F1E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151E20" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>広島 潮まちしおり</title>
+<style>html{-webkit-text-size-adjust:100%}</style>
+</head>
+<body>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">
+
+<style>
+/* ==================== 色 ==================== */
+:root{
+  --paper:#F2F1E6;
+  --card:#FCFBF4;
+  --card-2:#EBEADC;
+  --sumi:#26343B;
+  --sumi-2:#5C6D72;
+  --sumi-3:#8E9B9C;
+  --shu:#E8462A;
+  --shu-w:#FBDDD5;
+  --ai:#2A5C93;
+  --ai-w:#DCE6F1;
+  --midori:#178F8C;
+  --midori-w:#D2EAE7;
+  --yama:#E29A0F;
+  --yama-w:#FAEACB;
+  --edge:#26343B;
+  --on:#FFFFFF;
+  --rule:#D9D7C4;
+  --dot:rgba(38,52,59,.06);
+  --lift:0 2px 0 var(--rule), 0 16px 28px -24px rgba(38,52,59,.65);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#151E20;
+    --card:#1D282A;
+    --card-2:#253133;
+    --sumi:#EDE8DC;
+    --sumi-2:#B4C2C1;
+    --sumi-3:#7F8F8E;
+    --shu:#FF7B5B;
+    --shu-w:#3E211A;
+    --ai:#84B6E4;
+    --ai-w:#1B2C3D;
+    --midori:#4FC7BF;
+    --midori-w:#12312F;
+    --yama:#F5C15A;
+    --yama-w:#332810;
+    --edge:#41575A;
+    --on:#141D1F;
+    --rule:#2E3D3E;
+    --dot:rgba(237,232,220,.05);
+    --lift:0 2px 0 var(--rule), 0 16px 30px -26px #000;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#151E20;--card:#1D282A;--card-2:#253133;
+  --sumi:#EDE8DC;--sumi-2:#B4C2C1;--sumi-3:#7F8F8E;
+  --shu:#FF7B5B;--shu-w:#3E211A;--ai:#84B6E4;--ai-w:#1B2C3D;
+  --midori:#4FC7BF;--midori-w:#12312F;--yama:#F5C15A;--yama-w:#332810;
+  --edge:#41575A;--on:#141D1F;
+  --rule:#2E3D3E;--dot:rgba(237,232,220,.05);
+  --lift:0 2px 0 var(--rule), 0 16px 30px -26px #000;
+}
+
+/* ---- 紙・白・夜、手で選ぶとき ---- */
+#mPaper:checked ~ .sheet{
+  --paper:#F2F1E6;--card:#FCFBF4;--card-2:#EBEADC;
+  --sumi:#26343B;--sumi-2:#5C6D72;--sumi-3:#8E9B9C;
+  --shu:#E8462A;--shu-w:#FBDDD5;--ai:#2A5C93;--ai-w:#DCE6F1;
+  --midori:#178F8C;--midori-w:#D2EAE7;--yama:#E29A0F;--yama-w:#FAEACB;
+  --edge:#26343B;--on:#FFFFFF;
+  --rule:#D9D7C4;--dot:rgba(38,52,59,.06);
+  --lift:0 2px 0 var(--rule), 0 16px 28px -24px rgba(38,52,59,.65);
+}
+#mNight:checked ~ .sheet{
+  --paper:#151E20;--card:#1D282A;--card-2:#253133;
+  --sumi:#EDE8DC;--sumi-2:#B4C2C1;--sumi-3:#7F8F8E;
+  --shu:#FF7B5B;--shu-w:#3E211A;--ai:#84B6E4;--ai-w:#1B2C3D;
+  --midori:#4FC7BF;--midori-w:#12312F;--yama:#F5C15A;--yama-w:#332810;
+  --edge:#41575A;--on:#141D1F;
+  --rule:#2E3D3E;--dot:rgba(237,232,220,.05);
+  --lift:0 2px 0 var(--rule), 0 16px 30px -26px #000;
+}
+body:has(#mPaper:checked){
+  --paper:#F2F1E6;--card:#FCFBF4;--card-2:#EBEADC;
+  --sumi:#26343B;--sumi-2:#5C6D72;--sumi-3:#8E9B9C;
+  --shu:#E8462A;--shu-w:#FBDDD5;--ai:#2A5C93;--ai-w:#DCE6F1;
+  --midori:#178F8C;--midori-w:#D2EAE7;--yama:#E29A0F;--yama-w:#FAEACB;
+  --edge:#26343B;--on:#FFFFFF;
+  --rule:#D9D7C4;--dot:rgba(38,52,59,.06);
+  --lift:0 2px 0 var(--rule), 0 16px 28px -24px rgba(38,52,59,.65);
+}
+body:has(#mNight:checked){
+  --paper:#151E20;--card:#1D282A;--card-2:#253133;
+  --sumi:#EDE8DC;--sumi-2:#B4C2C1;--sumi-3:#7F8F8E;
+  --shu:#FF7B5B;--shu-w:#3E211A;--ai:#84B6E4;--ai-w:#1B2C3D;
+  --midori:#4FC7BF;--midori-w:#12312F;--yama:#F5C15A;--yama-w:#332810;
+  --edge:#41575A;--on:#141D1F;
+  --rule:#2E3D3E;--dot:rgba(237,232,220,.05);
+  --lift:0 2px 0 var(--rule), 0 16px 30px -26px #000;
+}
+
+/* ---- 紙えらび ---- */
+.swin{display:none}
+.papers{display:flex;justify-content:center;gap:8px;padding:14px 0 0}
+.papers label{
+  cursor:pointer;min-height:38px;padding:8px 24px;
+  background:var(--card);border:2px solid var(--rule);border-radius:999px;
+  color:var(--sumi-3);font-family:"M PLUS Rounded 1c",sans-serif;font-size:13.5px;font-weight:700;
+  line-height:1.4;transition:border-color .16s,color .16s;
+  display:inline-flex;align-items:center;
+}
+body:has(#mPaper:checked) .papers label[for="mPaper"],
+body:has(#mNight:checked) .papers label[for="mNight"]{border-color:var(--edge);color:var(--sumi)}
+#mPaper:checked ~ .sheet .papers label[for="mPaper"],
+#mNight:checked ~ .sheet .papers label[for="mNight"]{border-color:var(--edge);color:var(--sumi)}
+#mPaper:focus-visible ~ .papers label[for="mPaper"],
+#mNight:focus-visible ~ .papers label[for="mNight"]{outline:2.5px solid var(--ai);outline-offset:2px}
+
+/* ==================== 土台 ==================== */
+*{box-sizing:border-box}
+img,svg{max-width:100%}
+body{
+  margin:0;
+  color:var(--sumi);
+  background-color:var(--paper);
+  background-image:radial-gradient(var(--dot) 1.1px, transparent 1.2px);
+  background-size:7px 7px;
+  font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif;
+  font-size:17px;line-height:1.9;font-weight:500;
+  -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
+}
+.sheet{
+  max-width:640px;margin:0 auto;padding:0 15px 40px;
+  background-color:var(--paper);
+  background-image:radial-gradient(var(--dot) 1.1px, transparent 1.2px);
+  background-size:7px 7px;
+}
+.hand{font-family:"Yusei Magic","Hiragino Maru Gothic ProN",sans-serif;font-weight:400}
+.num{font-variant-numeric:tabular-nums;font-weight:700}
+p{margin:0}
+a{color:inherit}
+svg.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:2.5px solid var(--ai);outline-offset:2px;border-radius:4px}
+
+/* ==================== 表紙 ==================== */
+.cover{
+  position:relative;text-align:center;
+  margin-top:16px;padding:26px 18px 30px;
+  background:var(--card);border:2px solid var(--edge);border-radius:24px;
+  box-shadow:var(--lift);overflow:hidden;
+}
+.cover::before{
+  content:"";position:absolute;inset:6px;border:1.5px dashed var(--rule);
+  border-radius:18px;pointer-events:none;
+}
+.washi{
+  position:absolute;top:-9px;left:50%;width:104px;height:26px;
+  transform:translateX(-50%) rotate(-1.5deg);
+  background:var(--yama-w);border-left:2px dashed var(--yama);border-right:2px dashed var(--yama);
+  opacity:.95;
+}
+.cover-when{
+  position:relative;display:inline-block;margin-bottom:4px;
+  font-size:12.5px;letter-spacing:.1em;color:var(--sumi-2);
+}
+.crew{
+  position:relative;display:inline-block;margin:12px 0 4px;
+  padding:9px 26px;border-radius:22px;
+  background:var(--shu);border:2.5px solid var(--edge);
+  color:var(--on);font-family:"Yusei Magic","Hiragino Maru Gothic ProN",sans-serif;
+  font-size:clamp(21px,6vw,27px);line-height:1.35;letter-spacing:.03em;
+  transform:rotate(-1.6deg);box-shadow:var(--lift);
+}
+.scene{display:block;width:min(300px,86%);height:auto;margin:8px auto 6px}
+h1.title{
+  position:relative;margin:0;font-size:clamp(28px,7.6vw,38px);line-height:1.5;
+  font-family:"Yusei Magic",sans-serif;font-weight:400;letter-spacing:.02em;text-wrap:balance;
+}
+h1.title .pop{color:var(--shu)}
+.cover-sub{
+  position:relative;margin:10px auto 0;max-width:23em;
+  font-size:15px;line-height:1.95;color:var(--sumi-2);
+}
+.cover-sub b{color:var(--sumi);font-weight:700}
+.ticketline{
+  position:relative;margin:14px auto 0;max-width:24em;padding:7px 14px;
+  border:1.5px dashed var(--rule);border-radius:12px;
+  font-size:13px;color:var(--sumi-2);line-height:1.8;
+}
+.ticketline b{font-weight:800;color:var(--sumi);font-variant-numeric:tabular-nums}
+.ticketline .tl{display:inline-block;min-width:2.6em;color:var(--shu);font-weight:800}
+.hanko{
+  position:relative;margin:20px auto 2px;
+  width:132px;height:132px;border-radius:50%;
+  background:var(--shu);
+  box-shadow:
+    inset 0 0 0 4px var(--shu),
+    inset 0 0 0 7px var(--card),
+    inset 0 0 0 11px var(--shu);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;color:var(--card);
+  font-family:"Yusei Magic","Hiragino Maru Gothic ProN",sans-serif;
+  transform:rotate(-8deg);
+  text-shadow:0 1px 0 rgba(0,0,0,.08);
+}
+.hanko .h1{font-size:13px;letter-spacing:.22em;text-indent:.22em;opacity:.95}
+.hanko .h2{font-size:27px;line-height:1.15;letter-spacing:.02em}
+.hanko .h3{font-size:14px;letter-spacing:.12em;text-indent:.12em;opacity:.95}
+
+/* ==================== もくじ ==================== */
+.toc{
+  margin-top:14px;padding:14px 16px 16px;
+  background:var(--card);border:2px solid var(--edge);border-radius:20px;box-shadow:var(--lift);
+}
+.toc-h{font-family:"Yusei Magic",sans-serif;font-size:15px;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.toc-h svg.ic{color:var(--shu);width:18px;height:18px}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+@media(min-width:480px){.toc ol{grid-template-columns:1fr 1fr}}
+.toc a{
+  display:flex;align-items:center;gap:9px;text-decoration:none;
+  padding:8px 12px;border-radius:12px;background:var(--card-2);
+  font-size:14.5px;line-height:1.5;
+}
+.toc a .no{
+  width:21px;height:21px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--sumi);color:var(--card);font-size:11px;font-weight:700;
+}
+.toc a:hover{background:var(--yama-w)}
+
+/* ==================== 見出し ==================== */
+section{padding-top:34px;scroll-margin-top:16px}
+.head{margin-bottom:14px;position:relative;padding-right:74px}
+.head .spot{position:absolute;right:2px;bottom:-2px;width:62px;height:auto}
+.head h2{
+  margin:0;font-family:"Yusei Magic",sans-serif;font-weight:400;
+  font-size:23px;line-height:1.45;display:flex;align-items:center;gap:9px;
+}
+.head h2 .ball{
+  width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;
+  color:var(--card);font-size:12px;font-weight:700;font-family:"M PLUS Rounded 1c",sans-serif;
+}
+.squig{display:block;width:118px;height:8px;margin:1px 0 0 35px;color:var(--shu)}
+.head p{margin:5px 0 0 35px;font-size:13.5px;color:var(--sumi-3);line-height:1.75}
+
+/* ==================== 潮 ==================== */
+.tides{display:grid;gap:11px}
+@media(min-width:560px){.tides{grid-template-columns:1fr 1fr}}
+.tide{
+  background:var(--card);border:2px solid var(--edge);border-radius:18px;
+  padding:13px 15px 12px;box-shadow:var(--lift);
+}
+.tide-top{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.tide-top .dd{font-family:"Yusei Magic",sans-serif;font-size:17px}
+.tide-top .wd{font-size:11px;color:var(--sumi-3);letter-spacing:.08em}
+.tide-top .no{margin-left:auto;font-size:11px;color:var(--card);background:var(--midori);border-radius:999px;padding:1px 10px;font-weight:700}
+.wavebox{position:relative;padding:18px 0 15px}
+.wave{width:100%;height:64px;display:block;overflow:visible}
+.flag{position:absolute;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;font-weight:700}
+.flag.up{top:0;color:var(--midori)}
+.flag.dn{bottom:0;color:var(--shu)}
+.bead{position:absolute;width:10px;height:10px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--card)}
+.tide-key{display:flex;flex-wrap:wrap;gap:5px}
+.key{
+  display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--sumi-2);
+  background:var(--card-2);border-radius:999px;padding:2px 10px;
+}
+.key i{width:7px;height:7px;border-radius:50%;flex:none}
+.key b{font-weight:800;color:var(--sumi);font-variant-numeric:tabular-nums}
+.memo-yellow{
+  background:var(--yama-w);border:2px solid var(--yama);border-radius:18px;
+  padding:13px 16px;font-size:14px;line-height:1.9;color:var(--sumi-2);
+}
+@media(min-width:560px){.memo-yellow{grid-column:1/-1}}
+.memo-yellow b{color:var(--sumi);font-weight:700}
+
+/* ==================== プラン切替 ==================== */
+.tabs-sticky{position:sticky;top:0;z-index:30;padding:8px 0 10px;background:var(--paper)}
+.tabs-sticky::after{
+  content:"";position:absolute;left:-15px;right:-15px;bottom:0;height:16px;
+  background:linear-gradient(var(--paper),transparent);pointer-events:none;
+}
+.tabs{display:flex;gap:8px}
+.tabs label{
+  flex:1;min-height:56px;cursor:pointer;text-align:center;
+  background:var(--card);color:var(--sumi-3);
+  border:2px solid var(--edge);border-radius:16px;padding:7px 6px;
+  font-family:"Yusei Magic",sans-serif;font-size:15.5px;line-height:1.35;
+  box-shadow:var(--lift);transition:background .16s,color .16s,transform .16s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.tabs label small{
+  display:block;font-family:"M PLUS Rounded 1c",sans-serif;
+  font-size:11px;font-weight:500;margin-top:1px;
+}
+#tabA:checked ~ .tabs-sticky .tabs label[for="tabA"],
+#tabB:checked ~ .tabs-sticky .tabs label[for="tabB"]{background:var(--shu);color:var(--on);transform:translateY(-1px)}
+#tabA:checked ~ .tabs-sticky .tabs label[for="tabA"] small,
+#tabB:checked ~ .tabs-sticky .tabs label[for="tabB"] small{opacity:.9}
+#tabA:focus-visible ~ .tabs-sticky .tabs label[for="tabA"],
+#tabB:focus-visible ~ .tabs-sticky .tabs label[for="tabB"]{outline:2.5px solid var(--ai);outline-offset:2px}
+#tabB:checked ~ #planA{display:none}
+#tabA:checked ~ #planB{display:none}
+
+/* ==================== 一日 ==================== */
+.dayblock{margin-top:20px}
+.dayhead{
+  position:relative;display:flex;align-items:center;gap:11px;
+  background:var(--card);border:2px solid var(--edge);border-radius:16px;
+  padding:11px 15px;box-shadow:var(--lift);margin-bottom:12px;
+}
+.dayhead .tape{
+  position:absolute;top:-8px;left:20px;width:58px;height:18px;
+  transform:rotate(-3deg);background:var(--midori-w);
+  border-left:2px dashed var(--midori);border-right:2px dashed var(--midori);
+}
+.dayhead .badge{
+  width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:var(--ai);color:var(--on);font-family:"Yusei Magic",sans-serif;font-size:15px;
+}
+.dayhead .name{font-family:"Yusei Magic",sans-serif;font-size:17px;line-height:1.45}
+.dayhead .name em{display:block;font-style:normal;font-family:"M PLUS Rounded 1c",sans-serif;font-size:11px;color:var(--sumi-3);letter-spacing:.06em}
+.dayhead .prog{
+  margin-left:auto;flex:none;text-align:right;
+  font-size:11px;color:var(--sumi-3);line-height:1.4;
+}
+.dayhead .prog b{display:block;font-size:14px;color:var(--midori);font-variant-numeric:tabular-nums}
+.dayhead.has-art{padding-right:64px}
+.deer{position:absolute;right:7px;bottom:-3px;width:48px;height:auto;pointer-events:none}
+.leaf{position:absolute;right:11px;bottom:5px;width:36px;height:auto;pointer-events:none;transform:rotate(-14deg)}
+.boat{position:absolute;right:6px;bottom:6px;width:50px;height:auto;pointer-events:none}
+
+/* ==================== 行程 ==================== */
+ol.route{list-style:none;margin:0;padding:0;position:relative}
+ol.route::before{
+  content:"";position:absolute;left:57px;top:18px;bottom:18px;
+  border-left:3px dotted var(--rule);
+}
+ol.route>li{display:grid;grid-template-columns:46px 24px 1fr;gap:0 8px;align-items:start;padding:4px 0}
+.at{
+  padding-top:12px;text-align:right;font-size:13.5px;font-weight:700;
+  font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--sumi-2);
+}
+.pip{
+  width:24px;height:24px;border-radius:50%;margin-top:10px;position:relative;z-index:1;
+  display:grid;place-items:center;background:var(--card);
+  border:2px solid var(--edge);color:var(--ai);
+}
+.pip svg.ic{width:12px;height:12px;stroke-width:2.2}
+.slot{
+  background:var(--card);border:2px solid var(--edge);border-radius:15px;
+  padding:9px 12px 10px 13px;box-shadow:var(--lift);
+  display:grid;grid-template-columns:1fr 30px;gap:0 8px;
+}
+.slot h3{
+  grid-column:1;margin:0;font-family:"Yusei Magic",sans-serif;font-weight:400;
+  font-size:16.5px;line-height:1.6;
+}
+.slot .desc{grid-column:1/-1;margin:3px 0 0;font-size:13.5px;line-height:1.85;color:var(--sumi-2)}
+.slot .links{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;margin-top:5px}
+.gomap{
+  display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;
+  color:var(--ai);text-decoration:none;border-bottom:1.5px dotted var(--ai);
+}
+.gomap svg.ic{width:12px;height:12px}
+
+.tick{
+  grid-column:2;grid-row:1;justify-self:end;align-self:start;margin:0;
+  width:30px;height:30px;border-radius:50%;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background:transparent;border:2.5px dashed var(--rule);
+  display:grid;place-items:center;transition:background .16s,border-color .16s;
+}
+.tick::after{
+  content:"";width:11px;height:6.5px;
+  border-left:3px solid var(--on);border-bottom:3px solid var(--on);
+  transform:rotate(-45deg) translate(1px,-2px);opacity:0;transition:opacity .16s;
+}
+.tick:checked{background:var(--shu);border-color:var(--shu);border-style:solid}
+.tick:checked::after{opacity:1}
+.tick:focus-visible{outline:2.5px solid var(--ai);outline-offset:2px}
+.tick:checked ~ .desc,
+.tick:checked ~ .links{opacity:.5}
+.slot:has(.tick:checked) h3{opacity:.5;text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--sumi-3)}
+
+.chip{
+  display:inline-block;margin-left:6px;vertical-align:.12em;white-space:nowrap;
+  font-family:"M PLUS Rounded 1c",sans-serif;font-size:10.5px;font-weight:800;
+  border-radius:999px;padding:1px 9px;
+}
+.chip.mitsu{background:var(--midori);color:var(--on)}
+.chip.hiru{background:var(--shu);color:var(--on)}
+.chip.foto{background:var(--yama-w);color:var(--yama);border:1.5px solid var(--yama)}
+.chip.info{background:var(--ai-w);color:var(--ai)}
+.chip.goshu{background:var(--shu-w);color:var(--shu);border:1.5px solid var(--shu)}
+.chip.saka{background:var(--yama-w);color:var(--yama);border:1.5px solid var(--yama)}
+
+li.mitsu .pip{background:var(--midori);border-color:var(--midori);color:var(--on)}
+li.mitsu .slot{background:var(--midori-w);border-color:var(--midori)}
+li.mitsu .at{color:var(--midori)}
+li.hiru .pip{background:var(--shu);border-color:var(--shu);color:var(--on)}
+li.hiru .slot{background:var(--shu-w);border-color:var(--shu)}
+li.hiru .at{color:var(--shu)}
+
+
+.gline,.bline{
+  grid-column:1/-1;margin:8px 0 0;padding:7px 11px 8px;
+  border:2px solid var(--shu);border-radius:12px;background:var(--shu-w);
+  font-size:12.5px;line-height:1.75;color:var(--sumi);
+}
+.gline .tag2,.bline .tag2{
+  display:inline-block;margin-right:7px;padding:1px 9px;border-radius:999px;
+  background:var(--shu);color:var(--on);
+  font-family:"M PLUS Rounded 1c",sans-serif;font-size:11px;font-weight:800;
+  vertical-align:1px;
+}
+.bline{border-color:var(--yama);background:var(--yama-w)}
+.bline .tag2{background:var(--yama)}
+.aside{
+  margin-top:14px;padding:14px 16px;border-radius:18px;
+  background:var(--ai-w);border:2px solid var(--ai);
+  font-size:14px;line-height:1.9;color:var(--sumi-2);
+}
+.aside b{color:var(--sumi);font-weight:700}
+.aside .lead{font-family:"Yusei Magic",sans-serif;color:var(--ai);font-weight:400}
+
+/* ==================== 電車・おかね ==================== */
+.duo{display:grid;gap:11px}
+@media(min-width:560px){.duo{grid-template-columns:1fr 1fr}}
+.panel{background:var(--card);border:2px solid var(--edge);border-radius:18px;padding:13px 16px;box-shadow:var(--lift)}
+.panel h3{margin:0 0 9px;font-family:"Yusei Magic",sans-serif;font-weight:400;font-size:15.5px;display:flex;align-items:center;gap:8px}
+.panel h3 svg.ic{color:var(--shu);width:18px;height:18px}
+.hop{display:grid;grid-template-columns:52px 1fr;gap:0 10px;padding:6px 0;border-bottom:2px dotted var(--rule)}
+.hop:last-of-type{border-bottom:0}
+.hop.last .hm{color:var(--shu)}
+.hop.last .hn{font-weight:700}
+.hop .hm{font-size:14.5px;font-weight:800;color:var(--midori);font-variant-numeric:tabular-nums}
+.hop .hn{font-size:14.5px;line-height:1.65}
+.hop .hn small{display:block;font-size:12.5px;color:var(--sumi-3);line-height:1.75;font-weight:500}
+.panel .foot{margin-top:9px;padding-top:9px;border-top:2px dotted var(--rule);font-size:13px;color:var(--sumi-2);line-height:1.85}
+.panel .foot b{color:var(--shu);font-weight:700}
+
+.tickets{display:grid;gap:7px;margin-top:12px}
+@media(min-width:520px){.tickets{grid-template-columns:1fr 1fr}}
+.ticket{
+  display:flex;align-items:center;gap:9px;font-size:14px;
+  background:var(--card);border:2px solid var(--edge);border-radius:13px;padding:9px 13px;
+  box-shadow:var(--lift);
+}
+.ticket svg.ic{color:var(--midori)}
+.ticket .yen{margin-left:auto;text-align:right;white-space:nowrap}
+.ticket .yen b{font-size:13.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.ticket .yen small{display:block;font-size:10.5px;color:var(--sumi-3);line-height:1.5;font-weight:500}
+
+/* ==================== たべる ==================== */
+.group{margin-top:18px}
+.group:first-of-type{margin-top:0}
+.group-t{
+  display:flex;align-items:center;gap:10px;margin:0 0 8px;
+  font-family:"Yusei Magic",sans-serif;font-size:15px;color:var(--sumi-2);
+}
+.group-t::after{content:"";flex:1;border-top:2.5px dotted var(--rule)}
+.plates{display:grid;gap:8px}
+@media(min-width:560px){.plates{grid-template-columns:1fr 1fr}}
+.plate.best{background:var(--yama-w);border-color:var(--yama)}
+.osusume{
+  display:inline-block;margin-left:6px;vertical-align:.12em;white-space:nowrap;
+  font-size:10.5px;font-weight:800;border-radius:999px;padding:1px 9px;
+  background:var(--yama);color:var(--on);
+}
+.plate{background:var(--card);border:2px solid var(--edge);border-radius:15px;padding:10px 13px 11px;box-shadow:var(--lift)}
+.plate-top{display:flex;align-items:center;gap:8px}
+.plate-top b{font-family:"Yusei Magic",sans-serif;font-size:16.5px;font-weight:400;line-height:1.45}
+.days{display:flex;gap:4px;margin-left:auto;flex:none}
+.days i{font-style:normal;font-size:10.5px;font-weight:800;border-radius:999px;padding:1px 8px}
+.days i.o{background:var(--midori-w);color:var(--midori)}
+.days i.x{background:var(--shu-w);color:var(--shu)}
+.plate .cat{font-size:12px;color:var(--sumi-3);letter-spacing:.03em}
+.plate p{margin:4px 0 0;font-size:13.5px;line-height:1.85;color:var(--sumi-2)}
+
+/* ==================== わすれもの ==================== */
+ul.todo{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+ul.todo label{
+  display:grid;grid-template-columns:24px 1fr;gap:0 12px;align-items:start;cursor:pointer;
+  background:var(--card);border:2px solid var(--edge);border-radius:15px;
+  padding:12px 14px;font-size:14px;line-height:1.9;color:var(--sumi-2);box-shadow:var(--lift);
+}
+ul.todo input{
+  appearance:none;width:23px;height:23px;margin:3px 0 0;cursor:pointer;
+  border:2.5px solid var(--yama);border-radius:8px;background:var(--yama-w);
+  display:grid;place-items:center;transition:background .16s;
+}
+ul.todo input::after{
+  content:"";width:11px;height:6.5px;border-left:3px solid var(--card);border-bottom:3px solid var(--card);
+  transform:rotate(-45deg) translate(1px,-2px);opacity:0;transition:opacity .16s;
+}
+ul.todo input:checked{background:var(--yama)}
+ul.todo input:checked::after{opacity:1}
+ul.todo b{color:var(--sumi);font-weight:700}
+ul.todo input:checked ~ span{opacity:.45;text-decoration:line-through}
+
+.reset{
+  display:block;margin:16px auto 0;cursor:pointer;appearance:none;
+  background:var(--card);border:2px dashed var(--rule);border-radius:999px;
+  color:var(--sumi-3);font-family:"M PLUS Rounded 1c",sans-serif;font-size:12px;font-weight:700;
+  padding:8px 20px;
+}
+.reset:hover{border-color:var(--shu);color:var(--shu)}
+
+footer{
+  margin-top:34px;padding:18px 10px 0;border-top:2px dotted var(--rule);
+  text-align:center;font-size:11.5px;line-height:2;color:var(--sumi-3);
+}
+footer .bye{font-family:"Yusei Magic",sans-serif;font-size:15px;color:var(--shu);display:block;margin-bottom:8px}
+footer .train{display:block;width:104px;height:auto;margin:0 auto 10px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-train" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="13" rx="3.5"/><path d="M5 10h14M9 20l-2 2M15 20l2 2M7 16v2a2 2 0 002 2h6a2 2 0 002-2v-2"/><circle cx="9" cy="13" r=".7"/><circle cx="15" cy="13" r=".7"/></symbol>
+  <symbol id="i-tram" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="12" rx="3"/><path d="M4 9.5h16M12 4V2M6 20h12M8 16v4M16 16v4"/></symbol>
+  <symbol id="i-ferry" viewBox="0 0 24 24"><path d="M3 18c1.5 0 1.5 1.5 3 1.5S7.5 18 9 18s1.5 1.5 3 1.5S13.5 18 15 18s1.5 1.5 3 1.5S19.5 18 21 18M4 15l1.6-5h12.8L20 15M12 10V5M8 5h8"/></symbol>
+  <symbol id="i-torii" viewBox="0 0 24 24"><path d="M3 5.5h18M4.5 9h15M6.5 5.5v13M17.5 5.5v13M6.5 11.5h11"/></symbol>
+  <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 01-18 0zM8 7c0-1 1-1 1-2M12 6c0-1 1-1 1-2M16 7c0-1 1-1 1-2M4 20h16"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="4"/><circle cx="12" cy="13.5" r="3.6"/><path d="M9 7l1.2-2.5h3.6L15 7"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18v-8M3 13h18v5M21 18v-4a3 3 0 00-3-3h-7M7 11a2 2 0 100-4 2 2 0 000 4z"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M5 9v9M10 9v9M14 9v9M19 9v9M3 20h18"/></symbol>
+  <symbol id="i-mt" viewBox="0 0 24 24"><path d="M3 19l6-11 4 6.5 2-3L21 19z"/><path d="M7.5 12.5h3"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-5.7 7-11a7 7 0 10-14 0c0 5.3 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 013 3v13a2.5 2.5 0 00-2.5-2.5H4zM20 4h-6a3 3 0 00-3 3v13a2.5 2.5 0 012.5-2.5H20z"/></symbol>
+
+  <symbol id="s-momiji" viewBox="0 0 40 44">
+    <path d="M20,2.5 L25.5,13.5 L35,11 L28.5,21 L33,30.5 L21.5,27.5 L20,29 L18.5,27.5 L7,30.5 L11.5,21 L5,11 L14.5,13.5 Z" fill="var(--shu)" stroke="var(--edge)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M20,29 L20,42" fill="none" stroke="var(--edge)" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="s-tram" viewBox="0 0 64 44">
+    <path d="M32,2 L32,9" fill="none" stroke="var(--edge)" stroke-width="2" stroke-linecap="round"/>
+    <rect x="6" y="9" width="52" height="24" rx="6" fill="var(--midori)" stroke="var(--edge)" stroke-width="2.4"/>
+    <rect x="11" y="14" width="13" height="9" rx="2.5" fill="var(--card)" stroke="var(--edge)" stroke-width="1.8"/>
+    <rect x="27" y="14" width="10" height="9" rx="2.5" fill="var(--card)" stroke="var(--edge)" stroke-width="1.8"/>
+    <rect x="40" y="14" width="13" height="9" rx="2.5" fill="var(--card)" stroke="var(--edge)" stroke-width="1.8"/>
+    <rect x="6" y="26" width="52" height="4" fill="var(--yama)"/>
+    <circle cx="18" cy="36" r="4.4" fill="var(--card)" stroke="var(--edge)" stroke-width="2.2"/>
+    <circle cx="46" cy="36" r="4.4" fill="var(--card)" stroke="var(--edge)" stroke-width="2.2"/>
+    <path d="M2,41.5 h60" fill="none" stroke="var(--edge)" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="s-ferry" viewBox="0 0 64 40">
+    <rect x="18" y="6" width="26" height="12" rx="3" fill="var(--card)" stroke="var(--edge)" stroke-width="2.2"/>
+    <rect x="23" y="9" width="6" height="5" rx="1.5" fill="var(--ai-w)" stroke="var(--edge)" stroke-width="1.5"/>
+    <rect x="33" y="9" width="6" height="5" rx="1.5" fill="var(--ai-w)" stroke="var(--edge)" stroke-width="1.5"/>
+    <path d="M8,20 h48 l-6,10 h-36 z" fill="var(--shu)" stroke="var(--edge)" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M3,35 q6,-4 12,0 t12,0 t12,0 t12,0 t12,0" fill="none" stroke="var(--midori)" stroke-width="2.6" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="s-okonomi" viewBox="0 0 52 42">
+    <ellipse cx="26" cy="25" rx="21" ry="13" fill="var(--yama-w)" stroke="var(--edge)" stroke-width="2.4"/>
+    <ellipse cx="26" cy="21" rx="21" ry="13" fill="var(--yama)" stroke="var(--edge)" stroke-width="2.4"/>
+    <path d="M12,20 q7,-5 14,0 t13,0" fill="none" stroke="var(--shu)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M13,26 q7,-5 14,0 t13,0" fill="none" stroke="var(--shu)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="19" cy="15" r="1.7" fill="var(--midori)"/>
+    <circle cx="30" cy="14" r="1.7" fill="var(--midori)"/>
+    <circle cx="37" cy="17" r="1.7" fill="var(--midori)"/>
+    <path d="M22,7 q3,-4 6,-1 M31,6 q3,-3 5,0" fill="none" stroke="var(--edge)" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+
+  <symbol id="s-kaban" viewBox="0 0 48 44">
+    <path d="M17,12 v-3 a7,7 0 0114,0 v3" fill="none" stroke="var(--edge)" stroke-width="2.4" stroke-linecap="round"/>
+    <rect x="5" y="12" width="38" height="27" rx="6" fill="var(--ai)" stroke="var(--edge)" stroke-width="2.4"/>
+    <rect x="18" y="22" width="12" height="9" rx="2.5" fill="var(--card)" stroke="var(--edge)" stroke-width="2"/>
+    <path d="M5,20 h38" fill="none" stroke="var(--edge)" stroke-width="2"/>
+  </symbol>
+
+  <symbol id="s-shinkansen" viewBox="0 0 76 32">
+    <path d="M4,24 L4,16 C4,10 14,4 30,4 L64,4 C70,4 72,7 72,11 L72,24 Z" fill="var(--card)" stroke="var(--edge)" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M7,17 C9,12 17,8 30,8 L70,8" fill="none" stroke="var(--ai)" stroke-width="3.2" stroke-linecap="round"/>
+    <rect x="31" y="12" width="34" height="6" rx="3" fill="var(--ai-w)" stroke="var(--edge)" stroke-width="1.8"/>
+    <path d="M11,20 q4,-3 7,0" fill="none" stroke="var(--edge)" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="22" cy="27" r="3.4" fill="var(--card)" stroke="var(--edge)" stroke-width="2"/>
+    <circle cx="58" cy="27" r="3.4" fill="var(--card)" stroke="var(--edge)" stroke-width="2"/>
+  </symbol>
+</svg>
+
+<input type="radio" name="mode" id="mPaper" class="swin">
+<input type="radio" name="mode" id="mNight" class="swin">
+
+<div class="sheet">
+
+<div class="papers" role="group" aria-label="紙の色をえらぶ">
+  <label for="mPaper">きなり</label>
+  <label for="mNight">よる</label>
+</div>
+
+<!-- ============ 表紙 ============ -->
+<div class="cover">
+  <span class="washi"></span>
+  <p class="cover-when">2026年 8月30日（日）— 8月31日（月）</p>
+
+  <p class="crew">パーチとマーチの<br>広島旅</p>
+
+  <svg class="scene" viewBox="0 0 320 168" role="img" aria-label="海に立つ大鳥居と波のイラスト">
+    <circle cx="160" cy="70" r="46" fill="var(--yama-w)"/>
+    <g stroke="var(--sumi)" stroke-width="2.4" stroke-linejoin="round">
+      <path d="M62,52 Q160,38 258,52 L258,62 Q160,48 62,62 Z" fill="var(--shu)"/>
+      <rect x="78" y="68" width="164" height="10" rx="4" fill="var(--shu)"/>
+      <rect x="150" y="76" width="20" height="20" rx="3" fill="var(--shu)"/>
+      <rect x="88" y="94" width="144" height="9" rx="4" fill="var(--shu)"/>
+      <rect x="100" y="60" width="15" height="72" rx="5" fill="var(--shu)"/>
+      <rect x="205" y="60" width="15" height="72" rx="5" fill="var(--shu)"/>
+    </g>
+    <g>
+      <rect x="24" y="118" width="20" height="9" rx="2.5" fill="var(--card)" stroke="var(--edge)" stroke-width="2"/>
+      <path d="M14,129 h40 l-5,8 h-30 z" fill="var(--midori)" stroke="var(--edge)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M34,118 v-6" fill="none" stroke="var(--edge)" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <g fill="none" stroke="var(--midori)" stroke-width="3.2" stroke-linecap="round">
+      <path d="M14,141 q13,-9 26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0"/>
+      <path d="M2,153 q13,-9 26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0 t26,0" opacity=".55"/>
+    </g>
+  </svg>
+
+  <h1 class="title">しおを<span class="pop">まちながら</span>、<br>広島をあるく二日</h1>
+  <p class="cover-sub">ひさしぶりの、ふたり旅。<br>この二日は<b>昼に満潮・夕方に干潮</b>。海に浮かぶ社殿も、歩いてくぐる大鳥居も、<b>おなじ日に両方</b>見られます。</p>
+  <div class="hanko" role="img" aria-label="宮島は当たりの潮回り">
+    <span class="h1">宮島</span>
+    <span class="h2">大当り</span>
+    <span class="h3">潮回り</span>
+  </div>
+  <p class="ticketline"><span class="tl">往路</span>のぞみ99号　名古屋 <b>7:28</b> → 広島 <b>9:39</b>　6号車 2番D・E席<br><span class="tl">復路</span>のぞみ52号　広島 <b>18:03</b> → 美乃坂本 <b>21:45</b>　きっぷは現地で</p>
+</div>
+
+<!-- ============ もくじ ============ -->
+<nav class="toc" aria-label="もくじ">
+  <p class="toc-h"><svg class="ic"><use href="#i-book"/></svg>もくじ</p>
+  <ol>
+    <li><a href="#shio"><span class="no">1</span>しおを見る</a></li>
+    <li><a href="#plan"><span class="no">2</span>ふたつのプラン</a></li>
+    <li><a href="#ashi"><span class="no">3</span>でんしゃと、おかね</a></li>
+    <li><a href="#taberu"><span class="no">4</span>たべる</a></li>
+    <li><a href="#goshuin"><span class="no">5</span>御朱印をあつめる</a></li>
+    <li><a href="#junbi"><span class="no">6</span>出かける前に</a></li>
+  </ol>
+</nav>
+
+<!-- ============ 1 しお ============ -->
+<section id="shio">
+  <div class="head">
+    <h2><span class="ball" style="background:var(--midori)">1</span>しおを見る</h2>
+    <svg class="squig" viewBox="0 0 120 8" aria-hidden="true"><path d="M2,5 q10,-5 20,0 t20,0 t20,0 t20,0 t20,0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    <p>気象庁「広島」地点の推算値。宮島とはわずかに差があります。</p>
+    <svg class="spot" viewBox="0 0 64 40" aria-hidden="true"><use href="#s-ferry"/></svg>
+  </div>
+
+  <div class="tides">
+    <div class="tide">
+      <div class="tide-top"><span class="dd">8/30</span><span class="wd">SUN</span><span class="no">一日目</span></div>
+      <div class="wavebox">
+        <span class="flag up" style="left:45.2%">10:51 満潮</span>
+        <span class="flag dn" style="left:71%">17:03 干潮</span>
+        <svg class="wave" viewBox="0 0 100 46" preserveAspectRatio="none" role="img" aria-label="8月30日の潮位。10時51分に満潮362センチ、17時3分に干潮46センチ。">
+          <defs><linearGradient id="w1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--midori)" stop-opacity=".3"/>
+            <stop offset="100%" stop-color="var(--midori)" stop-opacity=".03"/>
+          </linearGradient></defs>
+          <path d="M0,9.4 C7,9.4 13,33.2 20.3,33.2 C28,33.2 37,7.4 45.2,7.4 C54,7.4 62,35.9 71,35.9 C80,35.9 88,6.2 96.8,6.2 L100,6.6 L100,46 L0,46 Z" fill="url(#w1)"/>
+          <path d="M0,9.4 C7,9.4 13,33.2 20.3,33.2 C28,33.2 37,7.4 45.2,7.4 C54,7.4 62,35.9 71,35.9 C80,35.9 88,6.2 96.8,6.2 L100,6.6" fill="none" stroke="var(--midori)" stroke-width="2.4" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+        </svg>
+        <span class="bead" style="left:45.2%;top:26px;background:var(--midori)"></span>
+        <span class="bead" style="left:71%;top:68px;background:var(--shu)"></span>
+      </div>
+      <div class="tide-key">
+        <span class="key"><i style="background:var(--midori)"></i><b>362cm</b>社殿が浮かぶ</span>
+        <span class="key"><i style="background:var(--shu)"></i><b>46cm</b>鳥居まで歩ける</span>
+      </div>
+    </div>
+
+    <div class="tide">
+      <div class="tide-top"><span class="dd">8/31</span><span class="wd">MON</span><span class="no">二日目</span></div>
+      <div class="wavebox">
+        <span class="flag up" style="left:47.8%">11:28 満潮</span>
+        <span class="flag dn" style="left:73.4%">17:37 干潮</span>
+        <svg class="wave" viewBox="0 0 100 46" preserveAspectRatio="none" role="img" aria-label="8月31日の潮位。11時28分に満潮364センチ、17時37分に干潮62センチ。">
+          <defs><linearGradient id="w2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--midori)" stop-opacity=".3"/>
+            <stop offset="100%" stop-color="var(--midori)" stop-opacity=".03"/>
+          </linearGradient></defs>
+          <path d="M0,8.5 C8,8.5 15,34.2 22.5,34.2 C30,34.2 39,7.2 47.8,7.2 C56,7.2 65,34.4 73.4,34.4 C82,34.4 90,6.9 98.8,6.9 L100,7 L100,46 L0,46 Z" fill="url(#w2)"/>
+          <path d="M0,8.5 C8,8.5 15,34.2 22.5,34.2 C30,34.2 39,7.2 47.8,7.2 C56,7.2 65,34.4 73.4,34.4 C82,34.4 90,6.9 98.8,6.9 L100,7" fill="none" stroke="var(--midori)" stroke-width="2.4" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+        </svg>
+        <span class="bead" style="left:47.8%;top:26px;background:var(--midori)"></span>
+        <span class="bead" style="left:73.4%;top:66px;background:var(--shu)"></span>
+      </div>
+      <div class="tide-key">
+        <span class="key"><i style="background:var(--midori)"></i><b>364cm</b>社殿が浮かぶ</span>
+        <span class="key"><i style="background:var(--shu)"></i><b>62cm</b>鳥居まで歩ける</span>
+      </div>
+    </div>
+
+    <p class="memo-yellow"><b>おぼえておくこと。</b>250cm以上で社殿が浮かんで見え、100cm以下で大鳥居の根元まで歩けます。ただし<b>嚴島神社の閉門は18:00</b>。お参りを先に済ませてから、砂浜に降りる順番です。</p>
+  </div>
+</section>
+
+<!-- ============ 2 プラン ============ -->
+<section id="plan">
+  <div class="head">
+    <h2><span class="ball" style="background:var(--shu)">2</span>ふたつのプラン</h2>
+    <svg class="squig" viewBox="0 0 120 8" aria-hidden="true"><path d="M2,5 q10,-5 20,0 t20,0 t20,0 t20,0 t20,0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    <p>呉の大和ミュージアムを入れるかどうかが分かれ目。ボタンで切り替わります。</p>
+  </div>
+
+  <input type="radio" name="plan" id="tabA" class="swin" checked>
+  <input type="radio" name="plan" id="tabB" class="swin">
+
+  <div class="tabs-sticky">
+    <div class="tabs" role="group" aria-label="プランの切り替え">
+      <label for="tabA">A案・宮島まるごと<small>潮の両方をねらう</small></label>
+      <label for="tabB">B案・呉もいく<small>大和ミュージアム</small></label>
+    </div>
+  </div>
+
+  <!-- ---------- A ---------- -->
+  <div id="planA">
+    <div class="dayblock">
+      <div class="dayhead has-art">
+        <span class="tape"></span>
+        <span class="badge">1</span>
+        <span class="name">宮島に一日つかる<em>8月30日（日）</em></span>
+        <span class="prog"><b data-prog="a1">0/12</b>すすんだ</span>
+        <svg class="deer" viewBox="0 0 80 84" aria-hidden="true">
+          <g stroke="var(--sumi)" stroke-width="2.4" fill="none" stroke-linecap="round">
+            <path d="M30,26 L24,12 M24,18 L17,15 M50,26 L56,12 M56,18 L63,15"/>
+          </g>
+          <ellipse cx="40" cy="58" rx="20" ry="14" fill="var(--yama)" stroke="var(--sumi)" stroke-width="2.4"/>
+          <rect x="27" y="66" width="5.5" height="15" rx="2.5" fill="var(--yama)" stroke="var(--sumi)" stroke-width="2.2"/>
+          <rect x="47" y="66" width="5.5" height="15" rx="2.5" fill="var(--yama)" stroke="var(--sumi)" stroke-width="2.2"/>
+          <ellipse cx="22" cy="30" rx="6" ry="4" fill="var(--yama)" stroke="var(--sumi)" stroke-width="2.2" transform="rotate(-25 22 30)"/>
+          <ellipse cx="58" cy="30" rx="6" ry="4" fill="var(--yama)" stroke="var(--sumi)" stroke-width="2.2" transform="rotate(25 58 30)"/>
+          <ellipse cx="40" cy="35" rx="14" ry="13" fill="var(--yama)" stroke="var(--sumi)" stroke-width="2.4"/>
+          <circle cx="35" cy="33" r="1.9" fill="var(--sumi)"/>
+          <circle cx="45" cy="33" r="1.9" fill="var(--sumi)"/>
+          <ellipse cx="40" cy="41" rx="3.4" ry="2.6" fill="var(--sumi)"/>
+          <circle cx="34" cy="55" r="2.4" fill="var(--card)"/>
+          <circle cx="45" cy="58" r="2.4" fill="var(--card)"/>
+        </svg>
+      </div>
+
+      <ol class="route" data-day="a1">
+        <li><span class="at">9:39</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>広島に着いたら、駅のロッカーへ</h3><input class="tick" type="checkbox" data-k="a1-1" aria-label="このよていをチェック"><p class="desc">ホテルに寄ると往復40分の損。初日は駅に預けて身軽に。</p></div></li>
+        <li><span class="at">10:04</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>JRで宮島口へ</h3><input class="tick" type="checkbox" data-k="a1-2" aria-label="このよていをチェック"><p class="desc">26分・420円で10:30着。路面電車は帰りのお楽しみに回します。</p></div></li>
+        <li><span class="at">10:35</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>あなごめし うえの</h3><input class="tick" type="checkbox" data-k="a1-3" aria-label="このよていをチェック"><p class="desc">11時から一気に混みます。お弁当にして、宮島で二人で食べるのが賢い手。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=あなごめし うえの 宮島口" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">11:00</span><span class="pip"><svg class="ic"><use href="#i-ferry"/></svg></span><div class="slot"><h3>フェリーで10分<span class="chip foto">写真</span></h3><input class="tick" type="checkbox" data-k="a1-4" aria-label="このよていをチェック"><p class="desc">JR便の「大鳥居便」（9:10〜16:10発）は、海の上から大鳥居に近づきます。デッキが特等席。</p></div></li>
+        <li class="mitsu"><span class="at">11:25</span><span class="pip"><svg class="ic"><use href="#i-torii"/></svg></span><div class="slot"><h3>嚴島神社、海に浮かぶ回廊<span class="chip mitsu">満潮</span><span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a1-5" aria-label="このよていをチェック"><p class="desc">満潮直後でまだ350cm前後。いちばん有名な姿です。昇殿300円。御朱印は本殿の右手の授与所で。そのまま出口を抜けると大願寺、そちらも御朱印。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=嚴島神社" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p><p class="gline"><span class="tag2">御朱印</span><b>嚴島神社</b>　本殿の右手の授与所・300円。<b>出口を抜けてすぐが大願寺</b>（本堂の左手・300円・境内は無料）。二つまとめてここで。</p></div></li>
+        <li><span class="at">12:40</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>表参道で食べ歩き<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a1-6" aria-label="このよていをチェック"><p class="desc">揚げもみじ、焼がき、あなご串。半分こにすると、いろいろ食べられます。</p><p class="gline"><span class="tag2">御朱印</span><b>豊国神社（千畳閣）</b>　表参道から石段を上がったところ。社務所で300円、しゃもじの朱印です。<b>五重塔もここ。</b></p><p class="bline"><span class="tag2">ビール</span><b>宮島ブルワリー</b>　桟橋から徒歩7分、商店街を抜けた先。<b>島でただ一つの醸造所</b>で、できたての生が飲めます。10:30〜17:00。「Dancing DEER」という銘柄も。</p></div></li>
+        <li><span class="at">13:30</span><span class="pip"><svg class="ic"><use href="#i-tram"/></svg></span><div class="slot"><h3>紅葉谷へ、無料バスで<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a1-7" aria-label="このよていをチェック"><p class="desc">嚴島神社の裏手を抜けた先、紅葉谷公園の手前が無料送迎バスの乗り場。9:50から約20分間隔、乗って3分。歩くと桟橋から25〜30分かかります。この途中に<b>大聖院</b>があるので、御朱印はここで。</p><p class="gline"><span class="tag2">御朱印</span><b>大聖院</b>　紅葉谷へ向かう道の途中。波切不動明王の御朱印と、季節限定の切り絵御朱印。</p></div></li>
+        <li><span class="at">14:00</span><span class="pip"><svg class="ic"><use href="#i-mt"/></svg></span><div class="slot"><h3>宮島ロープウエーで獅子岩へ<span class="chip foto">写真</span></h3><input class="tick" type="checkbox" data-k="a1-13" aria-label="このよていをチェック"><p class="desc">往復2,000円（片道1,100円）。紅葉谷から榧谷、榧谷から獅子岩と二本を乗り継いで20分ほど。運行は9:00〜16:00、<b>下りの最終は16:30</b>。展望台から瀬戸内の島々が一望できます。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=宮島ロープウエー 紅葉谷駅" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">15:20</span><span class="pip"><svg class="ic"><use href="#i-mt"/></svg></span><div class="slot"><h3>下りに乗る</h3><input class="tick" type="checkbox" data-k="a1-14" aria-label="このよていをチェック"><p class="desc">獅子岩から弥山の山頂までは、さらに片道30分の山道。<b>山頂まで行くと往復1時間</b>で、この後の予定がかなりきつくなります。展望台までにしておくのが無難。</p></div></li>
+        <li><span class="at">16:00</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>焼がきのはやし</h3><input class="tick" type="checkbox" data-k="a1-8" aria-label="このよていをチェック"><p class="desc">8月末は旬ではないものの、ここは生がきを通年出しています。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=焼がきのはやし 宮島" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li class="hiru"><span class="at">17:00</span><span class="pip"><svg class="ic"><use href="#i-wave"/></svg></span><div class="slot"><h3>大鳥居の根元まで、歩く<span class="chip hiru">この日いちばん</span></h3><input class="tick" type="checkbox" data-k="a1-9" aria-label="このよていをチェック"><p class="desc">干潮46cm。ちょうど夕陽の時間と重なります。二人の写真はここで。</p></div></li>
+        <li><span class="at">17:50</span><span class="pip"><svg class="ic"><use href="#i-tram"/></svg></span><div class="slot"><h3>広電2号線で、のんびり市内へ</h3><input class="tick" type="checkbox" data-k="a1-10" aria-label="このよていをチェック"><p class="desc">宮島口から約60分、240円。海沿いから市街へ、窓の景色が変わっていきます。</p></div></li>
+        <li><span class="at">19:15</span><span class="pip"><svg class="ic"><use href="#i-bed"/></svg></span><div class="slot"><h3>チェックイン<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a1-11" aria-label="このよていをチェック"><p class="desc">三井ガーデンホテル広島。広電・中電前から徒歩5分。</p><p class="gline"><span class="tag2">御朱印</span><b>白神社（しらかみしゃ）</b>　中町7-24、<b>ホテルとおなじ町内</b>です。翌朝でも、荷物を置いたあとの散歩でも。小さな社なので社務所が閉まっていることも。</p></div></li>
+        <li><span class="at">19:45</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>夜は、薬研堀 八昌<span class="chip info">日曜だけ</span><span class="chip saka">お酒</span></h3><input class="tick" type="checkbox" data-k="a1-12" aria-label="このよていをチェック"><p class="desc">月曜と第1・3火曜が定休なので、この旅では<b>8/30の夜しか行けません</b>。日曜は16:00〜21:00、ホテルから徒歩10分。行列が1時間半になることも。待つのがきつければ、袋町の「がんすけ」（徒歩5分）か薬研堀の「ちんちくりん」へ。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=薬研堀 八昌 広島" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p><p class="bline"><span class="tag2">お酒</span>八昌のあとの<b>二軒目</b>なら、紙屋町の「Pizzeria Bar ARIETTA」（ワイン100種以上・18:00〜25:00）か、袋町の「ビストロ酒場イシイ」（〜23:00・徒歩5分）。どちらも日曜営業です。</p></div></li>
+      </ol>
+    </div>
+
+    <div class="dayblock">
+      <div class="dayhead has-art">
+        <span class="tape" style="background:var(--shu-w);border-left-color:var(--shu);border-right-color:var(--shu)"></span>
+        <span class="badge" style="background:var(--shu)">2</span>
+        <span class="name">平和記念公園を、朝いちで<em>8月31日（月）</em></span>
+        <span class="prog"><b data-prog="a2">0/8</b>すすんだ</span>
+        <svg class="leaf" viewBox="0 0 40 44" aria-hidden="true"><use href="#s-momiji"/></svg>
+      </div>
+
+      <ol class="route" data-day="a2">
+        <li class="mitsu"><span class="at">7:30</span><span class="pip"><svg class="ic"><use href="#i-house"/></svg></span><div class="slot"><h3>平和記念資料館、開館と同時に<span class="chip info">すいてる</span></h3><input class="tick" type="checkbox" data-k="a2-1" aria-label="このよていをチェック"><p class="desc">8月は7:30〜20:00、200円。日中の混雑を、まるごと避けられます。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=広島平和記念資料館" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">9:00</span><span class="pip"><svg class="ic"><use href="#i-cam"/></svg></span><div class="slot"><h3>原爆ドーム・平和記念公園</h3><input class="tick" type="checkbox" data-k="a2-2" aria-label="このよていをチェック"><p class="desc">ゆっくり一周して30〜45分。</p></div></li>
+        <li><span class="at">9:50</span><span class="pip"><svg class="ic"><use href="#i-cam"/></svg></span><div class="slot"><h3>おりづるタワー<span class="chip foto">写真</span></h3><input class="tick" type="checkbox" data-k="a2-3" aria-label="このよていをチェック"><p class="desc">屋上から原爆ドームと市街を見下ろせます。2,200円。</p></div></li>
+        <li><span class="at">11:00</span><span class="pip"><svg class="ic"><use href="#i-bed"/></svg></span><div class="slot"><h3>チェックアウトして、本通り商店街<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a2-4" aria-label="このよていをチェック"><p class="desc">荷物はホテルに預けたまま動けます。</p><p class="gline"><span class="tag2">御朱印</span><b>胡子神社</b>（胡町5-14・商店街のなか）と<b>白神社</b>（中町7-24）。<b>本通を歩くこの時間にも取れます</b>。夕方に回りきれなかったときの保険に。</p></div></li>
+        <li><span class="at">11:40</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>くにまつ 中町店の汁なし担担麺</h3><input class="tick" type="checkbox" data-k="a2-5" aria-label="このよていをチェック"><p class="desc">ホテルから徒歩3分。ブームの火付け役と言われる一軒です。もう一方の雄「キング軒 本通店」（本通8-7・11:00〜22:00の通し）も徒歩圏。<b>月曜のお好み焼きなら</b>八丁堀の「みっちゃん総本店」か、平和公園前の「長田屋」。<b>瀬戸内の魚にするなら</b>、平和公園のそばに浮かぶ「かき船かなわ 瀬戸」（11:00〜14:30）。午前の平和公園からそのまま歩けるので、動線はいちばんきれいです。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=くにまつ 中町店 広島" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">13:00</span><span class="pip"><svg class="ic"><use href="#i-cam"/></svg></span><div class="slot"><h3>縮景園<span class="chip foto">写真</span></h3><input class="tick" type="checkbox" data-k="a2-6" aria-label="このよていをチェック"><p class="desc">350円、一周40〜60分。池をぐるりと回る庭で、木陰も多いのでひと休みになります。このあと広島城へ。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=縮景園" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">14:15</span><span class="pip"><svg class="ic"><use href="#i-house"/></svg></span><div class="slot"><h3>広島城まで、足をのばす<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a2-9" aria-label="このよていをチェック"><p class="desc">18:03の便にしたので、縮景園と<b>両方まわれます</b>。天守は登れませんが、堀と石垣、二の丸（9:00〜17:30）、それに入場無料の三の丸エリア。城内の<b>廣島護國神社で御朱印</b>（16:30まで、500円）。縮景園からは歩いて15分ほど。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=広島城" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p><p class="gline"><span class="tag2">御朱印</span><b>廣島護國神社</b>　広島城のなか、本殿の左の授与所。<b>9:00〜16:30</b>・500円。「鯉城跡鎮座」の朱印です。この日いちばん時間に気をつけるところ。</p></div></li>
+        <li><span class="at">15:30</span><span class="pip"><svg class="ic"><use href="#i-torii"/></svg></span><div class="slot"><h3>本通へ戻って、二社<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a2-10" aria-label="このよていをチェック"><p class="desc">商店街のなかの<b>胡子神社</b>（胡町5-14）と、ホテルとおなじ町内の<b>白神社</b>（中町7-24）。どちらもアーケードから数分で、買いもののついでに寄れます。コーヒー一杯ぶんの休憩もここで。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=胡子神社 広島" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>胡子神社</a><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=白神社 広島市中区中町" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>白神社</a></p></div></li>
+        <li><span class="at">16:30</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>広島駅 ekie で、おみやげ<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="a2-7" aria-label="このよていをチェック"><p class="desc">もみじ饅頭、牡蠣醤油、レモン系。</p><p class="gline"><span class="tag2">御朱印</span>駅の<b>新幹線口から徒歩15分</b>に、饒津神社・鶴羽根神社・広島東照宮。ただし<b>鶴羽根神社は17:00まで</b>なので、この時間からだと駆け足です。次の広島で。</p></div></li>
+        <li><span class="at">17:15</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>食べ納め、または駅弁</h3><input class="tick" type="checkbox" data-k="a2-11" aria-label="このよていをチェック"><p class="desc">ekie 1階の「麗ちゃん」（昭和32年創業・11:00〜21:30）か「電光石火」（11:00〜23:00・無休）。どちらも改札のすぐそば。車内で食べるなら、あなごめしの駅弁を買っておく手も。</p></div></li>
+        <li class="hiru"><span class="at">18:03</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>のぞみ52号で、おうちへ</h3><input class="tick" type="checkbox" data-k="a2-8" aria-label="このよていをチェック"><p class="desc">名古屋20:19 → 20:26の快速 → 美乃坂本 21:45。<b>前後させるなら</b>17:43のぞみ50号（21:16着）か、17:22のぞみ48号（20:58着）。</p></div></li>
+      </ol>
+    </div>
+
+    <p class="aside"><b class="lead">A案がおすすめの理由。</b>8/30は昼が満潮・夕方が干潮という好条件。駆け足で回らずに、浮かぶ社殿と歩ける大鳥居を<b>おなじ日に両方</b>味わえます。呉は半日がかりなので、別の機会にまとめて行くほうが満足度は高いはずです。</p>
+  </div>
+
+  <!-- ---------- B ---------- -->
+  <div id="planB">
+    <div class="dayblock">
+      <div class="dayhead has-art">
+        <span class="tape"></span>
+        <span class="badge">1</span>
+        <span class="name">呉、そして夜の平和記念公園<em>8月30日（日）</em></span>
+        <span class="prog"><b data-prog="b1">0/8</b>すすんだ</span>
+        <svg class="boat" viewBox="0 0 64 40" aria-hidden="true"><use href="#s-ferry"/></svg>
+      </div>
+
+      <ol class="route" data-day="b1">
+        <li><span class="at">10:20</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>呉線 快速「安芸路ライナー」</h3><input class="tick" type="checkbox" data-k="b1-1" aria-label="このよていをチェック"><p class="desc">広島から38分・510円。荷物は広島駅のロッカーへ。</p></div></li>
+        <li class="mitsu"><span class="at">11:10</span><span class="pip"><svg class="ic"><use href="#i-house"/></svg></span><div class="slot"><h3>大和ミュージアム<span class="chip info">2026.4 再開</span></h3><input class="tick" type="checkbox" data-k="b1-2" aria-label="このよていをチェック"><p class="desc">1年2か月の休館を経てリニューアル済み。呉駅から徒歩5分、1,000円、見学90〜120分。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=大和ミュージアム 呉" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">13:15</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>呉でお昼、海自カレー</h3><input class="tick" type="checkbox" data-k="b1-3" aria-label="このよていをチェック"><p class="desc">呉市内の飲食店が、実際に艦艇で出しているカレーを再現している取り組み。老舗なら「田舎洋食 いせ屋」の海軍さんのカレー825円（11:00〜15:00 L.O.／木曜と祝日の翌日休、呉駅から徒歩15分）。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=田舎洋食 いせ屋 呉" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">14:15</span><span class="pip"><svg class="ic"><use href="#i-ferry"/></svg></span><div class="slot"><h3>てつのくじら館</h3><input class="tick" type="checkbox" data-k="b1-4" aria-label="このよていをチェック"><p class="desc">道路を挟んで向かい。本物の潜水艦の内部に入れて、入館は無料。</p></div></li>
+        <li><span class="at">15:30</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>呉を発って、広島へ 16:10</h3><input class="tick" type="checkbox" data-k="b1-5" aria-label="このよていをチェック"><p class="desc">船が好きなら、呉港→広島港のフェリー45分・1,100円も。</p></div></li>
+        <li><span class="at">16:40</span><span class="pip"><svg class="ic"><use href="#i-tram"/></svg></span><div class="slot"><h3>広電1号線でチェックイン<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="b1-6" aria-label="このよていをチェック"><p class="desc">広島駅から中電前まで約20分、240円。路面電車はここで一本。</p><p class="gline"><span class="tag2">御朱印</span><b>白神社</b>　中町7-24、<b>ホテルとおなじ町内</b>。チェックインのついでに寄れます。</p></div></li>
+        <li class="mitsu"><span class="at">17:30</span><span class="pip"><svg class="ic"><use href="#i-house"/></svg></span><div class="slot"><h3>平和記念資料館は夜まで<span class="chip info">8月だけ</span></h3><input class="tick" type="checkbox" data-k="b1-7" aria-label="このよていをチェック"><p class="desc">8月は20:00まで（最終入館19:30）。夕方は日中よりずっと空いています。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=広島平和記念資料館" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">19:45</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>八昌か、ちんちくりん<span class="chip saka">お酒</span></h3><input class="tick" type="checkbox" data-k="b1-8" aria-label="このよていをチェック"><p class="desc">八昌は日曜21:00まで、ちんちくりんは17:00〜24:00。どちらも薬研堀で、月曜は八昌が定休なので<b>行くならこの夜</b>。この日はカープ戦（18:00）、21時台は市内が混むので早めに。</p><p class="bline"><span class="tag2">お酒</span>お好み焼きのあとの<b>二軒目</b>に、紙屋町の「Pizzeria Bar ARIETTA」（ワイン100種以上・18:00〜25:00）。ビールなら十日市町の「SESSION'S BREWERY」（15:00〜22:00・生660円〜）。</p></div></li>
+      </ol>
+    </div>
+
+    <div class="dayblock">
+      <div class="dayhead has-art">
+        <span class="tape" style="background:var(--shu-w);border-left-color:var(--shu);border-right-color:var(--shu)"></span>
+        <span class="badge" style="background:var(--shu)">2</span>
+        <span class="name">宮島は午前が勝負<em>8月31日（月）</em></span>
+        <span class="prog"><b data-prog="b2">0/8</b>すすんだ</span>
+        <svg class="leaf" viewBox="0 0 40 44" aria-hidden="true"><use href="#s-momiji"/></svg>
+      </div>
+
+      <ol class="route" data-day="b2">
+        <li><span class="at">7:40</span><span class="pip"><svg class="ic"><use href="#i-tram"/></svg></span><div class="slot"><h3>広電で宮島口へ</h3><input class="tick" type="checkbox" data-k="b2-1" aria-label="このよていをチェック"><p class="desc">直通で約60分・240円。急ぐならJRで26分・420円。</p></div></li>
+        <li><span class="at">9:00</span><span class="pip"><svg class="ic"><use href="#i-torii"/></svg></span><div class="slot"><h3>朝の嚴島神社<span class="chip info">しずか</span><span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="b2-2" aria-label="このよていをチェック"><p class="desc">開門6:30。団体が来る前の、静かな回廊を歩けます。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=嚴島神社" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p><p class="gline"><span class="tag2">御朱印</span><b>嚴島神社</b>（本殿右手・300円）と、出口すぐの<b>大願寺</b>（本堂左手・300円・境内無料）。朝いちなら待ち時間もほとんどありません。</p></div></li>
+        <li><span class="at">10:00</span><span class="pip"><svg class="ic"><use href="#i-mt"/></svg></span><div class="slot"><h3>宮島ロープウエー、または千畳閣・五重塔<span class="chip goshu">御朱印</span></h3><input class="tick" type="checkbox" data-k="b2-3" aria-label="このよていをチェック"><p class="desc">ロープウエーは往復2,000円、運行9:00〜16:00。紅葉谷まで無料送迎バス（9:50から約20分間隔）。獅子岩の往復でちょうど1時間半なので、11:28の満潮に戻るならここは急ぎ足。ゆっくり行くなら千畳閣・五重塔に切り替えを。</p><p class="gline"><span class="tag2">御朱印</span><b>豊国神社（千畳閣）</b>は社務所で300円、しゃもじの朱印。ロープウエーへ向かうなら途中に<b>大聖院</b>（切り絵御朱印）。</p></div></li>
+        <li class="mitsu"><span class="at">11:28</span><span class="pip"><svg class="ic"><use href="#i-torii"/></svg></span><div class="slot"><h3>満潮364cm、浮かぶ社殿<span class="chip mitsu">満潮</span></h3><input class="tick" type="checkbox" data-k="b2-4" aria-label="このよていをチェック"><p class="desc">先にお参りしておいて、満潮に合わせて戻る二段構えが効きます。</p></div></li>
+        <li><span class="at">12:10</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>表参道で食べ歩き＋焼がき<span class="chip saka">お酒</span></h3><input class="tick" type="checkbox" data-k="b2-5" aria-label="このよていをチェック"><p class="desc">揚げもみじ、あなご串、焼がきのはやし。</p><p class="bline"><span class="tag2">ビール</span><b>宮島ブルワリー</b>　商店街を抜けた先、桟橋から徒歩7分。島でただ一つの醸造所、10:30〜17:00。</p></div></li>
+        <li><span class="at">13:10</span><span class="pip"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="slot"><h3>あなごめし うえの（宮島口）</h3><input class="tick" type="checkbox" data-k="b2-6" aria-label="このよていをチェック"><p class="desc">9:00〜19:00（水曜のみ18:00）。あなごめし弁当は 並2,430円／大3,240円、前日までなら電話・メールで予約できます。<b>8/31は月曜</b>——月曜と木曜の13:00〜15:00だけ、巻きずしが10〜20本の限定で出ます。</p><p class="links"><a class="gomap" href="https://www.google.com/maps/search/?api=1&amp;query=あなごめし うえの 宮島口" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>地図</a></p></div></li>
+        <li><span class="at">14:20</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>広島へ戻る</h3><input class="tick" type="checkbox" data-k="b2-7" aria-label="このよていをチェック"><p class="desc">ホテルの荷物を回収するなら＋30分。</p></div></li>
+        <li><span class="at">15:30</span><span class="pip"><svg class="ic"><use href="#i-cam"/></svg></span><div class="slot"><h3>明るいうちの原爆ドーム・平和記念公園<span class="chip foto">写真</span></h3><input class="tick" type="checkbox" data-k="b2-9" aria-label="このよていをチェック"><p class="desc">初日は資料館だけで、公園は暗くなってからでした。18:03の便なので、ここで昼の景色を歩けます。一周30〜45分。</p></div></li>
+        <li><span class="at">16:45</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>広島駅 ekie で、おみやげと食べ納め</h3><input class="tick" type="checkbox" data-k="b2-10" aria-label="このよていをチェック"><p class="desc">もみじ饅頭、牡蠣醤油、レモン系。1階の「麗ちゃん」「電光石火」は改札のすぐそば。</p><p class="gline"><span class="tag2">御朱印</span>駅の<b>新幹線口から徒歩15分</b>に饒津神社・鶴羽根神社・広島東照宮。<b>鶴羽根神社は17:00まで</b>。次の広島で。</p></div></li>
+        <li class="hiru"><span class="at">18:03</span><span class="pip"><svg class="ic"><use href="#i-train"/></svg></span><div class="slot"><h3>のぞみ52号で、おうちへ</h3><input class="tick" type="checkbox" data-k="b2-8" aria-label="このよていをチェック"><p class="desc">名古屋20:19 → 20:26の快速 → 美乃坂本 21:45。<b>前後させるなら</b>17:43のぞみ50号（21:16着）か、17:22のぞみ48号（20:58着）。</p></div></li>
+      </ol>
+    </div>
+
+    <p class="aside"><b class="lead">B案の弱いところ。</b>二日目は17:37の干潮まで粘れないので、<b>大鳥居まで歩く体験は諦める</b>ことになります。<b>18:03の便にしても届きません</b>——広島駅に17:45にはいたいので、宮島を出るのは16:55のフェリーが限界。干潮の45分前で、まだ120cm前後あります。</p>
+  </div>
+</section>
+
+<!-- ============ 3 でんしゃ ============ -->
+<section id="ashi">
+  <div class="head">
+    <h2><span class="ball" style="background:var(--ai)">3</span>でんしゃと、おかね</h2>
+    <svg class="squig" viewBox="0 0 120 8" aria-hidden="true"><path d="M2,5 q10,-5 20,0 t20,0 t20,0 t20,0 t20,0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    <p>行きは5:40発が安全圏。帰りは18:03を軸に、手前二本まで。</p>
+    <svg class="spot" viewBox="0 0 64 44" aria-hidden="true"><use href="#s-tram"/></svg>
+  </div>
+
+  <div class="duo">
+    <div class="panel">
+      <h3><svg class="ic"><use href="#i-train"/></svg>行き　8月30日（日）</h3>
+      <div class="hop"><span class="hm">5:40</span><span class="hn">美乃坂本 発<small>普通・名古屋行／1,340円</small></span></div>
+      <div class="hop"><span class="hm">6:56</span><span class="hn">名古屋 着<small>乗換32分、ゆとりあり</small></span></div>
+      <div class="hop"><span class="hm">7:28</span><span class="hn">のぞみ99号（博多行）<small>6号車 2番D・E席／Eが窓側、Dが通路側</small></span></div>
+      <div class="hop"><span class="hm">9:39</span><span class="hn">広島 着<small>ここから旅がはじまります</small></span></div>
+      <p class="foot">中央線をもう一本遅らせるなら <b>5:56発</b>（名古屋7:16着）が限界で、乗換は12分。<b>6:21発は名古屋7:39着</b>で、のぞみ99号には間に合いません。寝坊できるのは16分だけ、と思っておくのが安全です。</p>
+    </div>
+
+    <div class="panel">
+      <h3><svg class="ic"><use href="#i-train"/></svg>帰り　8月31日（月）</h3>
+      <div class="hop"><span class="hm">17:22</span><span class="hn">のぞみ48号<small>名古屋19:34 → 19:48の快速 → 美乃坂本 20:58</small></span></div>
+      <div class="hop"><span class="hm">17:43</span><span class="hn">のぞみ50号<small>名古屋19:55 → 20:07の快速 → 美乃坂本 21:16</small></span></div>
+      <div class="hop last"><span class="hm">18:03</span><span class="hn">のぞみ52号　これで組んでいます<small>名古屋20:19 → 20:26の快速 → 美乃坂本 21:45</small></span></div>
+      <p class="foot"><b>18:03がけつ</b>。当日の様子で前後させるなら、手前の二本のどちらかへ。名古屋から美乃坂本へ行くのは「快速 中津川行」だけで、どれも名古屋での乗換は12〜14分あります。もっと遅らせたい場合の実質最終は広島20:02発（のぞみ64号・美乃坂本23:44頃）。</p>
+    </div>
+  </div>
+
+  <div class="tickets">
+    <div class="ticket"><svg class="ic"><use href="#i-tram"/></svg>広島駅 → ホテル<span class="yen"><b>240円</b><small>広電1号線 20分</small></span></div>
+    <div class="ticket"><svg class="ic"><use href="#i-tram"/></svg>広島駅 → 広電宮島口<span class="yen"><b>240円</b><small>2号線直通 66分</small></span></div>
+    <div class="ticket"><svg class="ic"><use href="#i-train"/></svg>広島駅 → 宮島口<span class="yen"><b>420円</b><small>JR 26分</small></span></div>
+    <div class="ticket"><svg class="ic"><use href="#i-ferry"/></svg>宮島口 → 宮島<span class="yen"><b>200＋100円</b><small>10分・訪問税は行きだけ</small></span></div>
+    <div class="ticket"><svg class="ic"><use href="#i-train"/></svg>広島駅 → 呉駅<span class="yen"><b>510円</b><small>呉線快速 38分</small></span></div>
+    <div class="ticket"><svg class="ic"><use href="#i-ferry"/></svg>広島港 → 呉港<span class="yen"><b>1,100円</b><small>フェリー 45分</small></span></div>
+  </div>
+</section>
+
+<!-- ============ 4 たべる ============ -->
+<section id="taberu">
+  <div class="head">
+    <h2><span class="ball" style="background:var(--yama)">4</span>たべる</h2>
+    <svg class="squig" viewBox="0 0 120 8" aria-hidden="true"><path d="M2,5 q10,-5 20,0 t20,0 t20,0 t20,0 t20,0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    <p>日曜に閉まる店と月曜に閉まる店が、見事に分かれています。ワイン・ビール・イタリアンは下のほうにまとめました。営業時間は8月29日に各店の情報で確認したもの。</p>
+    <svg class="spot" viewBox="0 0 52 42" aria-hidden="true"><use href="#s-okonomi"/></svg>
+  </div>
+
+  <p class="aside" style="margin-top:0"><b class="lead">先に、この二日の結論。</b>
+  <b>8/30の夜（日）</b>は薬研堀 八昌。月曜が定休なので、行けるのはこの晩だけです。並ぶのがきつければ、ホテルから徒歩5分の「がんすけ」か、同じ薬研堀の「ちんちくりん」。<br>
+  <b>8/31の昼（月）</b>は八昌が休み。お好み焼きなら八丁堀の「みっちゃん総本店」、軽くいくなら汁なし担担麺の「くにまつ」か「キング軒」。<br>
+  <b>帰りぎわ</b>は広島駅 ekie の「麗ちゃん」か「電光石火」。改札のそばなので、15:18に間に合います。<br>
+  <b>粉ものと牡蠣ばかりで飽きたら</b>、瀬戸内の魚。8/31の昼なら平和公園のそばに浮かぶ「かき船かなわ 瀬戸」、夜まで広島にいるなら老舗の「酔心 本店」。<br>
+  <b>ワインで一杯なら</b>、8/30の夜。八昌を早めに切り上げて、紙屋町の「ARIETTA」（ワイン100種以上・25時まで）か、ホテルから徒歩5分の「ビストロ酒場イシイ」（23時まで・月曜定休）。ビールは宮島の「宮島ブルワリー」が島でただ一つの醸造所です。</p>
+
+  <div class="group">
+    <p class="group-t">お好み焼き</p>
+    <div class="plates">
+      <div class="plate best"><div class="plate-top"><b>薬研堀 八昌</b><span class="osusume">本命</span><span class="days"><i class="o">日○</i><i class="x">月×</i></span></div><span class="cat">中区薬研堀10-6 ／ ホテルから徒歩10分</span><p>広島の頂点とされる一軒。ミシュランのビブグルマンにも載りました。16:00〜22:30、<b>日曜は21:00まで</b>。月曜と第1・3火曜が定休。行列は1時間半のことも。</p></div>
+      <div class="plate best"><div class="plate-top"><b>みっちゃん総本店 八丁堀本店</b><span class="osusume">月曜の本命</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">八丁堀 ／ ホテルから徒歩10分ほど</span><p>広島お好み焼きの元祖といわれる老舗。ソースはやや甘め、麺はやわらかめで、安定感があります。火曜定休。日祝11:00〜14:30／17:00〜21:00、平日11:30〜14:30／17:30〜21:00。</p></div>
+      <div class="plate"><div class="plate-top"><b>がんすけ</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">袋町 ／ ホテルから徒歩5分</span><p>いちばん近い実力店。11:30〜15:00（L.O.14:30）／17:30〜23:00（L.O.22:30）、第2・第4水曜定休。八昌の行列を見て諦めたときの受け皿に。</p></div>
+      <div class="plate"><div class="plate-top"><b>ちんちくりん 薬研堀本店</b><span class="days"><i class="o">日○</i><i class="x">月△</i></span></div><span class="cat">薬研堀 ／ 徒歩10分</span><p>パリパリに焼いた麺と、牡蠣のバター焼きが名物。17:00〜24:00、火曜定休（第3・第4月曜も休むという情報あり）。夜遅めでも入れるのが強み。</p></div>
+      <div class="plate"><div class="plate-top"><b>お好み焼 長田屋</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">平和公園前</span><p>観光の動線にいちばん乗る一軒。日曜は10:30から。8/31の午前に平和公園を回るなら、そのまま流れ込めます。</p></div>
+      <div class="plate"><div class="plate-top"><b>麗ちゃん／電光石火</b><span class="osusume">駅ナカ</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">広島駅 ekie 1階</span><p>麗ちゃんは昭和32年創業の老舗で11:00〜21:30。電光石火はふわっと丸いタイプで11:00〜23:00・無休。新幹線の前の食べ納めに。</p></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <p class="group-t">麺もの</p>
+    <div class="plates">
+      <div class="plate"><div class="plate-top"><b>くにまつ 中町店</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">汁なし担担麺 ／ ホテルから徒歩3分</span><p>広島の汁なし担担麺ブームの火付け役。日曜は昼のみ、月曜は昼と夜。土曜定休。</p></div>
+      <div class="plate"><div class="plate-top"><b>キング軒 本通店</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">汁なし担担麺 ／ 中区本通8-7</span><p>もう一方の雄。花椒がしっかり効いて、辛さを選べます。<b>11:00〜22:00の通し営業</b>なので、時間が半端なときに強い。</p></div>
+      <div class="plate"><div class="plate-top"><b>ばくだん屋 本店</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">広島つけ麺 ／ 新天地</span><p>11:30〜14:30／17:00〜21:30、水曜定休。辛さを選べる冷たいつけ麺。夏に効きます。</p></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <p class="group-t">瀬戸内の魚を食べる</p>
+    <div class="plates">
+      <div class="plate best"><div class="plate-top"><b>かき船かなわ 瀬戸</b><span class="osusume">昼の本命</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">広島料理 ／ 原爆ドーム前から徒歩5分</span><p>元安川に浮かぶ<b>船の上の店</b>。川面と平和公園を眺めながら、瀬戸内の食材と広島産の牡蠣を出します。11:00〜14:30／17:00〜20:00（L.O.）、休みは年末年始だけ。ランチ2,800〜5,500円、夜のコース6,000円〜。<b>8/31の午前に平和公園を歩いたら、そのまま歩いて行けます。</b>予約しておくのが確実。</p></div>
+      <div class="plate best"><div class="plate-top"><b>広島料理専門 酔心 本店</b><span class="osusume">両日いける</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">郷土料理 ／ 中区立町6-7・ホテルから徒歩圏</span><p>瀬戸内の魚介を使った広島の郷土料理の老舗。名物の<b>釜飯</b>のほか、かき料理、ふぐ。11:30〜22:00（L.O.20:30）、水曜定休。日曜・祝日は昼夜通しで開いていて、土日祝は予約優先です。</p></div>
+      <div class="plate"><div class="plate-top"><b>瀬戸内海鮮料理居酒屋 木々</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">海鮮居酒屋 ／ 中区中町2-12</span><p>ホテルと同じ中町。16:30〜24:00（料理L.O.23:00）、不定休。かしこまらずに瀬戸内の魚をつまみたい夜に。</p></div>
+      <div class="plate"><div class="plate-top"><b>瀬戸内料理 広起</b><span class="days"><i class="x">日×</i><i class="o">月○</i></span></div><span class="cat">和食 ／ 胡町電停から徒歩2分</span><p>親子二代の店。生け簀から捌く刺身、うにほうれん、小いわし、呉のめんたいフライ。17:00〜24:00、<b>日曜・祝日が休み</b>なので、行けるのは8/31の夜——復路を18:03か20:02にした場合だけです。</p></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <p class="group-t">宮島でたべる</p>
+    <div class="plates">
+      <div class="plate best"><div class="plate-top"><b>あなごめし うえの</b><span class="osusume">名物</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">宮島口 ／ 桟橋のすぐ前</span><p>9:00〜19:00（水曜のみ18:00）。<b>お弁当は 並2,430円／大3,240円</b>で、前日までなら電話・メールで予約できます。月曜・木曜の13:00〜15:00には、10〜20本限定の巻きずしも。</p></div>
+      <div class="plate"><div class="plate-top"><b>焼がきのはやし</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">牡蠣 ／ 宮島桟橋から徒歩8分</span><p>10:30〜17:00（L.O.16:30）。焼がきは注文を受けてから焼きはじめます。<b>生がきを一年じゅう出している</b>数少ない店。</p></div>
+      <div class="plate"><div class="plate-top"><b>牡蠣屋</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">牡蠣 ／ 表参道商店街</span><p>11:00〜17:00、不定休。焼き牡蠣は1個324円〜で、1個から頼めるので食べ歩きの途中に寄れます。地御前沖の牡蠣。</p></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <p class="group-t">呉でたべる（B案の日）</p>
+    <div class="plates">
+      <div class="plate"><div class="plate-top"><b>田舎洋食 いせ屋</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">海軍さんのカレー ／ 呉駅から徒歩15分</span><p>825円。11:00〜15:00（L.O.）／17:00〜19:00（L.O.）、木曜と祝日の翌日が休み。呉の飲食店が実際の艦艇のカレーを再現する「呉海自カレー」の一軒です。</p></div>
+      <div class="plate"><div class="plate-top"><b>レクレ2階の自販機</b><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">レトルト ／ 呉駅前</span><p>海自カレーのレトルトが15種類。店に入る時間がなくても、おみやげで持って帰れます。</p></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <p class="group-t">ワインとビール、イタリアン</p>
+    <div class="plates">
+      <div class="plate best"><div class="plate-top"><b>Pizzeria Bar ARIETTA</b><span class="osusume">日曜の二軒目</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">イタリアン・ワインバル ／ 紙屋町</span><p>薪窯で焼くナポリピッツァと、<b>100種類以上のワイン</b>。瀬戸内で揚がった魚介を使った皿もあります。<b>ディナー18:00〜25:00</b>（ランチは土日のみ12:00〜15:00）。八昌を早めに切り上げて、ここで一杯という流れが組めます。定休日は念のため確認を。</p></div>
+      <div class="plate best"><div class="plate-top"><b>ビストロ酒場イシイ</b><span class="osusume">ホテル至近</span><span class="days"><i class="o">日○</i><i class="x">月×</i></span></div><span class="cat">ビストロ ／ 中区袋町5-4・袋町電停から徒歩3分</span><p>ワイン中心の気軽なビストロ。11:30〜15:00（L.O.14:30）／<b>17:00〜23:00</b>（L.O.22:00）、<b>月曜定休</b>。ミスジ牛ステーキ1,628円など、値段もかまえずに済みます。ホテルから歩いて5分。</p></div>
+      <div class="plate"><div class="plate-top"><b>Ristorante Carlotta</b><span class="days"><i class="o">日？</i><i class="o">月？</i></span></div><span class="cat">イタリアン ／ 中区富士見町・じぞう通り</span><p><b>完全予約制</b>の隠れ家。皿ごとにワインを合わせるコースで、ディナー「Espressione」8品16,000円、ランチ6品7,700円。記念日にする夜なら、ここ。<b>予約が要る</b>ので行くなら今日中に（082-247-0639）。</p></div>
+      <div class="plate"><div class="plate-top"><b>Wine Bar ViVi</b><span class="days"><i class="o">日？</i><i class="o">月？</i></span></div><span class="cat">ワインバー ／ 銀山町</span><p>ソムリエが選んだワインと、産地直送の食材を合わせる店。しっとり飲みたい夜に。営業時間は当日確認を。</p></div>
+      <div class="plate best"><div class="plate-top"><b>SESSION'S BREWERY</b><span class="osusume">ビール</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">クラフトビール ／ 中区十日市町1-2-3</span><p>醸造所にビアホールが併設されていて、<b>できたての生が660円〜</b>。「広島レモンエール」「オイスターシティスタウト」など、土地のものを使った銘柄が並びます。15:00〜22:00（フードL.O.21:00）、火曜定休。</p></div>
+      <div class="plate best"><div class="plate-top"><b>宮島ブルワリー</b><span class="osusume">島でひとつ</span><span class="days"><i class="o">日○</i><i class="o">月○</i></span></div><span class="cat">クラフトビール ／ 宮島町459-2・桟橋から徒歩7分</span><p><b>宮島でただ一つの醸造所。</b>商店街を抜けた先、1階がビアスタンドです。10:30〜17:00。「Dancing DEER」という銘柄もあって、鹿のいる島らしい一杯。歩きまわった昼下がりにちょうどいい。</p></div>
+    </div>
+  </div>
+
+  <div class="group">
+    <p class="group-t">もう一品</p>
+    <div class="plates">
+      <div class="plate"><div class="plate-top"><b>中ちゃん</b><span class="days"><i class="x">日×</i><i class="o">月○</i></span></div><span class="cat">うにクレソン ／ 弥生町</span><p>うにクレソン発祥の店。17:00〜、1,900円。日曜が休みなので、行けるとしたら8/31の夜——復路を20:02にした場合だけです。</p></div>
+      <div class="plate"><div class="plate-top"><b>三の丸 八昌</b><span class="days"><i class="o">日○</i><i class="x">月×</i></span></div><span class="cat">お好み焼き ／ 広島城 三の丸</span><p>薬研堀 八昌で10年以上修行した店主の店。平日11:00〜18:00、土日祝11:00〜19:00。<b>月曜定休なので8/31は閉まっています</b>。広島城とセットにするなら日曜に。</p></div>
+    </div>
+  </div>
+
+  <p class="memo-yellow" style="margin-top:14px"><b>牡蠣のこと、正直に。</b>8月末は旬（11〜3月）ではありません。それでも宮島の「焼がきのはやし」は生がきを通年出していますし、「牡蠣屋」も焼き牡蠣は通年です。旬の牡蠣は、冬にもう一度。</p>
+</section>
+
+<!-- ============ 5 じゅんび ============ -->
+<section id="goshuin">
+  <div class="head">
+    <h2><span class="ball" style="background:var(--shu)">5</span>御朱印をあつめる</h2>
+    <svg class="squig" viewBox="0 0 120 8" aria-hidden="true"><path d="M2,5 q10,-5 20,0 t20,0 t20,0 t20,0 t20,0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    <p>いただいたらタップ。宮島に四つ、市内に三つ。奥さんの本命はこの章です。</p>
+    <svg class="spot" viewBox="0 0 40 44" aria-hidden="true"><use href="#s-momiji"/></svg>
+  </div>
+
+  <ul class="todo">
+    <li><label><input type="checkbox" data-t="g1"><span><b>嚴島神社</b>　本殿の右手の授与所。初穂料300円。<b>先に昇殿料300円</b>を納めて中に入る必要があります。社紋は「三つ盛り二重亀甲に剣花菱」。</span></label></li>
+    <li><label><input type="checkbox" data-t="g2"><span><b>大願寺</b>　本堂の左手。初穂料300円。<b>境内は無料</b>で入れます。「日本三辯天 厳島辯財天」の朱印。嚴島神社の出口からすぐなので、いちばん寄りやすい。</span></label></li>
+    <li><label><input type="checkbox" data-t="g3"><span><b>豊国神社（千畳閣）</b>　千畳閣のなかの社務所。初穂料300円。秀吉の「五七の桐紋」と、宮島名物の<b>しゃもじ</b>が描かれた朱印です。</span></label></li>
+    <li><label><input type="checkbox" data-t="g4"><span><b>大聖院</b>　波切不動明王の御朱印。<b>季節限定の切り絵御朱印</b>もあります。ロープウエーの紅葉谷へ行く途中なので、A案なら13:30の移動のついでに。</span></label></li>
+  </ul>
+
+  <p class="group-t" style="margin:20px 0 8px">市内で、動線に乗る三つ</p>
+  <ul class="todo">
+    <li><label><input type="checkbox" data-t="g5"><span><b>廣島護國神社</b>　広島城のなか。本殿の左の授与所、<b>9:00〜16:30</b>、初穂料500円。「鯉城跡鎮座」の朱印。二日目14:15の広島城で。</span></label></li>
+    <li><label><input type="checkbox" data-t="g6"><span><b>白神社（しらかみしゃ）</b>　中区中町7-24、<b>泊まるホテルとおなじ町内</b>です。広電・袋町から歩いてすぐ、平和公園からも近い。小さな社なので、社務所が閉まっていることもあります。</span></label></li>
+    <li><label><input type="checkbox" data-t="g7"><span><b>胡子神社（えびすじんじゃ）</b>　中区胡町5-14。<b>商店街のなかに建っています</b>。本通を東へ抜けた胡町の電停そば。買いもののついでに寄れます。</span></label></li>
+  </ul>
+
+  <p class="group-t" style="margin:20px 0 8px">駅の北にもう三つ（今回は時間的に厳しい）</p>
+  <ul class="todo">
+    <li><label><input type="checkbox" data-t="g8"><span><b>饒津神社・鶴羽根神社・広島東照宮</b>　広島駅の<b>新幹線口から徒歩15分</b>、「二葉の里 歴史の散歩道」に三社が並んでいます。鶴羽根神社は<b>9:00〜17:00</b>。二日目の夕方だと閉まる時刻に間に合わないので、これは次の広島で。三社まとめて回れるので、半日あれば十分です。</span></label></li>
+  </ul>
+
+  <p class="memo-yellow" style="margin-top:12px"><b>御朱印帳を忘れずに。</b>宮島の四つは歩いて回れる距離です。書き置きではなく直接書いてもらう場合、混んでいると待ち時間が出ます。嚴島神社は<b>閉門18:00</b>、廣島護國神社は<b>16:30まで</b>なので、この二つは時間に気をつけて。</p>
+</section>
+
+<section id="junbi">
+  <div class="head">
+    <h2><span class="ball" style="background:var(--sumi)">6</span>出かける前に</h2>
+    <svg class="squig" viewBox="0 0 120 8" aria-hidden="true"><path d="M2,5 q10,-5 20,0 t20,0 t20,0 t20,0 t20,0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+    <p>タップでチェックできます。この端末に記憶されます。</p>
+    <svg class="spot" viewBox="0 0 48 44" aria-hidden="true"><use href="#s-kaban"/></svg>
+  </div>
+
+  <ul class="todo">
+    <li><label><input type="checkbox" data-t="t1"><span><b>出発駅は美乃坂本と想定しました。</b>違っていたら教えてください、往復を組み直します。</span></label></li>
+    <li><label><input type="checkbox" data-t="t2"><span><b>往路の指定席はおさえました。</b>のぞみ99号・6号車 2番D席とE席。<b>復路は現地で買う</b>ことにしたので、みどりの窓口かEXアプリで。基本は18:03のぞみ52号、前後させるなら17:43か17:22。</span></label></li>
+    <li><label><input type="checkbox" data-t="t3"><span><b>資料館の朝7:30〜8:30枠</b>は定員制でWEB予約が要る場合あり。A案なら前の晩に公式サイトで確認を。</span></label></li>
+    <li><label><input type="checkbox" data-t="t4"><span><b>宮島ロープウエーは往復2,000円・運行9:00〜16:00（下り最終16:30）</b>と確認しました。ただし点検で運休する日があるので、当日の朝に運行状況だけ見ておくと安心。<b>おりづるタワーの閉館時刻</b>（19時／夏期20時）は情報が割れています。</span></label></li>
+    <li><label><input type="checkbox" data-t="t5"><span><b>広島城の天守は2026年3月22日に閉城。</b>登れませんが、堀と石垣、二の丸（4〜9月は9:00〜17:30）、それに入場無料の三の丸エリアは歩けます。現代美術館は月曜休館。</span></label></li>
+    <li><label><input type="checkbox" data-t="t6"><span><b>8/30はカープ戦（18:00）。</b>広島駅〜段原方面と、試合のあとの飲食店が混みます。</span></label></li>
+    <li><label><input type="checkbox" data-t="t7"><span><b>砂浜に降りるなら、歩きやすい靴を。</b>17時の大鳥居は濡れた砂の上を歩きます。</span></label></li>
+    <li><label><input type="checkbox" data-t="t8"><span><b>御朱印帳。</b>宮島で四つ、市内で三つ。小銭（300円・500円）を多めに用意しておくと待たせません。</span></label></li>
+  </ul>
+
+  <button class="reset" type="button" id="reset">チェックをぜんぶ消す</button>
+</section>
+
+<footer>
+  <svg class="train" viewBox="0 0 76 32" aria-hidden="true"><use href="#s-shinkansen"/></svg>
+  <span class="bye">いってらっしゃい。</span>
+  時刻・料金は2026年8月29日時点で、各社公式サイト・駅探・気象庁潮位表で確認したものです。<br>当日は最新のダイヤと営業情報をご確認ください。
+</footer>
+
+</div>
+
+<script>
+/* 切り替えそのものは CSS だけで動きます。
+   このスクリプトは「選んだ状態をこの端末に覚えておく」ためだけのものです。
+   JavaScript が止まる環境（iPhone のメールのプレビューなど）でも、
+   切り替えは問題なく動きます。 */
+(function(){
+  "use strict";
+
+  function get(key){ try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function set(key, val){ try { localStorage.setItem(key, val); } catch (e) {} }
+  function del(key){ try { localStorage.removeItem(key); } catch (e) {} }
+
+  /* ---- 紙の色 ---- */
+  var mPaper = document.getElementById('mPaper');
+  var mNight = document.getElementById('mNight');
+  if (mPaper && mNight) {
+    var savedMode = get('shiori.mode');
+    if (savedMode === 'paper') mPaper.checked = true;
+    if (savedMode === 'night') mNight.checked = true;
+    mPaper.addEventListener('change', function(){ if (mPaper.checked) set('shiori.mode', 'paper'); });
+    mNight.addEventListener('change', function(){ if (mNight.checked) set('shiori.mode', 'night'); });
+  }
+
+  /* ---- A案 / B案 ---- */
+  var tabA = document.getElementById('tabA');
+  var tabB = document.getElementById('tabB');
+  if (tabA && tabB) {
+    var savedPlan = get('shiori.plan');
+    if (savedPlan === 'A') tabA.checked = true;
+    if (savedPlan === 'B') tabB.checked = true;
+    tabA.addEventListener('change', function(){ if (tabA.checked) set('shiori.plan', 'A'); });
+    tabB.addEventListener('change', function(){ if (tabB.checked) set('shiori.plan', 'B'); });
+  }
+
+  /* ---- 行程のチェックと、すすんだ数 ---- */
+  var ticks = document.querySelectorAll('.tick');
+
+  function count(){
+    var lists = document.querySelectorAll('ol.route');
+    Array.prototype.forEach.call(lists, function(list){
+      var out = document.querySelector('[data-prog="' + list.dataset.day + '"]');
+      if (!out) return;
+      out.textContent = list.querySelectorAll('.tick:checked').length + '/' + list.querySelectorAll('.tick').length;
+    });
+  }
+
+  Array.prototype.forEach.call(ticks, function(box){
+    var key = 'shiori.done.' + box.dataset.k;
+    if (get(key) === '1') box.checked = true;
+    box.addEventListener('change', function(){
+      if (box.checked) set(key, '1'); else del(key);
+      count();
+    });
+  });
+  count();
+
+  /* ---- 出かける前に・御朱印 ---- */
+  var boxes = document.querySelectorAll('ul.todo input[type=checkbox]');
+  Array.prototype.forEach.call(boxes, function(box){
+    var key = 'shiori.todo.' + box.dataset.t;
+    if (get(key) === '1') box.checked = true;
+    box.addEventListener('change', function(){
+      if (box.checked) set(key, '1'); else del(key);
+    });
+  });
+
+  /* ---- ぜんぶ消す ---- */
+  var reset = document.getElementById('reset');
+  if (reset) {
+    reset.addEventListener('click', function(){
+      Array.prototype.forEach.call(ticks, function(box){ box.checked = false; del('shiori.done.' + box.dataset.k); });
+      Array.prototype.forEach.call(boxes, function(box){ box.checked = false; del('shiori.todo.' + box.dataset.t); });
+      count();
+    });
+  }
+})();
+</script>
+
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
