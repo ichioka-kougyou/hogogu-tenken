@@ -94,6 +94,14 @@ button.sub{appearance:none;font-family:inherit;font-size:14px;font-weight:700;pa
 .badge.wait{background:#ffe9b8;}
 .badge.sent{background:var(--okbg);}
 .muted{color:var(--sub);font-size:13px;}
+/* 記録の一覧に出す小さいサイン。入っているか一目で分かるように */
+.ssigns{display:flex;gap:8px;margin-top:6px;}
+.ssign{flex:1;min-width:0;border:1px solid #b5b5b5;background:#fff;
+  height:52px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.ssign img{max-height:44px;max-width:92%;}
+.ssign .none{color:#9a9a9a;font-size:12.5px;font-weight:700;}
+.ssign .lb{position:absolute;left:0;top:0;background:#e6e6e6;color:var(--sub);
+  font-size:10.5px;font-weight:700;padding:1px 5px;}
 hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 .state{font-size:13px;font-weight:700;padding:6px 9px;border:1.5px solid var(--line);margin-bottom:10px;}
 .state.on{background:var(--okbg);} .state.off{background:#ffe9b8;}
@@ -1215,7 +1223,9 @@ async function flushPending(){
 }
 async function loadRemote(){
   remote.ok = false; remote.loaded = true;
-  const r = await sbFetch('/rest/v1/'+TABLE+'?select=*&order=ts.desc&limit=500', {});
+  // サインの絵を含めて取るので、あまり多く取らない（1件あたり30KBほど）。
+  // 出荷は多くて週に数件なので、100件で2年分ほど見える。
+  const r = await sbFetch('/rest/v1/'+TABLE+'?select=*&order=ts.desc&limit=100', {});
   if(!r || !r.ok) return;
   try{ remote.rows = (await r.json()).map(rowToRec); remote.ok = true; }catch(e){}
 }
@@ -1632,6 +1642,19 @@ async function doSave(){
   setTab('list');
 }
 
+// 記録の一覧にもサインを小さく出す。入っているかどうかを、
+// 点検票を開かなくても分かるようにするため。
+function signStrip(r){
+  const s = r.signs || {};
+  if(!s.inspector && !s.shipper) return '<div class="muted">サインなし</div>';
+  const cell = (img, label)=>
+      '<div class="ssign">'
+    +   (img ? '<img src="'+img+'" alt="">' : '<span class="none">なし</span>')
+    +   '<span class="lb">'+label+'</span>'
+    + '</div>';
+  return '<div class="ssigns">' + cell(s.inspector,'点検者') + cell(s.shipper,'出荷責任者') + '</div>';
+}
+
 function renderList(){
   const local = readRecords();
   const pend = pendingList();
@@ -1659,6 +1682,7 @@ function renderList(){
        +   '<div>管理番号：'+esc(r.mgmtNo||'—')+'　／　出荷先：'+esc(r.site||'—')+'</div>'
        +   '<div class="jd'+(bad?' ng':'')+'">総合判定：'+esc(r.judge||'—')+'　否 '+(r.ngCount||0)+'件</div>'
        +   '<div class="muted">点検者：'+esc(r.inspector||'—')+'　確認：'+esc(r.foreman||'—')+'　出荷責任者：'+esc(r.shipper||'—')+'</div>'
+       +   signStrip(r)
        +   (r.remark? '<div class="muted">特記：'+esc(r.remark)+'</div>':'')
        +   '<div style="margin-top:6px">'
        +     (r.waiting? '<span class="badge wait">送り待ち</span>' : '<span class="badge sent">送信済</span>')
