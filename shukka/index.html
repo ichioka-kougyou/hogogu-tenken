@@ -272,8 +272,9 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
   <div id="paperBar">
     <span class="t" id="paperTitle"></span>
     <button id="paperPrint">PDFで保存する</button>
+    <button id="paperPaper" class="ghost">紙に印刷する</button>
     <button id="paperClose" class="ghost">閉じる</button>
-    <span id="paperHint">保存先で「PDF」を選びます。紙に刷るときも同じボタンです。</span>
+    <span id="paperHint">どちらも同じ画面が出ます。<b>保存先</b>で「PDF」を選べばPDF、プリンターを選べば紙です。</span>
   </div>
   <div id="paperWrap"><div id="paper"></div></div>
 </div>
@@ -1359,7 +1360,9 @@ function closePaper(){
   document.getElementById('paper').innerHTML = '';
   if(titleBeforePaper){ document.title = titleBeforePaper; titleBeforePaper = ''; }
 }
+// PDFも紙も、ブラウザの同じ保存／印刷の画面から。保存先の選び方が違うだけ。
 document.getElementById('paperPrint').onclick = ()=>{ window.print(); };
+document.getElementById('paperPaper').onclick = ()=>{ window.print(); };
 document.getElementById('paperClose').onclick = closePaper;
 
 function newForm(idx){
