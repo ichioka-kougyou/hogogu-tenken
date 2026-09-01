@@ -156,6 +156,8 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 #paperBar button{appearance:none;font-family:inherit;font-size:15px;font-weight:700;
   padding:9px 16px;border:1.5px solid #fff;background:#fff;color:#101010;cursor:pointer;}
 #paperBar button.ghost{background:transparent;color:#fff;}
+#paperHint{color:#ddd;font-size:12.5px;flex:1 0 100%;text-align:center;}
+@media screen and (min-width:720px){ #paperHint{flex:0 0 auto;text-align:right;} }
 #paperWrap{padding:14px 0 40px;}
 @media screen and (max-width:900px){ #paper .sheet{ zoom:.62; } }
 @media screen and (max-width:560px){ #paper .sheet{ zoom:.44; } }
@@ -269,8 +271,9 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 <div id="paperOverlay" hidden>
   <div id="paperBar">
     <span class="t" id="paperTitle"></span>
-    <button id="paperPrint">印刷する（PDFで保存も）</button>
+    <button id="paperPrint">PDFで保存する</button>
     <button id="paperClose" class="ghost">閉じる</button>
+    <span id="paperHint">保存先で「PDF」を選びます。紙に刷るときも同じボタンです。</span>
   </div>
   <div id="paperWrap"><div id="paper"></div></div>
 </div>
@@ -1342,12 +1345,19 @@ function openPaper(rec){
     rec.formNo + '　' + rec.machine + '　' + jpDate(rec.date);
   document.getElementById('paperOverlay').hidden = false;
   document.body.classList.add('printing');
+  // PDFで保存したときのファイル名は、ブラウザがこの題名から作る。
+  // 安全書類にそのまま添付できるよう、機械と管理番号と日付が入った名前にしておく。
+  if(!titleBeforePaper) titleBeforePaper = document.title;
+  document.title = ['出荷点検票', rec.formNo, rec.machine, rec.mgmtNo, rec.date]
+    .filter(Boolean).join('_').replace(/[\\/:*?"<>|]/g,'-');
   window.scrollTo(0,0);
 }
+let titleBeforePaper = '';
 function closePaper(){
   document.getElementById('paperOverlay').hidden = true;
   document.body.classList.remove('printing');
   document.getElementById('paper').innerHTML = '';
+  if(titleBeforePaper){ document.title = titleBeforePaper; titleBeforePaper = ''; }
 }
 document.getElementById('paperPrint').onclick = ()=>{ window.print(); };
 document.getElementById('paperClose').onclick = closePaper;
@@ -1649,7 +1659,7 @@ function renderList(){
        +   (r.remark? '<div class="muted">特記：'+esc(r.remark)+'</div>':'')
        +   '<div style="margin-top:6px">'
        +     (r.waiting? '<span class="badge wait">送り待ち</span>' : '<span class="badge sent">送信済</span>')
-       +     ' <button class="sub" data-paper="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">紙の様式で出す</button>'
+       +     ' <button class="sub" data-paper="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">点検票にする（PDF）</button>'
        +     ' <button class="sub" data-detail="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">中身を見る</button>'
        +   '</div>'
        + '</div></div>';
