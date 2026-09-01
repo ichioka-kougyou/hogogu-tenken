@@ -111,7 +111,98 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
   .seg button{padding:7px 0;}
 }
 @media print{ nav,button,.state{display:none;} }
+
+/* ── 紙の様式で出す画面 ────────────────────────────
+   工場でスマホに入れた内容を、そのまま紙の出荷点検票に流し込んで印刷する。
+   総務はこれを刷って提出する。様式の中身は sheet.mjs（白紙の様式と共通）。 */
+#paperOverlay{position:fixed;inset:0;z-index:50;background:#5f5f5f;overflow:auto;}
+#paperOverlay[hidden]{display:none;}
+#paperBar{position:sticky;top:0;z-index:2;background:var(--band);color:#fff;
+  padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+#paperBar .t{font-size:14px;font-weight:700;margin-right:auto;}
+#paperBar button{appearance:none;font-family:inherit;font-size:15px;font-weight:700;
+  padding:9px 16px;border:1.5px solid #fff;background:#fff;color:#101010;cursor:pointer;}
+#paperBar button.ghost{background:transparent;color:#fff;}
+#paperWrap{padding:14px 0 40px;}
+@media screen and (max-width:900px){ #paper .sheet{ zoom:.62; } }
+@media screen and (max-width:560px){ #paper .sheet{ zoom:.44; } }
+@media print{
+  body.printing > header, body.printing > main, body.printing #paperBar{ display:none !important; }
+  body.printing #paperOverlay{ position:static; background:#fff; overflow:visible; }
+  body.printing #paperWrap{ padding:0; }
+  /* 埋め込みCSS（#paper .sheet）より後に来るとは限らないので、指定を強くしておく */
+  body.printing #paper .sheet{ zoom:1; width:auto; min-height:0; margin:0; padding:0; box-shadow:none; }
+}
 </style>
+<style id="paperStyle">@page { size: A4 portrait; margin: 8mm 10mm 6mm 10mm; }
+#paper { font-family:"Noto Sans CJK JP","IPAGothic",sans-serif; color:#000;
+  line-height:normal; font-size:medium; font-weight:400; letter-spacing:normal; text-align:left; }
+
+#paper * { box-sizing: border-box; }
+#paper .sheet { page-break-after: always; }
+#paper .sheet:last-child { page-break-after: auto; }
+#paper .ttl { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:1.6mm; }
+#paper .ttl h1 { font-size:16pt; letter-spacing:.36em; margin:0 0 0 6mm; font-weight:700; }
+#paper .ttl .co { font-size:10.5pt; font-weight:700; }
+#paper .ttl .sub { font-size:8pt; text-align:right; line-height:1.5; }
+#paper table { border-collapse:collapse; width:100%; table-layout:fixed; }
+#paper td,#paper th { border:0.35mm solid #000; padding:0.4mm 1.3mm; font-size:9pt; line-height:1.15; vertical-align:middle; }
+#paper .thick { border:0.7mm solid #000; }
+#paper .hd td { height:7.2mm; }
+#paper .hd .lb { background:#ededed; text-align:center; font-size:8.5pt; font-weight:700; }
+#paper .hd .dt { white-space:nowrap; font-size:9.5pt; }
+#paper .hd .big { font-size:12pt; font-weight:700; }
+#paper .sec { margin-top:1.8mm; margin-bottom:0; font-size:9.5pt; font-weight:700;
+       background:#1a1a1a; color:#fff; padding:0.5mm 2mm; letter-spacing:.1em; }
+#paper .chk td { height:5.0mm; }
+#paper .chk .no { text-align:center; font-size:8.5pt; background:#fafafa; }
+#paper .chk .it { font-size:9pt; }
+#paper .chk .cr { font-size:8pt; }
+#paper .chk .jd { text-align:center; font-size:9.5pt; letter-spacing:.08em; color:#333; }
+#paper .chk .ac { font-size:7.4pt; line-height:1.1; }
+#paper .chk tr, #paper .meas tr { page-break-inside:avoid; }
+#paper .sig, #paper .note, #paper .rem { page-break-inside:avoid; }
+#paper .chk thead th { height:5mm; background:#e6e6e6; font-size:8.5pt; font-weight:700; text-align:center; }
+#paper .chk tbody tr:nth-child(even) td { background:#fafafa; }
+#paper .chk tbody tr:nth-child(even) .no { background:#f2f2f2; }
+#paper .meas thead th { height:5mm; background:#e6e6e6; font-size:8.5pt; font-weight:700; text-align:center; }
+#paper .meas td { height:6.0mm; }
+#paper .meas .mi { font-size:9pt; }
+#paper .meas .mc { font-size:7.9pt; }
+#paper .meas .mv { font-size:8.5pt; text-align:right; color:#333; }
+#paper .meas .mv b { font-size:10pt; color:#000; }
+#paper .meas tbody tr:nth-child(even) td { background:#fafafa; }
+#paper .rem td { height:10mm; vertical-align:top; }
+#paper .rem .lb { background:#ededed; text-align:center; font-weight:700; font-size:8.5pt; vertical-align:middle; }
+#paper .rem .txt { font-size:9pt; line-height:1.3; white-space:pre-wrap; }
+#paper .sig .lb { background:#ededed; text-align:center; font-weight:700; font-size:8.5pt; height:5.4mm; }
+#paper .sig .box { height:9mm; text-align:center; font-size:10pt; vertical-align:middle; }
+#paper .jdg { text-align:center; font-size:9.5pt; font-weight:700; letter-spacing:0; white-space:nowrap; }
+#paper .note { margin-top:1.4mm; }
+#paper .note table { table-layout:fixed; }
+#paper .note td { border:none; padding:0 3mm 0 0; font-size:6.7pt; line-height:1.3; vertical-align:top; }
+#paper .note div { margin-bottom:0.4mm; }
+#paper .note b { font-size:7.8pt; }
+
+/* 記入済みで刷るときの印。良／否のどちらかを丸で囲み、該当しない項目には横線を引く。
+   紙に手で書くときと同じ見え方にしてある。 */
+/* 丸は「重ねて描く」こと。inline-block で囲むと行の高さが 0.6mm 増え、
+   25行ぶんで約15mm 伸びてA4に収まらなくなる（実際に8ページになった）。
+   position:absolute にして場所を取らせないのが要点。触ったら必ずページ数を確認する。 */
+#paper .cir, #paper .cirw { position:relative; font-weight:700; }
+#paper .cir::before, #paper .cirw::before { content:""; position:absolute; border:0.35mm solid #000;
+       left:-1.0mm; right:-1.0mm; top:50%; height:4.2mm; margin-top:-2.1mm; border-radius:50%; }
+/* 「合格」「要整備」のように2文字以上を囲むとき。真円だと間延びするので角丸にする */
+#paper .cirw::before { left:-1.4mm; right:-1.4mm; height:4.6mm; margin-top:-2.3mm; border-radius:2.3mm; }
+#paper .na .it { text-decoration:line-through; }
+#paper .na .cr, #paper .na .jd { color:#8a8a8a; }
+#paper .ng .it { font-weight:700; }
+
+@media screen {
+  #paper .sheet { width:210mm; min-height:297mm; background:#fff; margin:0 auto 14px;
+           padding:8mm 10mm 6mm; box-shadow:0 3px 12px rgba(0,0,0,.45); }
+  #paper .sheet:last-child { margin-bottom:0; }
+}</style>
 </head>
 <body>
 <header>
@@ -126,6 +217,15 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
   </div>
 </header>
 <main id="main"></main>
+
+<div id="paperOverlay" hidden>
+  <div id="paperBar">
+    <span class="t" id="paperTitle"></span>
+    <button id="paperPrint">印刷する（PDFで保存も）</button>
+    <button id="paperClose" class="ghost">閉じる</button>
+  </div>
+  <div id="paperWrap"><div id="paper"></div></div>
+</div>
 
 <script>
 /* ---------------------------------------------------------------
@@ -642,6 +742,267 @@ const COMPANY = MASTER.COMPANY;
 const MACHINES = MASTER.MACHINES;
 document.getElementById('coName').textContent = COMPANY;
 
+/* 紙の様式を組み立てる部品。sheet.mjs の中身をそのまま埋め込んでいる（buildapp.mjs が行う）。
+   白紙の様式（build.mjs）と同じものを使うので、紙とアプリで見た目がずれない。 */
+const SHEET = (function(){
+// 紙の出荷点検票（A4縦1枚）を組み立てるところ。
+//
+// ここを使うのは2つ。
+//   build.mjs        … 白紙の様式6枚（印刷して手書きするぶん）
+//   出荷点検チェック   … アプリで入力した内容を、この様式に流し込んで印刷するぶん
+//
+// 見た目を直すときは、この1か所だけ直せば両方に効く。
+// buildapp.mjs は、このファイルの中身から export を外してアプリに埋め込んでいる。
+// そのため **ここでは import を書かないこと**。書くとアプリ側で動かなくなる。
+
+const PAGE_CSS = `@page { size: A4 portrait; margin: 8mm 10mm 6mm 10mm; }`;
+
+// sel に body（単体の印刷用HTML）か #paper（アプリの印刷画面）が入る
+function paperBase(sel) {
+  // フォントを足さないこと。Yu Gothic を足しただけで字幅が変わり、
+  // 着眼点が折り返して1様式がA4に収まらなくなった（8ページになった）。
+  //
+  // line-height などを既定値に戻しているのは、アプリに埋め込んだとき body の指定
+  // （line-height:1.45）が紙の中まで効いてしまい、1様式が約6mm 伸びたため。
+  return `${sel} { font-family:"Noto Sans CJK JP","IPAGothic",sans-serif; color:#000;
+  line-height:normal; font-size:medium; font-weight:400; letter-spacing:normal; text-align:left; }`;
+}
+
+// P に "" （単体）か "#paper " （アプリ）が入る
+function paperCss(P) {
+  return `
+${P}* { box-sizing: border-box; }
+${P}.sheet { page-break-after: always; }
+${P}.sheet:last-child { page-break-after: auto; }
+${P}.ttl { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:1.6mm; }
+${P}.ttl h1 { font-size:16pt; letter-spacing:.36em; margin:0 0 0 6mm; font-weight:700; }
+${P}.ttl .co { font-size:10.5pt; font-weight:700; }
+${P}.ttl .sub { font-size:8pt; text-align:right; line-height:1.5; }
+${P}table { border-collapse:collapse; width:100%; table-layout:fixed; }
+${P}td,${P}th { border:0.35mm solid #000; padding:0.4mm 1.3mm; font-size:9pt; line-height:1.15; vertical-align:middle; }
+${P}.thick { border:0.7mm solid #000; }
+${P}.hd td { height:7.2mm; }
+${P}.hd .lb { background:#ededed; text-align:center; font-size:8.5pt; font-weight:700; }
+${P}.hd .dt { white-space:nowrap; font-size:9.5pt; }
+${P}.hd .big { font-size:12pt; font-weight:700; }
+${P}.sec { margin-top:1.8mm; margin-bottom:0; font-size:9.5pt; font-weight:700;
+       background:#1a1a1a; color:#fff; padding:0.5mm 2mm; letter-spacing:.1em; }
+${P}.chk td { height:5.0mm; }
+${P}.chk .no { text-align:center; font-size:8.5pt; background:#fafafa; }
+${P}.chk .it { font-size:9pt; }
+${P}.chk .cr { font-size:8pt; }
+${P}.chk .jd { text-align:center; font-size:9.5pt; letter-spacing:.08em; color:#333; }
+${P}.chk .ac { font-size:7.4pt; line-height:1.1; }
+${P}.chk tr, ${P}.meas tr { page-break-inside:avoid; }
+${P}.sig, ${P}.note, ${P}.rem { page-break-inside:avoid; }
+${P}.chk thead th { height:5mm; background:#e6e6e6; font-size:8.5pt; font-weight:700; text-align:center; }
+${P}.chk tbody tr:nth-child(even) td { background:#fafafa; }
+${P}.chk tbody tr:nth-child(even) .no { background:#f2f2f2; }
+${P}.meas thead th { height:5mm; background:#e6e6e6; font-size:8.5pt; font-weight:700; text-align:center; }
+${P}.meas td { height:6.0mm; }
+${P}.meas .mi { font-size:9pt; }
+${P}.meas .mc { font-size:7.9pt; }
+${P}.meas .mv { font-size:8.5pt; text-align:right; color:#333; }
+${P}.meas .mv b { font-size:10pt; color:#000; }
+${P}.meas tbody tr:nth-child(even) td { background:#fafafa; }
+${P}.rem td { height:10mm; vertical-align:top; }
+${P}.rem .lb { background:#ededed; text-align:center; font-weight:700; font-size:8.5pt; vertical-align:middle; }
+${P}.rem .txt { font-size:9pt; line-height:1.3; white-space:pre-wrap; }
+${P}.sig .lb { background:#ededed; text-align:center; font-weight:700; font-size:8.5pt; height:5.4mm; }
+${P}.sig .box { height:9mm; text-align:center; font-size:10pt; vertical-align:middle; }
+${P}.jdg { text-align:center; font-size:9.5pt; font-weight:700; letter-spacing:0; white-space:nowrap; }
+${P}.note { margin-top:1.4mm; }
+${P}.note table { table-layout:fixed; }
+${P}.note td { border:none; padding:0 3mm 0 0; font-size:6.7pt; line-height:1.3; vertical-align:top; }
+${P}.note div { margin-bottom:0.4mm; }
+${P}.note b { font-size:7.8pt; }
+
+/* 記入済みで刷るときの印。良／否のどちらかを丸で囲み、該当しない項目には横線を引く。
+   紙に手で書くときと同じ見え方にしてある。 */
+/* 丸は「重ねて描く」こと。inline-block で囲むと行の高さが 0.6mm 増え、
+   25行ぶんで約15mm 伸びてA4に収まらなくなる（実際に8ページになった）。
+   position:absolute にして場所を取らせないのが要点。触ったら必ずページ数を確認する。 */
+${P}.cir, ${P}.cirw { position:relative; font-weight:700; }
+${P}.cir::before, ${P}.cirw::before { content:""; position:absolute; border:0.35mm solid #000;
+       left:-1.0mm; right:-1.0mm; top:50%; height:4.2mm; margin-top:-2.1mm; border-radius:50%; }
+/* 「合格」「要整備」のように2文字以上を囲むとき。真円だと間延びするので角丸にする */
+${P}.cirw::before { left:-1.4mm; right:-1.4mm; height:4.6mm; margin-top:-2.3mm; border-radius:2.3mm; }
+${P}.na .it { text-decoration:line-through; }
+${P}.na .cr, ${P}.na .jd { color:#8a8a8a; }
+${P}.ng .it { font-weight:700; }
+`;
+}
+
+// 画面で見るときだけ、1様式ずつ白い紙に見せる。印刷結果には影響しない。
+// これが無いと6枚が続けて並び、ブラウザで開いたとき同じ書類がダブって出たように見える。
+function paperScreenCss(P) {
+  return `
+@media screen {
+  ${P}.sheet { width:210mm; min-height:297mm; background:#fff; margin:0 auto 14px;
+           padding:8mm 10mm 6mm; box-shadow:0 3px 12px rgba(0,0,0,.45); }
+  ${P}.sheet:last-child { margin-bottom:0; }
+}`;
+}
+
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#x27;" }[c])
+  );
+}
+
+const COLS =
+  '<colgroup><col style="width:8mm"><col style="width:56mm"><col>' +
+  '<col style="width:20mm"><col style="width:36mm"></colgroup>';
+const HEAD =
+  "<thead><tr><th>No</th><th>点　検　項　目</th><th>着　眼　点 ・ 判　定　基　準</th>" +
+  "<th>判　定</th><th>処置・測定値</th></tr></thead>";
+
+// 判定欄。記入済みなら選んだ方を丸で囲む
+function jdCell(status) {
+  if (status === "ok") return '<span class="cir">良</span> ・ 否';
+  if (status === "ng") return '良 ・ <span class="cir">否</span>';
+  return "良 ・ 否";
+}
+
+// 年月日。空なら手書き用の空欄のまま
+function dateCell(v) {
+  if (!v) return "　　年　　月　　日";
+  const a = String(v).split("-");
+  if (a.length !== 3) return esc(v);
+  return `${Number(a[0])}年${Number(a[1])}月${Number(a[2])}日`;
+}
+
+function rows(items, start, answers) {
+  const out = [];
+  items.forEach(([it, cr], k) => {
+    const no = start + k;
+    const a = answers ? answers[no] : null;
+    const cls = a && a.status ? ` class="${a.status === "na" ? "na" : a.status === "ng" ? "ng" : ""}"` : "";
+    out.push(
+      `<tr${cls}><td class="no">${no}</td><td class="it">${esc(it)}</td>` +
+        `<td class="cr">${esc(cr)}</td><td class="jd">${jdCell(a && a.status)}</td>` +
+        `<td class="ac">${esc((a && a.memo) || "")}</td></tr>`
+    );
+  });
+  return [out.join(""), start + items.length];
+}
+
+/**
+ * 1様式ぶんのHTMLを返す。
+ * rec を渡すと記入済みの様式、渡さなければ白紙の様式になる。
+ */
+function buildSheet(opt) {
+  const { company, machine, idx, total, common, attach, maxrows, rec } = opt;
+
+  // 記録の中身を No で引けるようにしておく
+  const answers = {};
+  if (rec && rec.items) rec.items.forEach((i) => { answers[i.no] = i; });
+  const measVal = {};
+  if (rec && rec.meas) rec.meas.forEach((m) => { measVal[m.name] = m.value; });
+
+  // 特記事項欄の高さ。白紙のときは項目数の少ない様式ほど大きくして、余白を埋める。
+  // 記入済みのときは、処置欄に長い文が入ると行が伸びるので、その分だけこの欄を詰める。
+  // A4に余裕がまったく無いので、これをやらないと1枚に収まらなくなる。
+  const CH_PER_LINE = 15; // 処置欄（36mm・7.4pt）に入る全角のおよその数
+  let extraMm = 0;
+  Object.keys(answers).forEach((k) => {
+    const t = (answers[k] && answers[k].memo) || "";
+    if (!t) return;
+    const lines = Math.ceil(Array.from(t).length / CH_PER_LINE);
+    if (lines > 1) extraMm += (lines - 1) * 2.7;
+  });
+  const remh = Math.max(5, 8 + (maxrows - common.length - machine.items.length) * 5.2 - extraMm);
+  let n = 1;
+  let c, s, a;
+  [c, n] = rows(common, n, rec ? answers : null);
+  [s, n] = rows(machine.items, n, rec ? answers : null);
+  [a, n] = rows(attach, n, rec ? answers : null);
+
+  const mrows = machine.meas
+    .map(([nm, std, unit]) => {
+      const v = measVal[nm];
+      // 単位欄は2種類ある。「MPa」のような単なる単位と、「素線切れ　本／径　mm」のような
+      // 手書き用の型。前者は数値の後ろに残し、後者は書き込み済みなら消す（二重に出ると読みにくい）
+      const isTemplate = /　/.test(unit);
+      const cell = v ? (isTemplate ? `<b>${esc(v)}</b>` : `<b>${esc(v)}</b>　${esc(unit)}`) : esc(unit);
+      return `<tr><td class="mi">${esc(nm)}</td><td class="mc">${esc(std)}</td><td class="mv">${cell}</td></tr>`;
+    })
+    .join("");
+
+  const cirIf = (label, on) => (on ? `<span class="cirw">${label}</span>` : label);
+  const judge = rec ? rec.judge : "";
+
+  return `
+<div class="sheet">
+  <div class="ttl">
+    <div class="co">${esc(company)}</div>
+    <h1>出 荷 点 検 票</h1>
+    <div class="sub">様式 SK-${String(idx).padStart(2, "0")}（${idx}／${total}）<br>保存期間：出荷後 3 年</div>
+  </div>
+
+  <table class="hd thick">
+    <colgroup><col style="width:26mm"><col><col style="width:20mm"><col style="width:38mm">
+      <col style="width:20mm"><col style="width:36mm"></colgroup>
+    <tr><td class="lb">機　械　名</td><td class="big">${esc(machine.name)}</td>
+        <td class="lb">型式・規格</td><td>${esc((rec && rec.model) || machine.model)}</td>
+        <td class="lb">管理番号</td><td>${esc((rec && rec.mgmtNo) || "")}</td></tr>
+    <tr><td class="lb">出荷先現場名</td><td colspan="3">${esc((rec && rec.site) || "")}</td>
+        <td class="lb">出荷予定日</td><td class="dt">${dateCell(rec && rec.shipDate)}</td></tr>
+    <tr><td class="lb">元請・一次会社</td><td colspan="3">${esc((rec && rec.client) || "")}</td>
+        <td class="lb">返却予定日</td><td class="dt">${dateCell(rec && rec.returnDate)}</td></tr>
+  </table>
+
+  <div class="sec">Ⅰ．共通点検項目（全機種）</div>
+  <table class="chk">${COLS}${HEAD}<tbody>${c}</tbody></table>
+
+  <div class="sec">Ⅱ．機種別点検項目　―　${esc(machine.name)}</div>
+  <table class="chk">${COLS}<tbody>${s}</tbody></table>
+
+  <div class="sec">Ⅲ．付属品・書類</div>
+  <table class="chk">${COLS}<tbody>${a}</tbody></table>
+
+  <div class="sec">Ⅳ．測定値（数字で記入すること）</div>
+  <table class="meas">
+    <colgroup><col style="width:44mm"><col><col style="width:44mm"></colgroup>
+    <thead><tr><th>測　定　項　目</th><th>基　準　値 ・ 判　定　基　準</th><th>実　測　値</th></tr></thead>
+    <tbody>${mrows}</tbody>
+  </table>
+
+  <table class="rem" style="margin-top:1.6mm">
+    <colgroup><col style="width:24mm"><col></colgroup>
+    <tr><td class="lb">特記事項<br>不具合と処置</td>
+        <td class="txt" style="height:${remh.toFixed(1)}mm">${esc((rec && rec.remark) || "")}</td></tr>
+  </table>
+
+  <table class="sig thick" style="margin-top:1.6mm">
+    <colgroup><col style="width:48mm"><col style="width:34mm"><col><col><col></colgroup>
+    <tr><td class="lb">総　合　判　定</td><td class="lb">判 定 年 月 日</td>
+        <td class="lb">点　検　者</td><td class="lb">確認者（職長）</td><td class="lb">出荷責任者</td></tr>
+    <tr><td class="jdg">${cirIf("合　格", judge === "合格")} ・ ${cirIf("要整備", judge === "要整備")} ・ ${cirIf("出荷不可", judge === "出荷不可")}</td>
+        <td style="text-align:center;font-size:9.5pt;white-space:nowrap">${dateCell(rec && rec.judgeDate)}</td>
+        <td class="box">${esc((rec && rec.inspector) || "")}</td>
+        <td class="box">${esc((rec && rec.foreman) || "")}</td>
+        <td class="box">${esc((rec && rec.shipper) || "")}</td></tr>
+  </table>
+
+  <div class="note">
+    <div style="font-size:7.6pt;font-weight:700;margin-bottom:0.6mm">【記入のしかた】</div>
+    <table><colgroup><col style="width:50%"><col></colgroup><tr><td>
+      <div>① 判定欄は、良ければ「良」、悪ければ「否」を <b>○で囲む</b>。その機械に無い項目は項目名に横線を引く。</div>
+      <div>② 「否」があったら処置欄に <b>何がどう悪いか</b> と <b>どう直したか</b> を書く。直したら再点検して「良」に訂正する（二重線＋押印）。</div>
+      <div>③ 絶縁抵抗・圧力などは <b>測った値を数字で書く</b>。絶縁抵抗は電源を切ってから測る。</div>
+    </td><td>
+      <div>④ <b>「否」が1つでも残る機械は出荷しない。</b>「要整備」で出す場合は出荷責任者の承認をもらう。</div>
+      <div>⑤ 機械1台につき1枚書く。控を社内に保存し、原本は機械に付けて出荷する。現場搬入時は、この結果を「持込機械等使用届（安衛則第329条）」の点検表に転記する。</div>
+      <div>⑥ 基準値欄の「参考」は一般的な目安。<b>取扱説明書・銘板の値を確認して書き換え、確定させること。</b></div>
+    </td></tr></table>
+  </div>
+</div>`;
+}
+
+return { buildSheet: buildSheet };
+})();
+
 /* ---- 端末保存（ブラウザが拒む場合は画面を開いている間だけ覚える） ---- */
 const P = 'shukka:';
 const memStore = new Map();
@@ -783,6 +1144,37 @@ let form = null;             // 記入中の内容
 
 function commonFor(m){ const s = m.skip_common||[]; return MASTER.COMMON.filter(x=>s.indexOf(x[0])<0); }
 function attachFor(m){ const s = m.skip_attach||[]; return MASTER.ATTACH.filter(x=>s.indexOf(x[0])<0); }
+const MAXROWS = Math.max.apply(null, MACHINES.map(m => commonFor(m).length + m.items.length));
+
+/* ---- 記録を紙の様式に流し込んで出す ----
+   工場でスマホに入れた内容を、そのまま出荷点検票の形にして印刷する。
+   総務はこれを刷って提出する。 */
+function machineIndexOf(rec){
+  const k = Number(String(rec.formNo||'').replace('SK-','')) - 1;
+  if(k >= 0 && k < MACHINES.length) return k;
+  const byName = MACHINES.findIndex(m => m.name === rec.machine);
+  return byName >= 0 ? byName : 0;
+}
+function openPaper(rec){
+  const k = machineIndexOf(rec);
+  const m = MACHINES[k];
+  document.getElementById('paper').innerHTML = SHEET.buildSheet({
+    company: COMPANY, machine: m, idx: k+1, total: MACHINES.length,
+    common: commonFor(m), attach: attachFor(m), maxrows: MAXROWS, rec: rec
+  });
+  document.getElementById('paperTitle').textContent =
+    rec.formNo + '　' + rec.machine + '　' + jpDate(rec.date);
+  document.getElementById('paperOverlay').hidden = false;
+  document.body.classList.add('printing');
+  window.scrollTo(0,0);
+}
+function closePaper(){
+  document.getElementById('paperOverlay').hidden = true;
+  document.body.classList.remove('printing');
+  document.getElementById('paper').innerHTML = '';
+}
+document.getElementById('paperPrint').onclick = ()=>{ window.print(); };
+document.getElementById('paperClose').onclick = closePaper;
 
 function newForm(idx){
   const m = MACHINES[idx];
@@ -1014,12 +1406,19 @@ function renderList(){
        +   (r.remark? '<div class="muted">特記：'+esc(r.remark)+'</div>':'')
        +   '<div style="margin-top:6px">'
        +     (r.waiting? '<span class="badge wait">送り待ち</span>' : '<span class="badge sent">送信済</span>')
+       +     ' <button class="sub" data-paper="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">紙の様式で出す</button>'
        +     ' <button class="sub" data-detail="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">中身を見る</button>'
        +   '</div>'
        + '</div></div>';
   });
   main.innerHTML = h;
   document.getElementById('reload').onclick = ()=>{ remote.loaded=false; loadRemote().then(render); };
+  main.querySelectorAll('[data-paper]').forEach(b=>{
+    b.onclick = ()=>{
+      const r = all.find(x=>String(x.ts)===b.dataset.paper);
+      if(r) openPaper(r);
+    };
+  });
   main.querySelectorAll('[data-detail]').forEach(b=>{
     b.onclick = ()=>{
       const r = all.find(x=>String(x.ts)===b.dataset.detail);
