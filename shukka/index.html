@@ -24,8 +24,8 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
 body{font-size:16px;line-height:1.45;padding-bottom:env(safe-area-inset-bottom);}
 header{position:sticky;top:0;z-index:20;background:var(--band);color:#fff;}
 header .hwrap{max-width:820px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 8px) 12px 0;}
-header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:.08em;}
-header .co{font-size:12px;opacity:.85;margin-top:2px;}
+header .co{font-size:16px;font-weight:700;letter-spacing:.06em;line-height:1.25;}
+header h1{margin:2px 0 0;font-size:19px;font-weight:700;letter-spacing:.14em;}
 nav{display:flex;gap:0;margin-top:8px;}
 nav button{flex:1;appearance:none;border:none;background:#3a3a3a;color:#ddd;
   font-size:15px;font-weight:700;padding:11px 0;cursor:pointer;border-bottom:3px solid transparent;}
@@ -45,11 +45,18 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#1
   background-position:calc(100% - 18px) 50%,calc(100% - 12px) 50%;
   background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:34px;}
 .row2{display:flex;gap:8px;} .row2 > *{flex:1;min-width:0;}
-.item{border-top:1px solid #bdbdbd;padding:9px 2px;}
-.item:first-child{border-top:none;}
-.item.na{opacity:.55;}
-.item .nm{font-size:15px;font-weight:700;display:flex;gap:6px;align-items:baseline;}
-.item .nm .no{font-size:12px;color:var(--sub);font-weight:700;min-width:1.6em;}
+/* 点検の並びは、紙の点検表と同じく「罫線＋1行おきの網掛け」の表にする。
+   行のズレ防止と、紙を見慣れた人がそのまま読めることが狙い。 */
+.card.tbl > .body{padding:0;}
+.thead{display:none;}
+.item{border-top:1px solid #b5b5b5;padding:9px 10px;}
+.item:first-child, .thead + .item{border-top:none;}
+.item.alt{background:var(--stripe);}
+.item.na{opacity:.6;}
+.item .nm{font-size:15px;font-weight:700;display:flex;gap:8px;align-items:baseline;}
+.item .nm .no{font-size:11.5px;color:#fff;background:#5a5a5a;font-weight:700;
+  min-width:1.8em;text-align:center;padding:1px 0;flex:0 0 auto;align-self:flex-start;margin-top:2px;}
+.item.ngrow .nm .t{color:var(--ng);}
 .item.na .nm .t{text-decoration:line-through;}
 .item .cr{font-size:12.5px;color:var(--sub);margin:2px 0 7px 1.9em;}
 .seg{display:flex;gap:6px;margin-left:1.9em;}
@@ -102,8 +109,12 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 }
 /* 判定ボタンは項目の右にまとめる。全幅に伸ばすと押しにくく、間延びして見える。 */
 @media screen and (min-width:720px){
+  .thead{display:grid;grid-template-columns:1fr 288px;column-gap:16px;
+        background:var(--head);border-bottom:1.5px solid var(--line);
+        font-size:12px;font-weight:700;color:var(--sub);padding:5px 10px;letter-spacing:.08em;}
+  .thead .r{text-align:center;}
   .item{display:grid;grid-template-columns:1fr 288px;column-gap:16px;align-items:center;
-        padding:7px 2px;}
+        padding:7px 10px;}
   .item .nm{grid-column:1;grid-row:1;}
   .item .cr{grid-column:1;grid-row:2;margin:1px 0 0 1.9em;}
   .item .seg{grid-column:2;grid-row:1 / span 2;margin-left:0;}
@@ -207,8 +218,8 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 <body>
 <header>
   <div class="hwrap">
-    <h1>出 荷 点 検 チ ェ ッ ク</h1>
     <div class="co" id="coName"></div>
+    <h1>出 荷 点 検 チ ェ ッ ク 表</h1>
     <nav>
       <button id="tabCheck" class="on">点検する</button>
       <button id="tabList">記録</button>
@@ -234,6 +245,25 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 --------------------------------------------------------------- */
 const MASTER = /*__MASTER__*/{
  "COMPANY": "株式会社　市岡工業",
+ "INSPECTORS": [
+  "福嶋　剛",
+  "西尾　とうま"
+ ],
+ "FOREMEN": [
+  "鎌田",
+  "木村",
+  "田口",
+  "宮井",
+  "エルビン",
+  "熊沢",
+  "成田",
+  "鈴村",
+  "小笠原",
+  "藤原",
+  "福嶋",
+  "川島"
+ ],
+ "SHIPPER": "福嶋　剛",
  "COMMON": [
   [
    "外観（フレーム・本体）",
@@ -1190,9 +1220,14 @@ function newForm(idx){
     items: items,
     meas: m.meas.map(([nm,std,unit])=>({name:nm, std:std, unit:unit, value:''})),
     remark:'', judge:'', judgeDate: todayStr(),
-    inspector: st.get(P+'lastInspector')||'', foreman: st.get(P+'lastForeman')||'', shipper: st.get(P+'lastShipper')||''
+    inspector: st.get(P+'lastInspector')||'',
+    foreman: st.get(P+'lastForeman')||'',
+    shipper: MASTER.SHIPPER || ''   // 出荷責任者は工場長で固定
   };
 }
+// 点検者で「その他」を選んで手入力しているあいだだけ true
+let inspectorOther = false;
+let foremanOther = false;
 function counts(){
   const ng = form.items.filter(i=>i.status==='ng').length;
   const na = form.items.filter(i=>i.status==='na').length;
@@ -1257,10 +1292,11 @@ function renderCheck(){
   secs.forEach(sec=>{
     const list = form.items.filter(i=>i.sec===sec);
     if(!list.length) return;
-    h += '<div class="card"><h2>'+esc(secTitle[sec])+'</h2><div class="body">';
-    list.forEach(i=>{
+    h += '<div class="card tbl"><h2>'+esc(secTitle[sec])+'</h2><div class="body">'
+       + '<div class="thead"><div>点　検　項　目 ・ 着　眼　点</div><div class="r">判　定</div></div>';
+    list.forEach((i,row)=>{
       const idx = form.items.indexOf(i);
-      h += '<div class="item'+(i.status==='na'?' na':'')+'">'
+      h += '<div class="item'+(row%2?' alt':'')+(i.status==='na'?' na':'')+(i.status==='ng'?' ngrow':'')+'">'
          +   '<div class="nm"><span class="no">'+i.no+'</span><span class="t">'+esc(i.name)+'</span></div>'
          +   '<div class="cr">'+esc(i.cr)+'</div>'
          +   '<div class="seg" data-i="'+idx+'">'
@@ -1289,12 +1325,34 @@ function renderCheck(){
      + '<label class="f"><span>総合判定</span><select id="f_judge">'
      +   ['','合格','要整備','出荷不可'].map(v=>'<option value="'+v+'"'+(form.judge===v?' selected':'')+'>'+(v||'選んでください')+'</option>').join('')
      + '</select></label>'
-     + '<label class="f"><span>判定年月日</span><input type="date" id="f_judgeDate" value="'+esc(form.judgeDate)+'"></label>'
-     + '<label class="f"><span>点検者</span><input id="f_inspector" value="'+esc(form.inspector)+'"></label>'
-     + '<div class="row2">'
-     +   '<label class="f"><span>確認者（職長）</span><input id="f_foreman" value="'+esc(form.foreman)+'"></label>'
-     +   '<label class="f"><span>出荷責任者</span><input id="f_shipper" value="'+esc(form.shipper)+'"></label>'
-     + '</div></div></div>';
+     + '<label class="f"><span>判定年月日</span><input type="date" id="f_judgeDate" value="'+esc(form.judgeDate)+'"></label>';
+
+  const insList = MASTER.INSPECTORS || [];
+  const insOther = inspectorOther || (form.inspector && insList.indexOf(form.inspector) < 0);
+  h += '<label class="f"><span>点検者</span><select id="f_inspectorSel">'
+     +   '<option value="">選んでください</option>'
+     +   insList.map(n=>'<option'+(!insOther && form.inspector===n?' selected':'')+'>'+esc(n)+'</option>').join('')
+     +   '<option value="__other"'+(insOther?' selected':'')+'>その他（自分で入力）</option>'
+     + '</select></label>';
+  if(insOther){
+    h += '<label class="f"><span>点検者の名前</span><input id="f_inspector" value="'+esc(form.inspector)+'" placeholder="姓と名を入れてください"></label>';
+  }
+
+  const forList = MASTER.FOREMEN || [];
+  const forOther = foremanOther || (form.foreman && forList.indexOf(form.foreman) < 0);
+  h += '<label class="f"><span>確認者（職長）</span><select id="f_foremanSel">'
+     +   '<option value="">選んでください</option>'
+     +   forList.map(n=>'<option'+(!forOther && form.foreman===n?' selected':'')+'>'+esc(n)+'</option>').join('')
+     +   '<option value="__other"'+(forOther?' selected':'')+'>その他（自分で入力）</option>'
+     + '</select></label>';
+  if(forOther){
+    h += '<label class="f"><span>確認者の名前</span><input id="f_foreman" value="'+esc(form.foreman)+'" placeholder="名前を入れてください"></label>';
+  }
+
+  h += '<label class="f"><span>出荷責任者</span>'
+     +   '<input id="f_shipper" value="'+esc(form.shipper)+'" readonly style="background:#eee;color:#333"></label>'
+     + '<div class="muted">出荷責任者は工場長で固定です。</div>'
+     + '</div></div>';
 
   h += '<button class="big" id="saveBtn">この内容で記録する</button>'
      + '<button class="sub" id="clearBtn" style="width:100%">記入をやめて最初から</button>'
@@ -1308,17 +1366,29 @@ function renderCheck(){
     if(c2.ok+c2.ng+c2.na > 0 && !confirm('機械を変えると、いま記入した点検の内容は消えます。よろしいですか。')){
       e.target.value = mi; return;
     }
-    mi = k; form = newForm(mi); render();
+    mi = k; inspectorOther = false; foremanOther = false; form = newForm(mi); render();
   };
   [['f_model','model'],['f_mgmtNo','mgmtNo'],['f_site','site'],['f_client','client'],
    ['f_shipDate','shipDate'],['f_returnDate','returnDate'],['f_remark','remark'],
-   ['f_judgeDate','judgeDate'],['f_inspector','inspector'],['f_foreman','foreman'],['f_shipper','shipper']
+   ['f_judgeDate','judgeDate'],['f_inspector','inspector'],['f_foreman','foreman']
   ].forEach(([id,key])=>{
     const el = document.getElementById(id);
     if(el) el.oninput = ()=>{ form[key] = el.value; };
   });
   const jd = document.getElementById('f_judge');
   jd.onchange = ()=>{ form.judge = jd.value; };
+  const isel = document.getElementById('f_inspectorSel');
+  isel.onchange = ()=>{
+    if(isel.value === '__other'){ inspectorOther = true; form.inspector = ''; }
+    else { inspectorOther = false; form.inspector = isel.value; }
+    render();
+  };
+  const fsel = document.getElementById('f_foremanSel');
+  fsel.onchange = ()=>{
+    if(fsel.value === '__other'){ foremanOther = true; form.foreman = ''; }
+    else { foremanOther = false; form.foreman = fsel.value; }
+    render();
+  };
 
   main.querySelectorAll('.seg').forEach(seg=>{
     const idx = Number(seg.dataset.i);
@@ -1339,7 +1409,7 @@ function renderCheck(){
   });
   document.getElementById('saveBtn').onclick = doSave;
   document.getElementById('clearBtn').onclick = ()=>{
-    if(confirm('記入をやめて最初からにします。よろしいですか。')){ form = newForm(mi); render(); }
+    if(confirm('記入をやめて最初からにします。よろしいですか。')){ inspectorOther = false; foremanOther = false; form = newForm(mi); render(); }
   };
 }
 
@@ -1352,7 +1422,6 @@ async function doSave(){
 
   st.set(P+'lastInspector', form.inspector);
   st.set(P+'lastForeman', form.foreman);
-  st.set(P+'lastShipper', form.shipper);
 
   const rec = {
     ts: Date.now(), date: todayStr(),
@@ -1372,6 +1441,8 @@ async function doSave(){
   remote.loaded = false;
   alert(ok ? '記録しました。会社のデータベースへ送りました。'
            : '記録しました。いま送れなかったので端末に控えました。電波のあるところで自動的に送ります。');
+  inspectorOther = false;
+  foremanOther = false;
   form = newForm(mi);
   setTab('list');
 }
