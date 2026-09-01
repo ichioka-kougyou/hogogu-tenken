@@ -123,6 +123,28 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 }
 @media print{ nav,button,.state{display:none;} }
 
+/* ── サイン欄 ──────────────────────────────────
+   指かタッチペンで、その場で書いてもらう。前のサインは使い回さない。 */
+.signrow{display:flex;gap:8px;align-items:stretch;margin-bottom:10px;}
+.signbox{flex:1;min-width:0;border:1.5px solid var(--line);background:#fff;
+  height:64px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.signbox img{max-height:58px;max-width:100%;}
+.signbox .ph{color:#9a9a9a;font-size:13px;font-weight:700;}
+.signrow button{flex:0 0 auto;}
+#signOverlay{position:fixed;inset:0;z-index:60;background:#1a1a1a;
+  display:flex;flex-direction:column;}
+#signOverlay[hidden]{display:none;}
+#signBar{padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;color:#fff;
+  display:flex;gap:8px;align-items:center;}
+#signBar .t{font-size:15px;font-weight:700;margin-right:auto;}
+#signBar button{appearance:none;font-family:inherit;font-size:15px;font-weight:700;
+  padding:9px 14px;border:1.5px solid #fff;background:transparent;color:#fff;cursor:pointer;}
+#signBar button.go{background:#fff;color:#101010;}
+#signWrap{flex:1;padding:0 12px 12px;display:flex;flex-direction:column;gap:8px;}
+#signPad{flex:1;width:100%;background:#fff;border:2px solid #fff;touch-action:none;
+  cursor:crosshair;min-height:180px;}
+#signHint{color:#ddd;font-size:13px;text-align:center;padding-bottom:env(safe-area-inset-bottom);}
+
 /* ── 紙の様式で出す画面 ────────────────────────────
    工場でスマホに入れた内容を、そのまま紙の出荷点検票に流し込んで印刷する。
    総務はこれを刷って提出する。様式の中身は sheet.mjs（白紙の様式と共通）。 */
@@ -188,6 +210,8 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
 #paper .rem .txt { font-size:9pt; line-height:1.3; white-space:pre-wrap; }
 #paper .sig .lb { background:#ededed; text-align:center; font-weight:700; font-size:8.5pt; height:5.4mm; }
 #paper .sig .box { height:9mm; text-align:center; font-size:10pt; vertical-align:middle; }
+/* 手書きのサイン。押印欄の高さ（9mm）を超えないこと。超えると1枚に収まらなくなる */
+#paper .sig .box img { display:block; margin:0 auto; max-height:8mm; max-width:100%; }
 #paper .jdg { text-align:center; font-size:9.5pt; font-weight:700; letter-spacing:0; white-space:nowrap; }
 #paper .note { margin-top:1.4mm; }
 #paper .note table { table-layout:fixed; }
@@ -228,6 +252,19 @@ hr.sep{border:none;border-top:1px solid #bdbdbd;margin:12px 0;}
   </div>
 </header>
 <main id="main"></main>
+
+<div id="signOverlay" hidden>
+  <div id="signBar">
+    <span class="t" id="signTitle"></span>
+    <button id="signClear">書き直す</button>
+    <button id="signCancel">やめる</button>
+    <button id="signOk" class="go">これでいい</button>
+  </div>
+  <div id="signWrap">
+    <canvas id="signPad"></canvas>
+    <div id="signHint">白いところに、指かタッチペンで名前を書いてください</div>
+  </div>
+</div>
 
 <div id="paperOverlay" hidden>
   <div id="paperBar">
@@ -840,6 +877,8 @@ ${P}.rem .lb { background:#ededed; text-align:center; font-weight:700; font-size
 ${P}.rem .txt { font-size:9pt; line-height:1.3; white-space:pre-wrap; }
 ${P}.sig .lb { background:#ededed; text-align:center; font-weight:700; font-size:8.5pt; height:5.4mm; }
 ${P}.sig .box { height:9mm; text-align:center; font-size:10pt; vertical-align:middle; }
+/* 手書きのサイン。押印欄の高さ（9mm）を超えないこと。超えると1枚に収まらなくなる */
+${P}.sig .box img { display:block; margin:0 auto; max-height:8mm; max-width:100%; }
 ${P}.jdg { text-align:center; font-size:9.5pt; font-weight:700; letter-spacing:0; white-space:nowrap; }
 ${P}.note { margin-top:1.4mm; }
 ${P}.note table { table-layout:fixed; }
@@ -892,6 +931,14 @@ function jdCell(status) {
   if (status === "ok") return '<span class="cir">良</span> ・ 否';
   if (status === "ng") return '良 ・ <span class="cir">否</span>';
   return "良 ・ 否";
+}
+
+// 押印欄。その場で書いた手書きサインがあればそれを出す。無ければ名前の文字。
+// サインは毎回書き直す運用（使い回さない）。同じ判子が並ぶのを避けるため。
+function signCell(rec, who, name) {
+  const img = rec && rec.signs && rec.signs[who];
+  if (img) return `<img src="${img}" alt="">`;
+  return esc(name || "");
 }
 
 // 年月日。空なら手書き用の空欄のまま
@@ -1010,9 +1057,9 @@ function buildSheet(opt) {
         <td class="lb">点　検　者</td><td class="lb">確認者（職長）</td><td class="lb">出荷責任者</td></tr>
     <tr><td class="jdg">${cirIf("合　格", judge === "合格")} ・ ${cirIf("要整備", judge === "要整備")} ・ ${cirIf("出荷不可", judge === "出荷不可")}</td>
         <td style="text-align:center;font-size:9.5pt;white-space:nowrap">${dateCell(rec && rec.judgeDate)}</td>
-        <td class="box">${esc((rec && rec.inspector) || "")}</td>
-        <td class="box">${esc((rec && rec.foreman) || "")}</td>
-        <td class="box">${esc((rec && rec.shipper) || "")}</td></tr>
+        <td class="box">${signCell(rec, "inspector", rec && rec.inspector)}</td>
+        <td class="box">${signCell(rec, "foreman", rec && rec.foreman)}</td>
+        <td class="box">${signCell(rec, "shipper", rec && rec.shipper)}</td></tr>
   </table>
 
   <div class="note">
@@ -1120,6 +1167,7 @@ function recToRow(rec){
     items: rec.items, meas: rec.meas, remark: rec.remark,
     judge: rec.judge, judge_date: rec.judgeDate || null,
     inspector: rec.inspector, foreman: rec.foreman, shipper: rec.shipper,
+    signs: rec.signs || {},
     ng_count: rec.ngCount, na_count: rec.naCount,
     device_id: deviceId()
   };
@@ -1132,6 +1180,7 @@ function rowToRec(row){
     items: row.items||[], meas: row.meas||[], remark: row.remark||'',
     judge: row.judge, judgeDate: row.judge_date||'',
     inspector: row.inspector||'', foreman: row.foreman||'', shipper: row.shipper||'',
+    signs: row.signs || {},
     ngCount: row.ng_count||0, naCount: row.na_count||0,
     deviceId: row.device_id||'', fromServer: true
   };
@@ -1175,6 +1224,102 @@ let form = null;             // 記入中の内容
 function commonFor(m){ const s = m.skip_common||[]; return MASTER.COMMON.filter(x=>s.indexOf(x[0])<0); }
 function attachFor(m){ const s = m.skip_attach||[]; return MASTER.ATTACH.filter(x=>s.indexOf(x[0])<0); }
 const MAXROWS = Math.max.apply(null, MACHINES.map(m => commonFor(m).length + m.items.length));
+
+/* ---- 手書きサイン ----
+   指かタッチペンでその場で書く。前のサインは使い回さない（毎回書く）。
+   書いた線の範囲だけを切り出してPNGにし、記録と一緒に持たせる。 */
+let signTarget = null;   // 'inspector' か 'shipper'
+let signStrokes = [];    // 書いた線。切り出しの範囲を出すのに使う
+
+function openSign(who, title){
+  signTarget = who;
+  signStrokes = [];
+  document.getElementById('signTitle').textContent = title + 'のサイン';
+  const ov = document.getElementById('signOverlay');
+  ov.hidden = false;
+  const cv = document.getElementById('signPad');
+  // 画面の細かさに合わせる。これをやらないと線がぼやける
+  const r = cv.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  cv.width = Math.round(r.width * dpr);
+  cv.height = Math.round(r.height * dpr);
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = '#fff';
+  g.fillRect(0, 0, r.width, r.height);
+  g.lineWidth = 2.6;
+  g.lineCap = 'round';
+  g.lineJoin = 'round';
+  g.strokeStyle = '#101010';
+}
+function closeSign(){
+  document.getElementById('signOverlay').hidden = true;
+  signTarget = null;
+}
+(function setupSignPad(){
+  const cv = document.getElementById('signPad');
+  let drawing = false, last = null, cur = null;
+  const pos = e => {
+    const r = cv.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  cv.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    cv.setPointerCapture(e.pointerId);
+    drawing = true;
+    last = pos(e);
+    cur = [last];
+    signStrokes.push(cur);
+  });
+  cv.addEventListener('pointermove', e=>{
+    if(!drawing) return;
+    e.preventDefault();
+    const p = pos(e);
+    const g = cv.getContext('2d');
+    g.beginPath(); g.moveTo(last.x, last.y); g.lineTo(p.x, p.y); g.stroke();
+    last = p; cur.push(p);
+  });
+  const end = e=>{ if(drawing){ drawing = false; } };
+  cv.addEventListener('pointerup', end);
+  cv.addEventListener('pointercancel', end);
+  cv.addEventListener('pointerleave', end);
+})();
+document.getElementById('signClear').onclick = ()=>{
+  const who = signTarget, t = document.getElementById('signTitle').textContent.replace('のサイン','');
+  openSign(who, t);
+};
+document.getElementById('signCancel').onclick = closeSign;
+document.getElementById('signOk').onclick = ()=>{
+  if(!signStrokes.length){ alert('まだ何も書かれていません。'); return; }
+  const cv = document.getElementById('signPad');
+  const dpr = cv.width / cv.getBoundingClientRect().width;
+  // 書いた範囲だけを切り出す。余白ごと持つと、紙にしたとき字が小さくなる
+  let x0=1e9, y0=1e9, x1=-1e9, y1=-1e9;
+  signStrokes.forEach(s=>s.forEach(p=>{
+    if(p.x<x0)x0=p.x; if(p.y<y0)y0=p.y; if(p.x>x1)x1=p.x; if(p.y>y1)y1=p.y;
+  }));
+  const pad = 8;
+  x0=Math.max(0,x0-pad); y0=Math.max(0,y0-pad);
+  x1=Math.min(cv.getBoundingClientRect().width, x1+pad);
+  y1=Math.min(cv.getBoundingClientRect().height, y1+pad);
+  const sw = Math.max(1, Math.round((x1-x0)*dpr)), sh = Math.max(1, Math.round((y1-y0)*dpr));
+  // 紙では高さ8mmで刷る。200pxもあれば十分きれい。
+  // そのまま持つと1枚40KB近くなり、記録が重くなる
+  const MAXH = 200;
+  const k = sh > MAXH ? MAXH / sh : 1;
+  const w = Math.max(1, Math.round(sw * k)), h = Math.max(1, Math.round(sh * k));
+  const out = document.createElement('canvas');
+  out.width = w; out.height = h;
+  const og = out.getContext('2d');
+  og.imageSmoothingQuality = 'high';
+  og.fillStyle = '#fff'; og.fillRect(0,0,w,h);
+  og.drawImage(cv, Math.round(x0*dpr), Math.round(y0*dpr), sw, sh, 0, 0, w, h);
+  const url = out.toDataURL('image/png');
+  form.signs = form.signs || {};
+  form.signs[signTarget] = url;
+  closeSign();
+  render();
+};
 
 /* ---- 記録を紙の様式に流し込んで出す ----
    工場でスマホに入れた内容を、そのまま出荷点検票の形にして印刷する。
@@ -1222,7 +1367,8 @@ function newForm(idx){
     remark:'', judge:'', judgeDate: todayStr(),
     inspector: st.get(P+'lastInspector')||'',
     foreman: st.get(P+'lastForeman')||'',
-    shipper: MASTER.SHIPPER || ''   // 出荷責任者は工場長で固定
+    shipper: MASTER.SHIPPER || '',  // 出荷責任者は工場長で固定
+    signs: {}                       // 手書きサイン。毎回その場で書く
   };
 }
 // 点検者で「その他」を選んで手入力しているあいだだけ true
@@ -1351,7 +1497,20 @@ function renderCheck(){
 
   h += '<label class="f"><span>出荷責任者</span>'
      +   '<input id="f_shipper" value="'+esc(form.shipper)+'" readonly style="background:#eee;color:#333"></label>'
-     + '<div class="muted">出荷責任者は工場長で固定です。</div>'
+     + '<div class="muted" style="margin-bottom:12px">出荷責任者は工場長で固定です。</div>';
+
+  const sg = form.signs || {};
+  const signBlock = (who, label)=>
+      '<label class="f" style="margin-bottom:6px"><span>'+esc(label)+'のサイン</span></label>'
+    + '<div class="signrow">'
+    +   '<div class="signbox">'
+    +     (sg[who] ? '<img src="'+sg[who]+'" alt="">' : '<span class="ph">サインなし</span>')
+    +   '</div>'
+    +   '<button class="sub" data-sign="'+who+'">'+(sg[who]?'書き直す':'サインする')+'</button>'
+    + '</div>';
+  h += signBlock('inspector','点検者')
+     + signBlock('shipper','出荷責任者')
+     + '<div class="muted">指かタッチペンで、その場で書いてください。前のサインは残しません。</div>'
      + '</div></div>';
 
   h += '<button class="big" id="saveBtn">この内容で記録する</button>'
@@ -1383,6 +1542,12 @@ function renderCheck(){
     else { inspectorOther = false; form.inspector = isel.value; }
     render();
   };
+  main.querySelectorAll('[data-sign]').forEach(b=>{
+    b.onclick = ()=>{
+      const who = b.dataset.sign;
+      openSign(who, who === 'inspector' ? '点検者' : '出荷責任者');
+    };
+  });
   const fsel = document.getElementById('f_foremanSel');
   fsel.onchange = ()=>{
     if(fsel.value === '__other'){ foremanOther = true; form.foreman = ''; }
@@ -1419,6 +1584,11 @@ async function doSave(){
   if(!form.judge){ alert('総合判定を選んでください。'); return; }
   if(!form.inspector.trim()){ alert('点検者の名前を入れてください。'); return; }
   if(c.ng>0 && form.judge==='合格' && !confirm('「否」があるのに合格になっています。このまま記録しますか。')) return;
+  const sg = form.signs || {};
+  const noSign = [];
+  if(!sg.inspector) noSign.push('点検者');
+  if(!sg.shipper) noSign.push('出荷責任者');
+  if(noSign.length && !confirm(noSign.join('と')+'のサインがありません。このまま記録しますか。')) return;
 
   st.set(P+'lastInspector', form.inspector);
   st.set(P+'lastForeman', form.foreman);
@@ -1431,6 +1601,7 @@ async function doSave(){
     meas: form.meas.map(m=>({name:m.name, std:m.std, unit:m.unit, value:m.value})),
     remark: form.remark, judge: form.judge, judgeDate: form.judgeDate,
     inspector: form.inspector, foreman: form.foreman, shipper: form.shipper,
+    signs: form.signs || {},
     ngCount: c.ng, naCount: c.na
   };
   saveRecord(rec);
