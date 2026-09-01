@@ -1247,7 +1247,8 @@ function openSign(who, title){
   g.setTransform(dpr, 0, 0, dpr, 0, 0);
   g.fillStyle = '#fff';
   g.fillRect(0, 0, r.width, r.height);
-  g.lineWidth = 2.6;
+  // 太めにしておく。書き出すとき高さ200pxに縮めるので、細いと紙で薄くなる
+  g.lineWidth = 4.6;
   g.lineCap = 'round';
   g.lineJoin = 'round';
   g.strokeStyle = '#101010';
