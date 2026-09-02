@@ -1691,6 +1691,72 @@ async function doSave(){
   setTab('list');
 }
 
+/* ---- LINEなどに送る ----
+   PDFはスマホだと小さくて読みにくい。要点を文字にして共有の一覧に流す。
+   iPhone・Androidとも、出てくる一覧からLINEを選べる。
+   共有が使えない端末（パソコンのブラウザなど）では、文面を写しておく。 */
+function recToText(r){
+  const L = [];
+  L.push('【出荷点検票】' + (r.formNo||'') + '　' + (r.machine||''));
+  L.push('点検日　' + jpDate(r.date));
+  if(r.mgmtNo) L.push('管理番号　' + r.mgmtNo);
+  if(r.site) L.push('出荷先　' + r.site);
+  if(r.client) L.push('元請・一次　' + r.client);
+  if(r.shipDate) L.push('出荷予定　' + jpDate(r.shipDate));
+  L.push('');
+  L.push('総合判定　' + (r.judge||'—'));
+  const ng = (r.items||[]).filter(i=>i.status==='ng');
+  const na = (r.items||[]).filter(i=>i.status==='na');
+  L.push('良 ' + (r.items||[]).filter(i=>i.status==='ok').length + '件／否 ' + ng.length + '件／該当なし ' + na.length + '件');
+  if(ng.length){
+    L.push('');
+    L.push('■ 否と処置');
+    ng.forEach(i=> L.push('・' + i.name + (i.memo ? '　→ ' + i.memo : '')));
+  }
+  if(na.length){
+    L.push('');
+    L.push('■ 該当なし');
+    L.push(na.map(i=>i.name).join('、'));
+  }
+  const meas = (r.meas||[]).filter(m=>String(m.value||'').trim());
+  if(meas.length){
+    L.push('');
+    L.push('■ 測定値');
+    // 単位が「MPa」のような素の単位なら数値の後ろに付ける。
+    // 「素線切れ　本／径　mm」のような手書き用の型なら付けない
+    meas.forEach(m=>{
+      const u = (m.unit && !/　/.test(m.unit)) ? ' ' + m.unit : '';
+      L.push('・' + m.name + '　' + m.value + u);
+    });
+  }
+  if(r.remark){ L.push(''); L.push('■ 特記事項'); L.push(r.remark); }
+  L.push('');
+  L.push('点検者　' + (r.inspector||'—'));
+  L.push('確認者（職長）　' + (r.foreman||'—'));
+  L.push('出荷責任者　' + (r.shipper||'—'));
+  const s = r.signs || {};
+  if(s.inspector || s.shipper){
+    L.push('（サインは点検票に入っています）');
+  }
+  L.push('');
+  L.push('株式会社 市岡工業');
+  return L.join('\n');
+}
+async function shareRecord(r){
+  const text = recToText(r);
+  const title = '出荷点検票 ' + (r.formNo||'') + ' ' + (r.machine||'');
+  if(navigator.share){
+    try{ await navigator.share({ title: title, text: text }); return; }
+    catch(e){ if(e && e.name === 'AbortError') return; }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('この端末では共有の一覧を出せないので、文面を写しました。\nLINEやメールに貼り付けて送ってください。');
+  }catch(e){
+    prompt('この文面をコピーして、LINEやメールに貼り付けてください。', text);
+  }
+}
+
 // 記録の一覧にもサインを小さく出す。入っているかどうかを、
 // 点検票を開かなくても分かるようにするため。
 function signStrip(r){
@@ -1741,6 +1807,7 @@ function renderList(){
        +   '<div style="margin-top:6px">'
        +     (r.waiting? '<span class="badge wait">送り待ち</span>' : '<span class="badge sent">送信済</span>')
        +     ' <button class="sub" data-paper="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">点検票にする（PDF）</button>'
+       +     ' <button class="sub" data-share="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">LINEなどで送る</button>'
        +     ' <button class="sub" data-detail="'+r.ts+'" style="padding:5px 9px;font-size:12.5px">中身を見る</button>'
        +   '</div>'
        + '</div></div>';
@@ -1751,6 +1818,12 @@ function renderList(){
     b.onclick = ()=>{
       const r = all.find(x=>String(x.ts)===b.dataset.paper);
       if(r) openPaper(r);
+    };
+  });
+  main.querySelectorAll('[data-share]').forEach(b=>{
+    b.onclick = ()=>{
+      const r = all.find(x=>String(x.ts)===b.dataset.share);
+      if(r) shareRecord(r);
     };
   });
   main.querySelectorAll('[data-detail]').forEach(b=>{
