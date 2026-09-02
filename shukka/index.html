@@ -1634,8 +1634,22 @@ async function doSave(){
   const ok = await pushRecord(rec);
   if(!ok){ const l = pendingList(); l.push(rec.ts); setPending(l); }
   remote.loaded = false;
-  alert(ok ? '記録しました。会社のデータベースへ送りました。'
-           : '記録しました。いま送れなかったので端末に控えました。電波のあるところで自動的に送ります。');
+  // 送れなかった理由を分けて伝える。「電波」と一括りにすると、
+  // 合言葉が入っていないだけのときに原因を探せなくなる
+  let msg;
+  if(ok){
+    msg = '記録しました。会社のデータベースへ送りました。';
+  } else if(!aikotoba()){
+    msg = '記録しました。ただし合言葉が入っていないので、この端末の中だけに残っています。\n\n'
+        + '設定タブで合言葉を入れて「つないでみる」を押してください。そのあと「送り待ちをいま送る」で送れます。\n\n'
+        + '（ホーム画面のアイコンとSafariでは、合言葉の保存場所が別になります。いつも同じほうから開いてください）';
+  } else if(!navigator.onLine){
+    msg = '記録しました。いま電波が届かないので端末に控えました。電波のあるところで自動的に送ります。';
+  } else {
+    msg = '記録しました。ただし送信に失敗したので端末に控えました。\n\n'
+        + '設定タブを開いて、会社のデータベースにつながっているか確かめてください。';
+  }
+  alert(msg);
   inspectorOther = false;
   foremanOther = false;
   form = newForm(mi);
@@ -1670,7 +1684,12 @@ function renderList(){
                   : (aikotoba() ? 'いまつながっていません。この端末の記録だけ表示しています。'
                                 : '設定タブで合言葉を入れると、みんなの記録が見られます。'))
      + '</div>';
-  if(pend.length) h += '<div class="alert">まだ送れていない記録が'+pend.length+'件あります。電波のあるところで自動的に送ります。</div>';
+  if(pend.length){
+    h += '<div class="alert">まだ送れていない記録が'+pend.length+'件あります。'
+       + (aikotoba() ? '電波のあるところで自動的に送ります。'
+                     : '<br>合言葉が入っていません。設定タブで入れると送れます。')
+       + '</div>';
+  }
   h += '<button class="sub" id="reload" style="width:100%;margin-bottom:12px">最新を読み込む</button>';
 
   if(!all.length){ h += '<div class="note">記録はまだありません。</div>'; }
