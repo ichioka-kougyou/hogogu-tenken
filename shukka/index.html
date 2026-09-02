@@ -67,6 +67,9 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#1
 .seg button.on[data-v="na"]{background:var(--na);border-color:var(--na);color:#fff;}
 .memo{margin:7px 0 0 1.9em;}
 .memo input{border-color:var(--ng);}
+/* 否にしたら理由は必ず書く。書くまで記録させない */
+.memo.need input{background:var(--ngbg);border-width:2px;}
+.memo .needmsg{color:var(--ng);font-size:12.5px;font-weight:700;margin-top:3px;}
 table.meas{width:100%;border-collapse:collapse;}
 table.meas th,table.meas td{border:1px solid var(--line);padding:6px 7px;font-size:13px;vertical-align:middle;}
 table.meas th{background:var(--head);font-size:12.5px;}
@@ -1457,7 +1460,12 @@ function renderCheck(){
      + '<div><div class="n">'+c.na+'</div><div class="l">該当なし</div></div>'
      + '<div><div class="n">'+c.rest+'</div><div class="l">未</div></div>'
      + '</div>';
-  if(c.ng>0) h += '<div class="alert">「否」が'+c.ng+'件あります。この機械は出荷しないこと。「要整備」で出す場合は出荷責任者の承認をもらう。</div>';
+  if(c.ng>0){
+    const need = form.items.filter(i=>i.status==='ng' && !String(i.memo||'').trim()).length;
+    h += '<div class="alert">「否」が'+c.ng+'件あります。この機械は出荷しないこと。「要整備」で出す場合は出荷責任者の承認をもらう。'
+       + (need ? '<br>理由が未記入の項目が'+need+'件あります。書くまで記録できません。' : '')
+       + '</div>';
+  }
 
   secs.forEach(sec=>{
     const list = form.items.filter(i=>i.sec===sec);
@@ -1475,7 +1483,11 @@ function renderCheck(){
          +     '<button data-v="na" class="'+(i.status==='na'?'on':'')+'">該当なし</button>'
          +   '</div>';
       if(i.status==='ng'){
-        h += '<div class="memo"><input data-memo="'+idx+'" placeholder="何がどう悪いか／どう直したか" value="'+esc(i.memo)+'"></div>';
+        const blank = !String(i.memo||'').trim();
+        h += '<div class="memo'+(blank?' need':'')+'">'
+           +   '<input data-memo="'+idx+'" placeholder="'+(blank?'※必ず記入　':'')+'何がどう悪いか／どう直したか" value="'+esc(i.memo)+'">'
+           +   (blank?'<div class="needmsg">理由を書かないと記録できません</div>':'')
+           + '</div>';
       }
       h += '</div>';
     });
@@ -1591,7 +1603,21 @@ function renderCheck(){
     });
   });
   main.querySelectorAll('[data-memo]').forEach(inp=>{
-    inp.oninput = ()=>{ form.items[Number(inp.dataset.memo)].memo = inp.value; };
+    inp.oninput = ()=>{
+      form.items[Number(inp.dataset.memo)].memo = inp.value;
+      // 書き始めたら赤い催促を消す。全体を描き直すと入力が途切れるのでここだけ触る
+      const box = inp.parentElement;
+      const filled = !!inp.value.trim();
+      box.classList.toggle('need', !filled);
+      const msg = box.querySelector('.needmsg');
+      if(filled && msg) msg.remove();
+      else if(!filled && !msg){
+        const d = document.createElement('div');
+        d.className = 'needmsg';
+        d.textContent = '理由を書かないと記録できません';
+        box.appendChild(d);
+      }
+    };
   });
   main.querySelectorAll('[data-meas]').forEach(inp=>{
     inp.oninput = ()=>{ form.meas[Number(inp.dataset.meas)].value = inp.value; };
@@ -1605,6 +1631,15 @@ function renderCheck(){
 async function doSave(){
   const c = counts();
   if(c.rest > 0 && !confirm('まだ判定していない項目が'+c.rest+'件あります。このまま記録しますか。')) return;
+  // 「否」にした項目は、なぜ否なのかを書かないと記録させない。
+  // 理由の無い「否」が紙に出ると、書類として通らないため。
+  const noReason = form.items.filter(i => i.status==='ng' && !String(i.memo||'').trim());
+  if(noReason.length){
+    alert('「否」にした項目の理由が書かれていません。\n\n'
+        + noReason.map(i=>'・'+i.no+'　'+i.name).join('\n')
+        + '\n\n赤い欄に、何がどう悪いか／どう直したかを書いてください。');
+    return;
+  }
   if(!form.judge){ alert('総合判定を選んでください。'); return; }
   if(!form.inspector.trim()){ alert('点検者の名前を入れてください。'); return; }
   if(c.ng>0 && form.judge==='合格' && !confirm('「否」があるのに合格になっています。このまま記録しますか。')) return;
