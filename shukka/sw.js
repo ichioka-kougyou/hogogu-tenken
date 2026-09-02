@@ -1,10 +1,11 @@
 // 圏外でもアプリが開けるようにする係。
 // 電波があるときは常に最新版を取りに行き、なければ手元の控えで立ち上げる。
-const CACHE = 'shukka-v1';
+const CACHE = 'shukka-v2';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './tsukaikata.html',
   './shukka-icon-180.png',
   './shukka-icon-192.png',
   './shukka-icon-512.png'

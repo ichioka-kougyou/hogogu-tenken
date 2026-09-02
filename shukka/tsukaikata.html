@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="出荷点検 取説">
+<title>出荷点検チェック表　使い方｜株式会社 市岡工業</title>
+<style>
+:root{
+  --ink:#141414; --sub:#4d4d4d; --line:#141414; --paper:#ffffff; --soft:#f1f1f1;
+  --band:#1a1a1a; --ng:#b3140c; --ngbg:#ffe4e1; --ok:#0b6b2f; --okbg:#e2f2e7;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  font-size:17px;line-height:1.7;}
+img,svg{max-width:100%;}
+header{background:var(--band);color:#fff;padding:24px 18px 20px;}
+header .co{font-size:15px;font-weight:700;letter-spacing:.06em;}
+header h1{margin:6px 0 0;font-size:23px;line-height:1.35;font-weight:700;letter-spacing:.04em;}
+header p{margin:10px 0 0;font-size:15px;opacity:.9;line-height:1.6;}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 60px;}
+h2{font-size:18px;margin:32px 0 12px;padding:8px 12px;background:var(--band);color:#fff;
+  font-weight:700;letter-spacing:.06em;}
+h3{font-size:16.5px;margin:22px 0 6px;padding-left:10px;border-left:5px solid var(--line);}
+p{margin:0 0 12px;}
+.url{display:block;background:var(--soft);border:1px solid #bdbdbd;padding:11px 12px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:15px;
+  word-break:break-all;margin:10px 0;}
+.step{border:1.5px solid var(--line);margin-bottom:12px;}
+.step .n{background:var(--soft);border-bottom:1.5px solid var(--line);padding:8px 12px;
+  font-weight:700;font-size:16.5px;display:flex;gap:10px;align-items:baseline;}
+.step .n b{min-width:1.5em;font-size:19px;}
+.step .b{padding:12px;}
+.step .b p:last-child{margin-bottom:0;}
+.note{background:var(--soft);border-left:5px solid var(--line);padding:11px 13px;
+  font-size:15.5px;margin:12px 0;}
+.warn{background:var(--ngbg);border:1.5px solid var(--ng);color:var(--ng);
+  padding:11px 13px;font-weight:700;font-size:15.5px;margin:12px 0;}
+.ok{background:var(--okbg);border:1.5px solid var(--ok);padding:11px 13px;font-size:15.5px;margin:12px 0;}
+ul,ol{margin:10px 0 14px;padding-left:1.4em;}
+li{margin-bottom:7px;}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15.5px;}
+th,td{border:1px solid #9a9a9a;padding:8px 10px;text-align:left;vertical-align:top;}
+th{background:var(--soft);font-weight:700;white-space:nowrap;}
+.q{font-weight:700;margin:18px 0 4px;font-size:16.5px;}
+.a{margin:0 0 14px;color:var(--sub);}
+.key{display:inline-block;border:1.5px solid var(--line);border-bottom-width:3px;border-radius:4px;
+  padding:1px 8px;font-weight:700;font-size:15px;background:#fff;white-space:nowrap;}
+/* 合言葉。現場で探させないよう、いちばん目立つ形にする */
+.pw{border:3px solid var(--line);margin:14px 0;}
+.pw .t{background:var(--band);color:#fff;font-weight:700;font-size:15px;
+  padding:7px 12px;letter-spacing:.06em;}
+.pw .v{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:32px;font-weight:700;letter-spacing:.10em;text-align:center;
+  padding:16px 10px 14px;word-break:break-all;line-height:1.2;}
+.pw .m{border-top:1.5px solid var(--line);background:var(--soft);
+  font-size:14px;padding:8px 12px;color:var(--sub);line-height:1.5;}
+.secret{background:var(--ngbg);border:2px solid var(--ng);color:var(--ng);
+  font-weight:700;padding:11px 13px;font-size:15.5px;margin:14px 0;line-height:1.6;}
+footer{margin-top:40px;padding-top:16px;border-top:1.5px solid var(--line);
+  font-size:14px;color:var(--sub);line-height:1.6;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="co">株式会社　市岡工業</div>
+  <h1>出荷点検チェック表<br>使い方</h1>
+  <p>自社機械を現場へ出す前の点検を、スマホで記録するアプリです。<br>
+     記録した内容は、そのまま紙の出荷点検票にして印刷できます。</p>
+  
+</header>
+
+<div class="wrap">
+
+<h2>１．全体の流れ</h2>
+
+<table>
+  <tr><th>工場</th><td>機械を出す前に、スマホで点検して記録する</td></tr>
+  <tr><th>総務</th><td>パソコンで記録を開き、「点検票にする（PDF）」でPDFにする</td></tr>
+  <tr><th>提出</th><td>そのPDFを安全書類に貼り付けて提出する</td></tr>
+</table>
+
+<p>出す書類の形は今までどおりです。書くところがスマホに変わっただけ、と思ってください。
+   提出は電子なので、紙に刷って郵送する必要はありません。</p>
+
+<div class="note">
+  現場に搬入したときは、この結果を従来の「持込機械等使用届（安衛則第329条）」の点検表に
+  転記します。そこは今までと変わりません。
+</div>
+
+<h2>２．最初の設定（1回だけ）</h2>
+
+<div class="step">
+  <div class="n"><b>1</b><span>URLを開く</span></div>
+  <div class="b">
+    <p>ブラウザで、このアドレスを開きます。</p>
+    <span class="url">https://ichioka-kougyou.github.io/hogogu-tenken/shukka/</span>
+    <p>ログインは要りません。開くだけです。<b>iPhoneでもAndroidでもパソコンでも同じように使えます。</b></p>
+    <div class="note">
+      <b>URLはLINEで配って構いません。</b>LINEで送って、受け取った人がそれを開けば使えます。<br>
+      ひとつだけ。<b>LINEの中で開いたままだと、次の「ホーム画面に追加」ができません。</b>
+      LINEでURLを受け取ったら、右上のメニューから
+      <b>「Safariで開く」「ブラウザで開く」</b>を選んでから、次に進んでください。
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="n"><b>2</b><span>ホーム画面に追加する</span></div>
+  <div class="b">
+    <p>毎回URLを打たなくて済むように、アイコンをホーム画面に置きます。黒地に「出荷／点検」と書いたアイコンが出ます。</p>
+
+    <h3 style="margin-top:6px">iPhone・iPad（Safari）</h3>
+    <ol>
+      <li>画面の下にある<b>共有ボタン</b>（四角に上向きの矢印）を押す</li>
+      <li>一覧を下に送って<b>「ホーム画面に追加」</b>を選ぶ</li>
+      <li>右上の<b>「追加」</b>を押す</li>
+    </ol>
+
+    <h3>Android（Chrome）</h3>
+    <ol>
+      <li>画面の右上にある<b>「︙」</b>（点が縦に3つ）を押す</li>
+      <li><b>「ホーム画面に追加」</b>を選ぶ。機種によっては<b>「アプリをインストール」</b>と出ます</li>
+      <li><b>「追加」</b>や<b>「インストール」</b>を押す</li>
+    </ol>
+
+    <h3>パソコン（Edge・Chrome）</h3>
+    <p>そのまま使えます。よく使うならお気に入りに入れてください。
+       アドレス欄の右のほうに出る<b>インストールの印</b>（画面に下向き矢印のような形）を押すと、
+       アプリとして単独の窓で開けます。総務のパソコンはこれが便利です。</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="n"><b>3</b><span>合言葉を入れる</span></div>
+  <div class="b">
+    <p>アプリを開いて、上の<b>「設定」</b>を押します。いちばん上に「合言葉」の欄があります。
+       下の合言葉を入れて、<b>「つないでみる」</b>を押します。</p>
+
+    <div class="pw">
+      <div class="t">合　言　葉</div>
+      <div class="v" style="font-size:19px;letter-spacing:.04em">事務所で聞いてください</div>
+      <div class="m">このページは誰でも開けるので、合言葉は載せていません。<br>
+        保護具点検チェックと同じ合言葉です。</div>
+    </div>
+
+    <div class="ok"><b>「つながりました。」</b>と出れば設定は終わりです。</div>
+    <p>一度入れれば、その端末は次から自動でつながります。毎回は聞かれません。</p>
+  </div>
+</div>
+
+<div class="note">
+  合言葉は、事務所で聞くか、市岡から受け取ってください。<br>
+  アプリのURLは誰でも開けます。合言葉を人に教えるときは、そのことを承知のうえで渡してください。
+</div>
+
+<div class="note">
+  <b>合言葉を入れないとどうなるか。</b>
+  そのスマホで入れた記録は、そのスマホの中だけに残ります。
+  総務のパソコンには出てきません。だから、点検をする人の端末には必ず入れてください。
+  総務のパソコンにも同じ合言葉を入れます。
+</div>
+
+<h2>３．点検のしかた</h2>
+
+<h3>機械を選ぶ</h3>
+<p>いちばん上の「機械を選ぶ」から、これから出す機械を選びます。6種類あります。</p>
+<ul>
+  <li>SK-01　吹付機</li>
+  <li>SK-02　吊下式削孔機</li>
+  <li>SK-03　アタッチメントドリル</li>
+  <li>SK-04　種子吹付機（シーダー）</li>
+  <li>SK-05　仮設分電盤</li>
+  <li>SK-06　砂計量機</li>
+</ul>
+<p>選ぶと、その機械に合った点検項目に切り替わります。</p>
+
+<h3>出荷の内容を入れる</h3>
+<p>管理番号、出荷先の現場名、元請・一次会社、出荷予定日、返却予定日を入れます。
+   型式・規格は最初から入っているものもあります。</p>
+
+<h3>判定する</h3>
+<p>項目ごとに、3つのうち1つを押します。</p>
+<table>
+  <tr><th>良</th><td>問題なし</td></tr>
+  <tr><th>否</th><td>悪いところがある。押すと下に赤い欄が出ます。<b>ここに理由を書かないと記録できません</b></td></tr>
+  <tr><th>該当なし</th><td>その機械には付いていない。項目名に線が引かれます</td></tr>
+</table>
+<p>項目名の下に「着眼点」が書いてあります。<b>何を見ればいいか分からないときはそこを読んでください。</b>
+   慣れていない人でも同じ判断ができるように付けてあります。</p>
+<p>上の4つの数字（良／否／該当なし／未）で、残りが何件あるか分かります。「未」が0になれば全部見終わりです。</p>
+
+<div class="warn">
+  「否」にしたら、<b>なぜ否なのかを必ず書きます。</b><br>
+  書くまで記録できません。赤い欄が出るので、そこに
+  <b>何がどう悪いか</b>と<b>どう直したか</b>を書いてください。<br>
+  書いた内容は、紙の点検票のその項目の行、右端の「処置・測定値」欄に入ります。
+</div>
+
+<div class="warn">
+  「否」が1つでも残る機械は出荷しません。<br>
+  「要整備」で出す場合は、出荷責任者の承認をもらってください。
+</div>
+
+<p>総合判定そのものは止めていません。否があっても「合格」を選べます（確認は出ます）。
+   現場の判断に任せる作りです。ただし<b>理由の記入だけは省けません。</b></p>
+
+<h3>測定値を入れる</h3>
+<p>絶縁抵抗や圧力などは、<b>測った数字を入れます。</b>横に基準値が出ているので、それと見比べてください。
+   絶縁抵抗は電源を切ってから測ります。</p>
+<p>基準値に「参考」と書いてあるものは、まだ取扱説明書で確認できていない目安の値です。
+   実際の値が分かったら教えてください。印字を差し替えます。</p>
+
+<h3>記録する</h3>
+<p>特記事項、総合判定（合格／要整備／出荷不可）、判定年月日、点検者、確認者（職長）を入れて、
+   いちばん下の<b>「この内容で記録する」</b>を押します。</p>
+<ul>
+  <li>点検者 … 福嶋 剛／西尾 正敏 から選びます。ほかの人なら「その他」で手入力できます</li>
+  <li>確認者（職長）… 職長の一覧から選びます</li>
+  <li>出荷責任者 … 工場長で固定です。触っても変わりません</li>
+</ul>
+
+<h3>サインする</h3>
+<p><b>点検者と出荷責任者は、その場で手書きのサインをします。</b>
+   「サインする」を押すと黒い画面になるので、白いところに<b>指かタッチペン</b>で名前を書きます。</p>
+<ul>
+  <li>書き直したいときは<b>「書き直す」</b>。消しゴムは要りません。全部消えて白紙に戻ります</li>
+  <li>書けたら<b>「これでいい」</b>を押します</li>
+  <li>やめるときは<b>「やめる」</b></li>
+</ul>
+<p>書いたサインは、そのまま紙の出荷点検票の押印欄に入ります。判子の代わりです。</p>
+<div class="note">
+  <b>サインは毎回その場で書きます。</b>前に書いたものを使い回す仕組みにはしていません。
+  同じ判子が並ぶのを避けるためです。
+</div>
+<p>サインをしないまま記録しようとすると、確認が出ます。急ぎのときはそのまま記録もできますが、
+   提出する書類なので書いてから記録してください。</p>
+
+<h2>４．PDFにして提出する（総務）</h2>
+
+<p>提出は電子で行います。<b>PDFにして、安全書類に貼り付けて出す</b>のが基本の流れです。
+   紙に刷って郵送することは、いまはありません。</p>
+
+<div class="step">
+  <div class="n"><b>1</b><span>記録を開く</span></div>
+  <div class="b"><p>パソコンで同じURLを開いて、上の<b>「記録」</b>を押します。
+    合言葉を入れてあれば、工場で入れた点検がここに並びます。</p></div>
+</div>
+
+<div class="step">
+  <div class="n"><b>2</b><span>点検票にする</span></div>
+  <div class="b">
+    <p>その記録の<b>「点検票にする（PDF）」</b>を押すと、出荷点検票の形になって出てきます。</p>
+    <p>良・否は選んだほうに丸が付き、該当なしの項目には線が引かれます。処置の内容も入ります。
+       点検者と出荷責任者の欄には、工場で書いた手書きのサインがそのまま入ります。
+       手で書いたものと同じ見た目です。</p>
+    <p><b>総務で内容を確かめ直す必要はありません。</b>工場で判定もサインも済んでいます。</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="n"><b>3</b><span>PDFで保存する</span></div>
+  <div class="b">
+    <p>上の<b>「PDFで保存する」</b>を押します。保存先を選ぶ画面が出るので、
+       プリンターの一覧から<b>「PDFとして保存」</b>（Edgeなら「Microsoft Print to PDF」または
+       「PDF として保存」）を選んで、保存を押します。</p>
+    <p>A4縦・1台につき1枚です。</p>
+    <div class="note">
+      ファイル名は、<b>出荷点検票_SK-01_吹付機_A-31_2026-09-02</b> のように、
+      機械名・管理番号・日付が入った名前が最初から入ります。そのまま保存してください。
+      安全書類に貼り付けたとき、どの機械のものか分かるようにしてあります。
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="n"><b>4</b><span>安全書類に付けて提出する</span></div>
+  <div class="b">
+    <p>保存したPDFを、安全書類の中に貼り付けて提出します。</p>
+    <p>控は社内に残します。保存期間は出荷後3年です。</p>
+  </div>
+</div>
+
+<h3>LINEで送りたいとき</h3>
+<p>記録の<b>「LINEなどで送る」</b>を押すと、送り先を選ぶ一覧が出ます。そこからLINEを選んでください。
+   トークにそのまま貼れる<b>文字</b>で送られます。</p>
+<p>送られる中身は、機械名・管理番号・出荷先・総合判定・否の項目と処置・測定値・特記事項・
+   点検者と確認者と出荷責任者の名前です。<b>スマホの画面でそのまま読めます。</b></p>
+<div class="note">
+  PDFはスマホだと小さくて読みにくいので、LINEには文字で流します。
+  正式な書類として出すときはPDFを使ってください。
+</div>
+
+<h3>備考　紙で出したいとき</h3>
+<p>紙でも出せます。ボタンを分けてあります。</p>
+<table>
+  <tr><th>PDFで保存する</th><td>保存先の一覧から<b>「PDFとして保存」</b>を選ぶ。ふだんはこちら</td></tr>
+  <tr><th>紙に印刷する</th><td>保存先の一覧から<b>プリンター</b>を選ぶ</td></tr>
+</table>
+<p>どちらのボタンを押しても同じ画面が出ます。<b>保存先で何を選ぶかが違うだけ</b>です。
+   間違えて押しても、その画面で選び直せます。</p>
+
+<div class="note">
+  機械に付けて出す控えなど、紙が要る場面はこちらから刷ってください。<br>
+  白紙の出荷点検票（手書き用）も用意してあります。置き場所は
+  「03_システム／03_機械設備／shukka-tenken」です。
+</div>
+
+<h2>５．困ったとき</h2>
+
+<p class="q">電波が届かない場所で使える？</p>
+<p class="a">使えます。入力した記録は端末に残り、「送り待ち」と表示されます。
+  電波のあるところに戻ると自動で送られます。何もしなくて構いません。
+  ただし、その端末で<b>一度も開いたことがない場合は開けません。</b>電波のあるところで一度開いておいてください。</p>
+
+<p class="q">総務のパソコンに、工場の記録が出てこない</p>
+<p class="a">どちらかの端末で合言葉が入っていません。設定タブを見て、
+  「会社のデータベースにつながっています」と出ているか確かめてください。</p>
+
+<p class="q">「送り待ち」が消えない</p>
+<p class="a">電波が弱いか、合言葉が入っていません。設定タブの「送り待ちをいま送る」を押してみてください。
+  それでも残るときは連絡してください。記録自体は端末に残っているので消えません。</p>
+
+<p class="q">記録が消えた</p>
+<p class="a">Safariと、ホーム画面のアイコンとでは、保存する場所が別になります。
+  いつも同じほう（ホーム画面のアイコン）から開いてください。</p>
+
+<p class="q">項目を増やしたい・減らしたい</p>
+<p class="a">言ってください。こちらで直します。直すと、アプリと紙の両方に同じように反映されます。</p>
+
+<h2>６．決まりごと</h2>
+<ul>
+  <li>機械1台につき1枚。</li>
+  <li><b>「否」が1つでも残る機械は出荷しない。</b>「要整備」で出す場合は出荷責任者の承認をもらう。</li>
+  <li><b>「否」にしたら理由を必ず書く。書かないと記録できない。</b>何がどう悪いか・どう直したかを書く。
+      直したら再点検して「良」に直す。</li>
+  <li>その機械に無い項目は「該当なし」。</li>
+  <li>控を社内に保存。原本は機械に付けて出荷。保存期間は出荷後3年。</li>
+  <li>現場搬入時は、この結果を「持込機械等使用届」の点検表に転記する。</li>
+</ul>
+
+<footer>
+  株式会社 市岡工業／出荷点検チェック表　使い方<br>
+  2026年9月2日<br>
+  アプリ　https://ichioka-kougyou.github.io/hogogu-tenken/shukka/
+</footer>
+
+</div>
+</body>
+</html>

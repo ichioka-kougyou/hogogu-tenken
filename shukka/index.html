@@ -1855,6 +1855,14 @@ function renderSet(){
      + '<div class="muted">保存の可否：'+(canStore?'保存できます':'このブラウザでは保存できません（画面を閉じると消えます）')+'</div>'
      + '<hr class="sep"><button class="sub" id="sendAll" style="width:100%">送り待ちをいま送る</button>'
      + '</div></div>';
+  h += '<div class="card"><h2>使い方</h2><div class="body">'
+     + '<a href="./tsukaikata.html" style="display:block;text-align:center;font-weight:700;'
+     +   'padding:12px;border:1.5px solid var(--line);color:var(--ink);text-decoration:none">'
+     +   '使い方を見る（取説）</a>'
+     + '<div class="muted" style="margin-top:8px">このページのアドレスをLINEで送れば、'
+     + '受け取った人もそのまま読めます。合言葉は載せていないので、別に伝えてください。</div>'
+     + '</div></div>';
+
   h += '<div class="card"><h2>この様式について</h2><div class="body">'
      + '<div class="muted">'+MACHINES.map((m,k)=>'SK-'+String(k+1).padStart(2,'0')+'　'+esc(m.name)).join('<br>')+'</div>'
      + '<hr class="sep">'
