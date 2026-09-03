@@ -1106,6 +1106,7 @@ const st = {
   remove(k){ if(canStore){ localStorage.removeItem(k); } else { memStore.delete(k); } }
 };
 const REC_PREFIX = P+'record:';
+const DRAFT_KEY  = P+'draft';
 
 // 日付は必ず現地時間で作る。toISOString() はUTCなので朝9時前だと前日になる。
 function todayStr(d){
@@ -1123,6 +1124,22 @@ function readRecords(){
   return out.sort((a,b)=> b.ts - a.ts);
 }
 function saveRecord(rec){ st.set(REC_PREFIX+rec.ts, JSON.stringify(rec)); }
+
+/* ---- 端末の控えの片づけ ----
+   送り終えた記録は会社のデータベースに入っているので、端末から消してよい。
+   消しても記録タブには変わらず出る（データベースから取ってくるため）。
+   まだ送れていない記録は絶対に消さない。 */
+function sentRecords(){
+  const pend = pendingList();
+  return readRecords().filter(r => pend.indexOf(r.ts) < 0);
+}
+function pruneLocal(keep){
+  const sent = sentRecords();            // 新しい順
+  const drop = sent.slice(keep);         // 古いほうから外す
+  drop.forEach(r => st.remove(REC_PREFIX + r.ts));
+  return drop.length;
+}
+const KEEP_LOCAL = 50;   // 端末に残しておく送信済みの件数
 
 /* ---- 会社のデータベース（Supabase）とのやり取り ---- */
 const SB_URL = 'https://sqpodqbaujoanqjzfvbo.supabase.co';
@@ -1401,6 +1418,49 @@ function newForm(idx){
 // 点検者で「その他」を選んで手入力しているあいだだけ true
 let inspectorOther = false;
 let foremanOther = false;
+
+/* ---- 書きかけの保存 ----
+   点検の途中でLINEを見たり画面を消したりすると、iPhoneは画面を捨てて開き直す。
+   そのたびに書きかけが消えていたので、端末に控えて続きから開けるようにした。
+   記録し終えたときと、最初からやり直したときに消す。 */
+let draftTimer = null;
+let draftRestored = false;
+
+function formHasContent(){
+  if(!form) return false;
+  if(form.items.some(i=>i.status)) return true;
+  if(['mgmtNo','site','client','shipDate','returnDate','remark','judge','inspector','foreman'].some(k=>String(form[k]||'').trim())) return true;
+  if((form.meas||[]).some(m=>String(m.value||'').trim())) return true;
+  const s = form.signs||{};
+  return !!(s.inspector || s.shipper);
+}
+function saveDraft(){
+  if(draftTimer) clearTimeout(draftTimer);
+  draftTimer = setTimeout(()=>{
+    try{
+      if(formHasContent()) st.set(DRAFT_KEY, JSON.stringify({ mi: mi, form: form, at: Date.now() }));
+      else st.remove(DRAFT_KEY);
+    }catch(e){ /* 容量いっぱいなどは黙って諦める。記録そのものには影響しない */ }
+  }, 400);
+}
+function loadDraft(){
+  try{
+    const d = JSON.parse(st.get(DRAFT_KEY));
+    if(d && d.form && Array.isArray(d.form.items) && d.form.items.length){
+      mi = (typeof d.mi === 'number' && MACHINES[d.mi]) ? d.mi : 0;
+      form = d.form;
+      if(!form.signs) form.signs = {};
+      draftRestored = true;
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+function clearDraft(){
+  if(draftTimer) clearTimeout(draftTimer);
+  st.remove(DRAFT_KEY);
+  draftRestored = false;
+}
 function counts(){
   const ng = form.items.filter(i=>i.status==='ng').length;
   const na = form.items.filter(i=>i.status==='na').length;
@@ -1432,12 +1492,16 @@ function render(){
 }
 
 function renderCheck(){
-  if(!form) form = newForm(mi);
+  if(!form && !loadDraft()) form = newForm(mi);
+  saveDraft();
   const c = counts();
   const secs = ['共通','機種別','付属品'];
   const secTitle = {共通:'Ⅰ．共通点検項目（全機種）', 機種別:'Ⅱ．機種別点検項目　―　'+form.machine, 付属品:'Ⅲ．付属品・書類'};
 
   let h = '';
+  if(draftRestored){
+    h += '<div class="state on">書きかけを続きから開きました。そのまま続けてください。</div>';
+  }
   h += '<label class="f"><span>機械を選ぶ</span><select id="mSel">'
      + MACHINES.map((m,k)=>'<option value="'+k+'"'+(k===mi?' selected':'')+'>SK-'+String(k+1).padStart(2,'0')+'　'+esc(m.name)+'</option>').join('')
      + '</select></label>';
@@ -1561,17 +1625,17 @@ function renderCheck(){
     if(c2.ok+c2.ng+c2.na > 0 && !confirm('機械を変えると、いま記入した点検の内容は消えます。よろしいですか。')){
       e.target.value = mi; return;
     }
-    mi = k; inspectorOther = false; foremanOther = false; form = newForm(mi); render();
+    mi = k; inspectorOther = false; foremanOther = false; clearDraft(); form = newForm(mi); render();
   };
   [['f_model','model'],['f_mgmtNo','mgmtNo'],['f_site','site'],['f_client','client'],
    ['f_shipDate','shipDate'],['f_returnDate','returnDate'],['f_remark','remark'],
    ['f_judgeDate','judgeDate'],['f_inspector','inspector'],['f_foreman','foreman']
   ].forEach(([id,key])=>{
     const el = document.getElementById(id);
-    if(el) el.oninput = ()=>{ form[key] = el.value; };
+    if(el) el.oninput = ()=>{ form[key] = el.value; saveDraft(); };
   });
   const jd = document.getElementById('f_judge');
-  jd.onchange = ()=>{ form.judge = jd.value; };
+  jd.onchange = ()=>{ form.judge = jd.value; saveDraft(); };
   const isel = document.getElementById('f_inspectorSel');
   isel.onchange = ()=>{
     if(isel.value === '__other'){ inspectorOther = true; form.inspector = ''; }
@@ -1605,6 +1669,7 @@ function renderCheck(){
   main.querySelectorAll('[data-memo]').forEach(inp=>{
     inp.oninput = ()=>{
       form.items[Number(inp.dataset.memo)].memo = inp.value;
+      saveDraft();
       // 書き始めたら赤い催促を消す。全体を描き直すと入力が途切れるのでここだけ触る
       const box = inp.parentElement;
       const filled = !!inp.value.trim();
@@ -1620,11 +1685,11 @@ function renderCheck(){
     };
   });
   main.querySelectorAll('[data-meas]').forEach(inp=>{
-    inp.oninput = ()=>{ form.meas[Number(inp.dataset.meas)].value = inp.value; };
+    inp.oninput = ()=>{ form.meas[Number(inp.dataset.meas)].value = inp.value; saveDraft(); };
   });
   document.getElementById('saveBtn').onclick = doSave;
   document.getElementById('clearBtn').onclick = ()=>{
-    if(confirm('記入をやめて最初からにします。よろしいですか。')){ inspectorOther = false; foremanOther = false; form = newForm(mi); render(); }
+    if(confirm('記入をやめて最初からにします。よろしいですか。')){ inspectorOther = false; foremanOther = false; clearDraft(); form = newForm(mi); render(); }
   };
 }
 
@@ -1685,6 +1750,8 @@ async function doSave(){
         + '設定タブを開いて、会社のデータベースにつながっているか確かめてください。';
   }
   alert(msg);
+  pruneLocal(KEEP_LOCAL);   // 端末が記録でいっぱいにならないよう、古い送信済みから外す
+  clearDraft();
   inspectorOther = false;
   foremanOther = false;
   form = newForm(mi);
@@ -1849,11 +1916,20 @@ function renderSet(){
      + '<div id="connMsg" class="muted" style="margin-top:8px"></div>'
      + '<div class="note" style="margin-top:10px">合言葉はこの端末に保存され、次からは自動でつながります。合言葉はLINEで送らず、口頭か紙で受け取ってください。</div>'
      + '</div></div>';
+  const nSent = sentRecords().length;
+  const nPend = pendingList().length;
   h += '<div class="card"><h2>この端末</h2><div class="body">'
-     + '<div class="muted">端末の記録：'+readRecords().length+'件　／　送り待ち：'+pendingList().length+'件</div>'
+     + '<div class="muted">端末に残っている記録：'+readRecords().length+'件（送信済 '+nSent+'件／送り待ち '+nPend+'件）</div>'
      + '<div class="muted">端末ID：'+esc(deviceId())+'</div>'
      + '<div class="muted">保存の可否：'+(canStore?'保存できます':'このブラウザでは保存できません（画面を閉じると消えます）')+'</div>'
+     + (st.get(DRAFT_KEY) ? '<div class="muted">書きかけ：1件（点検タブで続きから開けます）</div>' : '')
      + '<hr class="sep"><button class="sub" id="sendAll" style="width:100%">送り待ちをいま送る</button>'
+     + '<button class="sub" id="tidy" style="width:100%;margin-top:8px"'+(nSent?'':' disabled')+'>'
+     +   '送信済みの控えを片づける（'+nSent+'件）</button>'
+     + '<div class="note" style="margin-top:8px">片づけても記録は消えません。'
+     + '会社のデータベースに入っているので、記録タブには変わらず出ます。'
+     + '<b>送り待ちの分は片づけません。</b>　なお、記録し終えるたびに、'
+     + '古い送信済みの控えは'+KEEP_LOCAL+'件を残して自動で外れます。</div>'
      + '</div></div>';
   h += '<div class="card"><h2>使い方</h2><div class="body">'
      + '<a href="./tsukaikata.html" style="display:block;text-align:center;font-weight:700;'
@@ -1881,6 +1957,19 @@ function renderSet(){
     else { msg.textContent = 'つながりませんでした。合言葉と電波を確かめてください。'; }
   };
   document.getElementById('sendAll').onclick = async ()=>{ await flushPending(); renderSet(); };
+  const tidy = document.getElementById('tidy');
+  if(tidy && !tidy.disabled){
+    tidy.onclick = ()=>{
+      const n = sentRecords().length;
+      if(!confirm('送信済みの控え'+n+'件を、この端末から片づけます。\n\n'
+                + '記録そのものは会社のデータベースに残るので、記録タブには変わらず出ます。\n'
+                + '送り待ちの分は片づけません。\n\nよろしいですか。')) return;
+      const done = pruneLocal(0);
+      remote.loaded = false;
+      alert(done+'件を片づけました。');
+      renderSet();
+    };
+  }
 }
 
 window.addEventListener('online', ()=>{ flushPending(); });
