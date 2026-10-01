@@ -1362,7 +1362,7 @@ const ITEMS = [
     no: "01",
     short: "ヘルメット",
     name: "ヘルメット",
-    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認</span>。内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。",
+    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認</span>。内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。<span class=\"desc-highlight\">⚠ 名前や血液型のシールが貼ってあるか確認する。</span>",
     sizeLabel: "交換するヘルメットの種類",
     sizes: ["1本線", "2本線"]
   },
@@ -1371,7 +1371,7 @@ const ITEMS = [
     no: "02",
     short: "ハーネス",
     name: "法面用フルハーネス",
-    desc: "<span class=\"desc-highlight\">⚠ ベルト全体の擦り切れ・セメントなどによる汚れ</span>・毛羽立ち・薬品汚れ・焼け焦げを確認。バックル・D環に変形やガタつきがないか。裏側も見る。",
+    desc: "<span class=\"desc-highlight\">⚠ ベルト全体の擦り切れ・セメントなどによる汚れ</span>・毛羽立ち・薬品汚れ・焼け焦げを確認。バックル・D環に変形やガタつきがないか。裏側も見る。<span class=\"desc-highlight\">⚠ 体型に合ったサイズを使用しているかも確認。</span>",
     sizeLabel: "交換するハーネスのサイズ",
     sizes: ["M", "L", "LL"]
   },
@@ -1380,14 +1380,14 @@ const ITEMS = [
     no: "03",
     short: "2丁掛け",
     name: "2丁掛け安全帯",
-    desc: "移動時にフックを掛け替える際、無胴綱状態（体が構造物とつながっていない状態）を作らないため2丁掛けとしている。ランヤード、ショックアブソーバーの傷みを全長確認し、ショックアブソーバーが伸びていたら即交換する。フックは外れ止めがバネで自動的に閉じるか数回動かして確認し、変形・摩耗がないか確認する。2丁掛けのため、<span class=\"desc-highlight\">⚠ 両方のランヤードとフックを点検</span>する。"
+    desc: "移動時にフックを掛け替える際、無胴綱状態（体が構造物とつながっていない状態）を作らないため2丁掛けとしている。ランヤード、ショックアブソーバーの傷みを全長確認し、ショックアブソーバーが伸びていたら即交換する。フックは外れ止めがバネで自動的に閉じるか数回動かして確認し、変形・摩耗がないか確認する。2丁掛けのため、<span class=\"desc-highlight\">⚠ 両方のランヤードとフックを点検する。</span>"
   },
   {
     id: "rollip",
     no: "04",
     short: "ロリップ",
     name: "ロリップ",
-    desc: "ライフラインに正しくセットされているか確認。ロック解除レバーがスムーズに動き、確実にロックするかを確認。<span class=\"desc-highlight\">⚠ 爪が2ミリ以下になっていないか確認</span>。本体の摩耗・変形がないか確認。"
+    desc: "ライフラインに正しくセットされているか確認。ロック解除レバーがスムーズに動き、確実にロックするかを確認。<span class=\"desc-highlight\">⚠ 爪が2ミリ以下になっていないか確認</span>。<span class=\"desc-highlight\">⚠ 本体の摩耗・変形、また、過度な汚れがないか確認。</span>"
   },
   {
     id: "airconwear",
@@ -1395,7 +1395,7 @@ const ITEMS = [
     short: "空調服",
     name: "空調服 / ファン / バッテリー",
     desc: "<ul class=\"desc-list\">"
-        + "<li><span class=\"part\">空調服</span><span>服の破れ・汚れがないか確認する。</span></li>"
+        + "<li><span class=\"part\">空調服</span><span><span class=\"desc-highlight\">⚠ 服の破れ・汚れがないか確認する。</span></span></li>"
         + "<li><span class=\"part\">ファン</span><span><span class=\"desc-highlight\">⚠ 正常に回転するか確認</span>し、取付部のゆるみを確認する。</span></li>"
         + "<li><span class=\"part\">バッテリー</span><span>充電状態を確認する。ケーブル・コネクター部に破損がないか確認する。</span></li>"
         + "</ul>",
@@ -1618,11 +1618,16 @@ function updateSummary(){
   summaryEl.innerHTML = `<b>${done} / ${total}</b> 項目 確認済み` + flagText;
 
   const banner = document.getElementById('alertBanner');
+  // 使用不可と要注意が両方あるときは、どちらも消さずに続けて出す（片方だけ読んで終わらせないため）
+  const NG_TEXT = '⚠ 「使用不可・交換」の項目があります。その保護具は絶対に使わず、職長に報告し、ただちに交換してください。';
+  const CAUTION_TEXT = '⚠ 「要注意」の項目があります。作業前に職長に確認してもらい、作業を行ってください。';
+  const BOTH_TEXT = NG_TEXT
+    + '<br>また、「要注意」の項目の保護具については、作業前に職長に確認してもらい、作業を行ってください。';
   if(unusableCount>0){
-    banner.textContent = '⚠ 「使用不可・交換」の項目があります。その保護具は絶対に使わず、職長へ報告してください。';
+    banner.innerHTML = cautionCount>0 ? BOTH_TEXT : NG_TEXT;
     banner.classList.add('show');
   }else if(cautionCount>0){
-    banner.textContent = '⚠ 「要注意」の項目があります。作業前に職長へ相談してください。';
+    banner.textContent = CAUTION_TEXT;
     banner.classList.add('show');
   }else{
     banner.classList.remove('show');
