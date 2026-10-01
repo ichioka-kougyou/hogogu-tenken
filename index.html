@@ -294,6 +294,44 @@
   .status-btn.caution.selected{background:var(--caution);border-color:var(--caution);color:var(--on-color);}
   .status-btn.ng.selected{background:var(--ng);border-color:var(--ng);color:var(--on-color);}
 
+  /* 交換するサイズ・種類（使用不可のときだけ出す）。
+     備品管理アプリの在庫はサイズごとに分かれているため、ここで選んでおくと向こうで探さずに済む。 */
+  .size-wrap{display:none;margin-top:12px;}
+  .size-wrap.show{display:block;}
+  .size-wrap .size-label{
+    font-size:13px;
+    font-weight:800;
+    color:var(--ink-2);
+    display:block;
+    margin-bottom:8px;
+  }
+  .size-btns{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .size-btn{
+    padding:11px 16px;
+    border-radius:8px;
+    border:2px solid var(--line);
+    background:var(--surface);
+    color:var(--ink-2);
+    font-size:15px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .size-btn.selected{
+    background:var(--ink);
+    color:var(--surface);
+    border-color:var(--ink);
+  }
+  .size-hint{
+    margin:8px 0 0;
+    font-size:12.5px;
+    color:var(--ink-2);
+  }
+
   .memo-wrap{display:none;margin-top:12px;}
   .memo-wrap.show{display:block;}
   .memo-wrap textarea{
@@ -490,6 +528,92 @@
     color:var(--surface);
     border-color:var(--ink);
   }
+  /* 使用不可が残っているときだけ、サブタブに件数を出す */
+  .subtab .cnt{
+    display:inline-block;
+    min-width:18px;
+    margin-left:4px;
+    padding:0 5px;
+    border-radius:9px;
+    background:var(--ng);
+    color:var(--on-color);
+    font-size:12px;
+  }
+
+  /* 交換がいる物 */
+  .ex-lead{
+    background:var(--surface);
+    border:2px solid var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    margin-bottom:14px;
+    font-size:14px;
+    color:var(--ink-2);
+  }
+  .ex-card{
+    background:var(--surface);
+    border:2px solid var(--ink);
+    border-radius:var(--radius);
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .ex-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--ng);
+    color:var(--on-color);
+    padding:10px 14px;
+  }
+  .ex-head .nm{font-weight:800;font-size:16px;}
+  .ex-head .qt{font-size:14px;white-space:nowrap;}
+  .ex-body{padding:12px 14px;}
+  .ex-line{
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .ex-line:last-of-type{border-bottom:none;}
+  .ex-line .who{font-weight:800;}
+  .ex-line .sub{color:var(--ink-2);font-size:13px;}
+  .ex-line .memo{color:var(--ng);font-weight:800;}
+  /* 交換するサイズ・種類。備品を出す人が最初に見るところなので目立たせる */
+  .ex-line .sz{
+    display:inline-block;
+    background:var(--ink);
+    color:var(--surface);
+    border-radius:6px;
+    padding:1px 9px;
+    font-size:13px;
+    font-weight:800;
+  }
+  .ex-go{
+    display:block;
+    width:100%;
+    margin-top:10px;
+    padding:13px 10px;
+    border:2px solid var(--ink);
+    border-radius:var(--radius);
+    background:var(--hazard);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:15px;
+    font-weight:800;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .ex-note{
+    background:var(--surface);
+    border:2px dashed var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    margin-bottom:14px;
+    font-size:13px;
+    color:var(--ink-2);
+  }
+  .ex-note .nm{font-weight:800;color:var(--ink);}
 
   /* 月の切り替え */
   .month-nav{
@@ -1139,6 +1263,7 @@
     <div class="subtabs">
       <button type="button" class="subtab active" data-mode="site">現場ごとの表</button>
       <button type="button" class="subtab" data-mode="card">1件ずつ見る</button>
+      <button type="button" class="subtab" data-mode="exchange">交換がいる物<span class="cnt" id="exCount" style="display:none;">0</span></button>
     </div>
 
     <div class="storage-warn" id="storageWarn">
@@ -1154,6 +1279,7 @@
 
     <div id="siteTable"></div>
     <div id="historyList" style="display:none;"></div>
+    <div id="exchangeList" style="display:none;"></div>
   </section>
 
   <!-- SETTINGS VIEW -->
@@ -1227,20 +1353,27 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// sizes … 「使用不可・交換」を選んだときに、交換するものの種類／サイズを選ぶ欄。
+// 備品管理アプリの在庫はサイズごとに分かれているため、ここで選んでおくと向こうで探さずに済む。
+// 備品管理アプリに品目があるもの（ヘルメット・フルハーネス・空調服）だけに付けている。
 const ITEMS = [
   {
     id: "helmet",
     no: "01",
     short: "ヘルメット",
     name: "ヘルメット",
-    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認</span>。内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。"
+    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認</span>。内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。",
+    sizeLabel: "交換するヘルメットの種類",
+    sizes: ["1本線", "2本線"]
   },
   {
     id: "harness",
     no: "02",
     short: "ハーネス",
     name: "法面用フルハーネス",
-    desc: "<span class=\"desc-highlight\">⚠ ベルト全体の擦り切れ・セメントなどによる汚れ</span>・毛羽立ち・薬品汚れ・焼け焦げを確認。バックル・D環に変形やガタつきがないか。裏側も見る。"
+    desc: "<span class=\"desc-highlight\">⚠ ベルト全体の擦り切れ・セメントなどによる汚れ</span>・毛羽立ち・薬品汚れ・焼け焦げを確認。バックル・D環に変形やガタつきがないか。裏側も見る。",
+    sizeLabel: "交換するハーネスのサイズ",
+    sizes: ["M", "L", "LL"]
   },
   {
     id: "twin_lanyard",
@@ -1265,7 +1398,9 @@ const ITEMS = [
         + "<li><span class=\"part\">空調服</span><span>服の破れ・汚れがないか確認する。</span></li>"
         + "<li><span class=\"part\">ファン</span><span><span class=\"desc-highlight\">⚠ 正常に回転するか確認</span>し、取付部のゆるみを確認する。</span></li>"
         + "<li><span class=\"part\">バッテリー</span><span>充電状態を確認する。ケーブル・コネクター部に破損がないか確認する。</span></li>"
-        + "</ul>"
+        + "</ul>",
+    sizeLabel: "交換するもの（服はサイズも）",
+    sizes: ["空調服 M", "空調服 L", "空調服 LL", "空調服 3L", "ファン", "バッテリー"]
   },
   {
     id: "boots",
@@ -1290,8 +1425,8 @@ const ITEMS = [
   },
 ];
 
-const state = {}; // id -> {status: 'ok'|'caution'|'ng'|null, memo: '', photo: null}
-ITEMS.forEach(i => state[i.id] = {status: null, memo: '', photo: null});
+const state = {}; // id -> {status: 'ok'|'caution'|'ng'|null, memo: '', photo: null, size: ''}
+ITEMS.forEach(i => state[i.id] = {status: null, memo: '', photo: null, size: ''});
 
 // toISOString() は協定世界時なので、朝9時前だと前日の日付になる。必ず現地時間で作る。
 function todayStr(){
@@ -1325,6 +1460,14 @@ function renderItems(){
         <button type="button" class="status-btn caution" data-id="${item.id}" data-status="caution">要注意</button>
         <button type="button" class="status-btn ng" data-id="${item.id}" data-status="ng">使用不可・交換</button>
       </div>
+      ${item.sizes ? `
+      <div class="size-wrap" id="size-${item.id}">
+        <span class="size-label">${item.sizeLabel}</span>
+        <div class="size-btns">
+          ${item.sizes.map(s => `<button type="button" class="size-btn" data-id="${item.id}" data-size="${s}">${s}</button>`).join('')}
+        </div>
+        <p class="size-hint">分かる範囲で選んでください。選ばなくても記録はできます。</p>
+      </div>` : ''}
       <div class="memo-wrap" id="memo-${item.id}">
         <textarea placeholder="内容をメモ（例：あご紐の縫い目がほつれている／ベルトの糸が切れている）" data-id="${item.id}"></textarea>
       </div>
@@ -1370,7 +1513,30 @@ function renderItems(){
       if(status !== 'ng'){
         clearPhoto(id);
       }
+
+      // 交換するサイズ・種類は「使用不可・交換」のときだけ。戻したら選択も消す
+      const sizeWrap = document.getElementById(`size-${id}`);
+      if(sizeWrap){
+        sizeWrap.classList.toggle('show', status === 'ng');
+        if(status !== 'ng'){
+          state[id].size = '';
+          sizeWrap.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+        }
+      }
       updateSummary();
+    });
+  });
+
+  list.querySelectorAll('.size-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.id;
+      const size = btn.dataset.size;
+      // 同じものをもう一度押したら選択を外す（押し間違いをその場で戻せるように）
+      const off = state[id].size === size;
+      state[id].size = off ? '' : size;
+      document.getElementById(`size-${id}`).querySelectorAll('.size-btn').forEach(b=>{
+        b.classList.toggle('selected', !off && b.dataset.size === size);
+      });
     });
   });
 
@@ -1631,7 +1797,7 @@ function recToRow(rec){
     client_branch: rec.clientBranch || '', client_office: rec.clientOffice || '',
     project_name: rec.projectName || '',
     user_name: rec.userName, worker: rec.worker, same_person: !!rec.samePerson,
-    items: rec.items.map(i => ({ id: i.id, name: i.name, status: i.status, memo: i.memo || '' })),
+    items: rec.items.map(i => ({ id: i.id, name: i.name, status: i.status, memo: i.memo || '', size: i.size || '' })),
     unusable_count: rec.unusableCount, caution_count: rec.cautionCount,
     device_id: deviceId(),
     photos: photos, photo_count: photoCount
@@ -2149,7 +2315,9 @@ function recordToText(rec){
   if(ng.length === 0 && caution.length === 0){
     lines.push('全' + rec.items.length + '項目 良好');
   }else{
-    ng.forEach(i=> lines.push('【使用不可・交換】' + i.name + (i.memo ? '（' + i.memo + '）' : '')));
+    ng.forEach(i=> lines.push('【使用不可・交換】' + i.name
+      + (i.size ? '［交換：' + i.size + '］' : '')
+      + (i.memo ? '（' + i.memo + '）' : '')));
     caution.forEach(i=> lines.push('【要注意】' + i.name + (i.memo ? '（' + i.memo + '）' : '')));
     const ok = rec.items.filter(i=>i.status==='ok').map(i=>i.name);
     if(ok.length) lines.push('良好：' + ok.join('、'));
@@ -2231,6 +2399,8 @@ async function submitRecord(){
     id: i.id, name: i.name,
     status: state[i.id].status,
     memo: state[i.id].memo || '',
+    // 交換するサイズ・種類。使用不可のときだけ入る（任意なので空のこともある）
+    size: state[i.id].status === 'ng' ? (state[i.id].size || '') : '',
     photo: state[i.id].photo || null
   }));
   const unusableCount = items.filter(i=>i.status==='ng').length;
@@ -2265,8 +2435,7 @@ let refreshBusy = false;
 async function refreshRecordViews(){
   // まず手元の分をすぐ描く（通信待ちで画面を止めない）
   renderMonthNav();
-  const siteMode = document.querySelector('.subtab.active').dataset.mode === 'site';
-  if(siteMode){ renderSiteTable(); } else { loadHistory(); }
+  showSubview(document.querySelector('.subtab.active').dataset.mode);
 
   if(refreshBusy) return;
   refreshBusy = true;
@@ -2279,8 +2448,8 @@ async function refreshRecordViews(){
   updateConnStatus();
   // 共有の分が読めたら描き直す
   renderMonthNav();
-  const sm = document.querySelector('.subtab.active').dataset.mode === 'site';
-  if(sm){ renderSiteTable(); } else { loadHistory(); }
+  showSubview(document.querySelector('.subtab.active').dataset.mode);
+  updateExchangeBadge();
 }
 
 function resetForm(){
@@ -2293,10 +2462,128 @@ function resetForm(){
   resetPair('workerNameSelect', 'workerName');
   document.getElementById('samePersonWarn').classList.remove('show');
   document.getElementById('checkDate').value = todayStr();
-  ITEMS.forEach(i => state[i.id] = {status: null, memo: '', photo: null});
+  ITEMS.forEach(i => state[i.id] = {status: null, memo: '', photo: null, size: ''});
   renderItems();
   seasonNote();
   updateSummary();
+}
+
+// ---- 交換がいる物 ----
+// 「使用不可・交換」で記録された物を、品目ごとにまとめて見せる画面。
+// 在庫管理アプリ（FUTSU製の別システム）は在庫数を外から勝手に動かしてはいけない作りなので、
+// ここは「何を・誰の分・いつ」を見せるところまで。実際に在庫を減らすのは、向こうで人が記録する。
+const ZAIKO_URL = 'https://ichioka-zaiko-demo.vercel.app/';
+
+// 在庫管理アプリに品目があるものだけ。無い物（安全靴・保護メガネ・防じんマスク）は
+// 飛び先が無いので、ボタンを出さずに「在庫アプリに無い」と出す。
+const ZAIKO_ITEMS = {
+  helmet:       'ヘルメット',
+  harness:      'フルハーネス',
+  twin_lanyard: '2丁掛安全帯ランヤード',
+  rollip:       'ロリップ',
+  airconwear:   '空調服・ファン・バッテリー'
+};
+
+let exchangeRows = null; // 共有側から取った「使用不可あり」の記録
+
+function exEsc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function ngCountOf(rec){
+  return rec.unusableCount != null
+    ? rec.unusableCount
+    : (rec.items || []).filter(i => i.status === 'ng').length;
+}
+
+// 共有側から、使用不可が1つでもある記録だけを取り寄せる（写真は抜きなので軽い）
+async function fetchUnusable(){
+  const r = await sbFetch('/rest/v1/records?select=' + MONTH_COLS
+    + '&unusable_count=gt.0&order=ts.desc&limit=300', {});
+  if(!r || !r.ok) return null;
+  try{ return (await r.json()).map(rowToRec); }catch(e){ return null; }
+}
+
+// 共有側＋この端末の分。同じ記録が二重に出ないよう ts で寄せる
+function mergeUnusable(){
+  const seen = {}, out = [];
+  (exchangeRows || []).concat(readRecords().filter(r => ngCountOf(r) > 0)).forEach(r=>{
+    if(seen[r.ts]) return;
+    seen[r.ts] = true;
+    out.push(r);
+  });
+  return out.sort((a,b) => b.ts - a.ts);
+}
+
+function updateExchangeBadge(){
+  const el = document.getElementById('exCount');
+  if(!el) return;
+  const n = mergeUnusable().reduce((s, r) => s + ngCountOf(r), 0);
+  if(n > 0){ el.textContent = n; el.style.display = 'inline-block'; }
+  else { el.style.display = 'none'; }
+}
+
+async function renderExchangeList(){
+  const el = document.getElementById('exchangeList');
+  if(exchangeRows === null && aikotoba()){
+    el.innerHTML = '<div class="history-empty">読み込み中…</div>';
+  }
+  drawExchange();
+  if(aikotoba()){
+    const fresh = await fetchUnusable();
+    if(fresh){ exchangeRows = fresh; drawExchange(); updateExchangeBadge(); }
+  }
+}
+
+function drawExchange(){
+  const el = document.getElementById('exchangeList');
+  const groups = {};
+  mergeUnusable().forEach(rec=>{
+    (rec.items || []).filter(i => i.status === 'ng').forEach(i=>{
+      const key = i.id || i.name;
+      if(!groups[key]) groups[key] = {name: i.name, lines: []};
+      groups[key].lines.push({rec: rec, memo: i.memo, size: i.size || ''});
+    });
+  });
+
+  const keys = Object.keys(groups);
+  if(keys.length === 0){
+    el.innerHTML = '<div class="history-empty">交換がいる物はありません。<br>'
+      + '「使用不可・交換」で記録すると、ここに出ます。</div>';
+    return;
+  }
+
+  // 在庫アプリに品目があるものを先、無いものを後ろに
+  const inStock = keys.filter(k => ZAIKO_ITEMS[k]);
+  const noStock = keys.filter(k => !ZAIKO_ITEMS[k]);
+
+  let html = '<div class="ex-lead">「使用不可・交換」で記録された物です。'
+    + '<b>在庫は自動では減りません。</b>在庫管理アプリで「交換」を記録してください。</div>';
+  inStock.concat(noStock).forEach(k=>{
+    const g = groups[k];
+    const lines = g.lines.map(l=>{
+      const r = l.rec;
+      return '<div class="ex-line">'
+        + '<div><span class="who">' + exEsc(r.userName || '（使用者未記入）') + '</span>'
+        + ' <span class="sub">' + exEsc(r.date) + '</span>'
+        + (l.size ? ' <span class="sz">' + exEsc(l.size) + '</span>' : '') + '</div>'
+        + (r.site ? '<div class="sub">' + exEsc(r.site) + '</div>' : '')
+        + (l.memo ? '<div class="memo">' + exEsc(l.memo) + '</div>' : '')
+        + '</div>';
+    }).join('');
+    const go = ZAIKO_ITEMS[k]
+      ? '<a class="ex-go" href="' + ZAIKO_URL + '" target="_blank" rel="noopener">'
+        + '在庫管理アプリを開いて「交換」を記録する</a>'
+      : '<div class="ex-note" style="margin:10px 0 0;">'
+        + 'この品目は在庫管理アプリにありません。手配は別で行ってください。</div>';
+    html += '<div class="ex-card">'
+      + '<div class="ex-head"><div class="nm">' + exEsc(g.name) + '</div>'
+      + '<div class="qt">' + g.lines.length + '件</div></div>'
+      + '<div class="ex-body">' + lines + go + '</div></div>';
+  });
+  el.innerHTML = html;
 }
 
 function loadHistory(){
@@ -2317,7 +2604,7 @@ function loadHistory(){
       const unusableCount = rec.unusableCount ?? rec.items.filter(i=>i.status==='ng').length;
       const cautionCount = rec.cautionCount ?? rec.items.filter(i=>i.status==='caution').length;
       const unusableLines = rec.items.filter(i=>i.status==='ng')
-        .map(i=>`<div class="ng-line">・${i.name}：使用不可・交換${i.memo? '（'+i.memo+'）':''}</div>${i.photo ? `<img class="rc-photo" src="${i.photo}" alt="${i.name}の写真">` : ''}`).join('');
+        .map(i=>`<div class="ng-line">・${i.name}：使用不可・交換${i.size? '［'+i.size+'］':''}${i.memo? '（'+i.memo+'）':''}</div>${i.photo ? `<img class="rc-photo" src="${i.photo}" alt="${i.name}の写真">` : ''}`).join('');
       const cautionLines = rec.items.filter(i=>i.status==='caution')
         .map(i=>`<div class="ng-line">・${i.name}：要注意${i.memo? '（'+i.memo+'）':''}</div>`).join('');
       const okNames = rec.items.filter(i=>i.status==='ok').map(i=>i.name).join('、');
@@ -2714,12 +3001,24 @@ document.querySelectorAll('.subtab').forEach(sub=>{
   sub.addEventListener('click', ()=>{
     document.querySelectorAll('.subtab').forEach(s=>s.classList.remove('active'));
     sub.classList.add('active');
-    const siteMode = sub.dataset.mode === 'site';
-    document.getElementById('siteTable').style.display = siteMode ? 'block' : 'none';
-    document.getElementById('historyList').style.display = siteMode ? 'none' : 'block';
-    if(siteMode){ renderSiteTable(); } else { loadHistory(); }
+    showSubview(sub.dataset.mode);
   });
 });
+
+// 記録タブの中の3つの見え方を切り替える。
+// 「交換がいる物」だけは月に関係なく（交換はその月で終わる話ではないため）全期間から拾う。
+function showSubview(mode){
+  document.getElementById('siteTable').style.display    = mode === 'site' ? 'block' : 'none';
+  document.getElementById('historyList').style.display  = mode === 'card' ? 'block' : 'none';
+  document.getElementById('exchangeList').style.display = mode === 'exchange' ? 'block' : 'none';
+  const mn = document.getElementById('monthNav');
+  const ms = document.getElementById('monthSummary');
+  if(mn) mn.style.display = mode === 'exchange' ? 'none' : '';
+  if(ms) ms.style.display = mode === 'exchange' ? 'none' : '';
+  if(mode === 'site'){ renderSiteTable(); }
+  else if(mode === 'card'){ loadHistory(); }
+  else { renderExchangeList(); }
+}
 
 // ---- tabs ----
 document.querySelectorAll('.tab').forEach(tab=>{
