@@ -14,19 +14,22 @@
 <style>
   /* 現場で見る画面。日光の下でも読めるよう、淡い色は使わず罫線と判定色を濃くしています。
      明るい場所での視認性と、全員が同じ見え方になることを優先し、ライト固定にしています。 */
+  /* 判定の色は「信号機」の鮮やかさ（2026-10-01 市岡さん選定）。
+     要注意だけは明るい色なので、文字は白でなく黒（--caution-ink）にする。日なたで白文字が飛ぶため。 */
   :root{
-    --ground:#E4E4DE;
+    --ground:#ECECE6;
     --surface:#FFFFFF;
-    --ink:#15150E;
-    --ink-2:#4B4B41;
-    --line:#B5B5A9;
-    --hazard:#F5B301;
-    --hazard-ink:#6B4C00;
-    --ok:#146F38;
-    --caution:#A85F00;
-    --ng:#B81F12;
+    --ink:#121210;
+    --ink-2:#45453C;
+    --line:#B9B9AD;
+    --hazard:#FFCC00;
+    --hazard-ink:#5E4300;
+    --ok:#00A33A;
+    --caution:#FF7A00;
+    --caution-ink:#111111;
+    --ng:#F01F1F;
     --on-color:#FFFFFF;
-    --radius:10px;
+    --radius:12px;
   }
   *{box-sizing:border-box;}
   body{
@@ -48,57 +51,52 @@
   }
 
   .stripe{
-    height:12px;
+    height:14px;
     background:repeating-linear-gradient(45deg,var(--hazard) 0 18px,var(--ink) 18px 36px);
   }
+  /* ヘッダーは黒地。工事看板の黒×黄に合わせる（2026-10-01 市岡さん選定）。社名を一番大きく */
   header{
-    padding:20px 18px 16px;
-    border-bottom:2px solid var(--ink);
-    background:var(--surface);
+    padding:22px 18px 18px;
+    background:var(--ink);
+    color:var(--surface);
   }
+  /* 社名は白、アプリ名は黄色（2026-10-01 市岡さん指定） */
   header .eyebrow{
-    display:inline-block;
-    font-size:12px;
-    letter-spacing:.12em;
-    color:var(--ink);
-    font-weight:800;
-    border:2px solid var(--hazard-ink);
-    border-radius:999px;
-    padding:3px 12px;
-    margin-bottom:9px;
+    display:block;
+    font-size:24px;
+    letter-spacing:.1em;
+    color:var(--surface);
+    font-weight:900;
+    margin-bottom:8px;
   }
   header h1{
-    margin:4px 0 4px;
-    font-size:27px;
+    margin:0 0 4px;
+    font-size:32px;
+    line-height:1.2;
     font-weight:800;
     letter-spacing:.01em;
     text-wrap:balance;
-    position:relative;
-    display:inline-block;
-    padding-bottom:9px;
-  }
-  header h1::after{
-    content:"";
-    position:absolute;
-    left:0;bottom:0;
-    width:54px;
-    height:5px;
-    background:repeating-linear-gradient(45deg,var(--hazard) 0 5px,var(--ink) 5px 10px);
-    border-radius:2px;
+    color:var(--hazard);
   }
   header p.sub{
-    margin:0;
-    font-size:14px;
-    color:var(--ink-2);
+    margin:10px 0 0;
+    font-size:16px;
+    font-weight:800;
+    line-height:1.5;
+    color:var(--surface);
+    padding:10px 13px;
+    background:#2A2A24;
+    border-left:6px solid var(--hazard);
+    border-radius:0 8px 8px 0;
   }
   .double-check-banner{
     margin-top:15px;
     display:flex;
     align-items:center;
     gap:11px;
-    background:var(--ink);
-    color:var(--surface);
-    border-radius:9px;
+    background:var(--hazard);
+    color:var(--ink);
+    border-radius:10px;
     padding:13px 15px;
   }
   .double-check-banner .dc-icon{
@@ -106,8 +104,8 @@
     font-weight:800;
     font-size:13px;
     letter-spacing:.04em;
-    background:var(--hazard);
-    color:var(--ink);
+    background:var(--ink);
+    color:var(--hazard);
     padding:5px 10px;
     border-radius:5px;
     white-space:nowrap;
@@ -119,7 +117,11 @@
   }
   .double-check-banner .dc-text strong{
     font-weight:800;
-    color:var(--hazard);
+    color:var(--ink);
+    text-decoration:underline;
+    text-decoration-color:var(--ng);
+    text-decoration-thickness:3px;
+    text-underline-offset:3px;
   }
 
   main{
@@ -129,16 +131,20 @@
   }
   .tabs{
     display:flex;
-    gap:8px;
+    gap:4px;
     margin:14px 0 18px;
+    padding:4px;
+    background:var(--surface);
+    border:2px solid var(--ink);
+    border-radius:999px;
   }
   .tab{
     flex:1;
     text-align:center;
     padding:13px 6px;
     border-radius:999px;
-    border:2px solid var(--line);
-    background:var(--surface);
+    border:0;
+    background:transparent;
     font-size:15px;
     font-weight:800;
     color:var(--ink-2);
@@ -146,8 +152,7 @@
   }
   .tab.active{
     background:var(--ink);
-    color:var(--surface);
-    border-color:var(--ink);
+    color:var(--hazard);
   }
   section.view{display:none;}
   section.view.active{display:block;}
@@ -201,14 +206,15 @@
   .item-card{
     background:var(--surface);
     border:2px solid var(--line);
-    border-left-width:9px;
+    border-left:10px solid var(--ink);
     border-radius:var(--radius);
     padding:15px;
     margin-bottom:11px;
+    box-shadow:0 2px 0 var(--line);
   }
   .item-card.judged-ok{border-left-color:var(--ok);}
-  .item-card.judged-caution{border-left-color:var(--caution);border-color:var(--caution);border-left-color:var(--caution);}
-  .item-card.judged-ng{border-color:var(--ng);}
+  .item-card.judged-caution{border-color:var(--caution);border-left-color:var(--caution);}
+  .item-card.judged-ng{border-color:var(--ng);border-left-color:var(--ng);}
   .item-card .item-head{
     display:flex;
     justify-content:space-between;
@@ -216,9 +222,13 @@
     gap:10px;
   }
   .item-card .item-no{
+    display:inline-block;
     font-size:12px;
     font-weight:800;
-    color:var(--hazard-ink);
+    color:var(--ink);
+    background:var(--hazard);
+    padding:2px 9px;
+    border-radius:4px;
     letter-spacing:.08em;
   }
   .item-card h3{
@@ -291,7 +301,7 @@
     cursor:pointer;
   }
   .status-btn.ok.selected{background:var(--ok);border-color:var(--ok);color:var(--on-color);}
-  .status-btn.caution.selected{background:var(--caution);border-color:var(--caution);color:var(--on-color);}
+  .status-btn.caution.selected{background:var(--caution);border-color:var(--caution);color:var(--caution-ink);}
   .status-btn.ng.selected{background:var(--ng);border-color:var(--ng);color:var(--on-color);}
 
   /* 交換するサイズ・種類（使用不可のときだけ出す）。
@@ -448,7 +458,7 @@
     display:none;
     background:var(--caution);
     border:2px solid var(--caution);
-    color:var(--on-color);
+    color:var(--caution-ink);
     border-radius:var(--radius);
     padding:13px 15px;
     font-size:14px;
@@ -458,14 +468,14 @@
   }
   .storage-warn.show,
   .same-person-warn.show{display:block;}
-  .same-person-warn b{color:var(--hazard);}
+  .same-person-warn b{color:var(--on-color);background:var(--ng);padding:0 6px;border-radius:4px;}
 
   /* 下の固定バー */
   .bottom-bar{
     position:fixed;
     left:0;right:0;bottom:0;
     background:var(--surface);
-    border-top:3px solid var(--ink);
+    border-top:5px solid var(--hazard);
     padding:13px 14px calc(13px + env(safe-area-inset-bottom));
     display:flex;
     align-items:center;
@@ -491,9 +501,9 @@
   #submitBtn{
     padding:15px 24px;
     border-radius:9px;
-    border:none;
-    background:var(--ink);
-    color:var(--surface);
+    border:3px solid var(--ink);
+    background:var(--hazard);
+    color:var(--ink);
     font-size:16px;
     font-weight:800;
     font-family:inherit;
@@ -501,6 +511,7 @@
   }
   #submitBtn:disabled{
     background:var(--ground);
+    border-color:var(--line);
     color:var(--ink-2);
     cursor:not-allowed;
   }
@@ -686,8 +697,8 @@
   .ms-stat.quiet b{color:var(--line);}
   .ms-stat.ng{background:var(--ng);border-color:var(--ng);}
   .ms-stat.caution{background:var(--caution);border-color:var(--caution);}
-  .ms-stat.ng b, .ms-stat.ng span,
-  .ms-stat.caution b, .ms-stat.caution span{color:var(--on-color);}
+  .ms-stat.ng b, .ms-stat.ng span{color:var(--on-color);}
+  .ms-stat.caution b, .ms-stat.caution span{color:var(--caution-ink);}
 
   /* 現場ごとの表 */
   .site-group{
@@ -733,7 +744,7 @@
     background:var(--surface);
   }
   .tally.ok{border-color:var(--ok);color:var(--ok);}
-  .tally.caution{background:var(--caution);border-color:var(--caution);color:var(--on-color);}
+  .tally.caution{background:var(--caution);border-color:var(--caution);color:var(--caution-ink);}
   .tally.ng{background:var(--ng);border-color:var(--ng);color:var(--on-color);}
 
   .matrix-wrap{
@@ -786,7 +797,7 @@
     color:var(--ink-2);
   }
   .mark.ok{color:var(--ok);}
-  .mark.caution{background:var(--caution);color:var(--on-color);}
+  .mark.caution{background:var(--caution);color:var(--caution-ink);}
   .mark.ng{background:var(--ng);color:var(--on-color);}
   .legend{
     font-size:13px;
@@ -810,7 +821,7 @@
     color:var(--on-color);
   }
   .site-notes .note-ng{background:var(--ng);}
-  .site-notes .note-caution{background:var(--caution);}
+  .site-notes .note-caution{background:var(--caution);color:var(--caution-ink);}
   .site-actions{
     margin-top:14px;
     padding-top:14px;
@@ -1362,7 +1373,7 @@ const ITEMS = [
     no: "01",
     short: "ヘルメット",
     name: "ヘルメット",
-    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認</span>。内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。<span class=\"desc-highlight\">⚠ 名前や血液型のシールが貼ってあるか確認する。</span>",
+    desc: "帽体に<span class=\"desc-highlight\">⚠ ひび・変形・過度な汚れがないか確認。</span>内側のハンモックとあご紐の縫い目を確認。あご紐は指1本入る程度まで締める。<span class=\"desc-highlight\">⚠ 名前や血液型のシールが貼ってあるか確認する。</span>",
     sizeLabel: "交換するヘルメットの種類",
     sizes: ["1本線", "2本線"]
   },
@@ -1380,14 +1391,14 @@ const ITEMS = [
     no: "03",
     short: "2丁掛け",
     name: "2丁掛け安全帯",
-    desc: "移動時にフックを掛け替える際、無胴綱状態（体が構造物とつながっていない状態）を作らないため2丁掛けとしている。ランヤード、ショックアブソーバーの傷みを全長確認し、ショックアブソーバーが伸びていたら即交換する。フックは外れ止めがバネで自動的に閉じるか数回動かして確認し、変形・摩耗がないか確認する。2丁掛けのため、<span class=\"desc-highlight\">⚠ 両方のランヤードとフックを点検する。</span>"
+    desc: "<span class=\"desc-highlight\">⚠ 2丁掛けのため、両方のランヤードとフックを点検する。</span>移動時にフックを掛け替える際、無胴綱状態（体が構造物とつながっていない状態）を作らないため2丁掛けとしている。ランヤード、ショックアブソーバーの傷みを全長確認し、ショックアブソーバーが伸びていたら即交換する。フックは外れ止めがバネで自動的に閉じるか数回動かして確認し、変形・摩耗がないか確認する。"
   },
   {
     id: "rollip",
     no: "04",
     short: "ロリップ",
     name: "ロリップ",
-    desc: "ライフラインに正しくセットされているか確認。ロック解除レバーがスムーズに動き、確実にロックするかを確認。<span class=\"desc-highlight\">⚠ 爪が2ミリ以下になっていないか確認</span>。<span class=\"desc-highlight\">⚠ 本体の摩耗・変形、また、過度な汚れがないか確認。</span>"
+    desc: "<span class=\"desc-highlight\">⚠ 爪が2ミリ以下になっていないか確認。</span><span class=\"desc-highlight\">⚠ 本体の摩耗・変形、また、過度な汚れがないか確認。</span>ライフラインに正しくセットされているか確認。ロック解除レバーがスムーズに動き、確実にロックするかを確認。"
   },
   {
     id: "airconwear",
@@ -1414,14 +1425,14 @@ const ITEMS = [
     no: "07",
     short: "保護メガネ",
     name: "保護メガネ",
-    desc: "吹付・穿孔作業時は必須。傷やくもりで視界を妨げないか確認。<span class=\"desc-highlight\">⚠ 薬剤などを使用する際にはゴーグル型を着用</span>。"
+    desc: "<span class=\"desc-highlight\">⚠ 薬剤などを使用する際にはゴーグル型を着用。</span>吹付・穿孔作業時は必須。傷やくもりで視界を妨げないか確認。"
   },
   {
     id: "mask",
     no: "08",
     short: "防じんマスク",
     name: "防じんマスク",
-    desc: "<span class=\"desc-highlight\">規格はDS2・DL2</span>。吹付・穿孔作業・はつり作業時に使用。フィルターの汚れ、顔への密着を確認。"
+    desc: "<span class=\"desc-highlight\">規格はDS2・DL2。</span>吹付・穿孔作業・はつり作業時に使用。フィルターの汚れ、顔への密着を確認。"
   },
 ];
 
