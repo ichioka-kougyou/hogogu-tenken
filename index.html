@@ -1411,7 +1411,7 @@ const ITEMS = [
         + "<li><span class=\"part\">バッテリー</span><span>充電状態を確認する。ケーブル・コネクター部に破損がないか確認する。</span></li>"
         + "</ul>",
     sizeLabel: "交換するもの（服はサイズも）",
-    sizes: ["空調服 M", "空調服 L", "空調服 LL", "空調服 3L", "ファン", "バッテリー"]
+    sizes: ["空調服 M", "空調服 L", "空調服 2L", "空調服 3L", "ファン", "バッテリー"]
   },
   {
     id: "boots",
@@ -2490,14 +2490,15 @@ function resetForm(){
 // ここは「何を・誰の分・いつ」を見せるところまで。実際に在庫を減らすのは、向こうで人が記録する。
 const ZAIKO_URL = 'https://ichioka-zaiko-demo.vercel.app/';
 
-// 在庫管理アプリに品目があるものだけ。無い物（安全靴・保護メガネ・防じんマスク）は
+// 在庫管理アプリに品目があるものだけ。無い物（安全靴・保護メガネ）は
 // 飛び先が無いので、ボタンを出さずに「在庫アプリに無い」と出す。
 const ZAIKO_ITEMS = {
   helmet:       'ヘルメット',
   harness:      'フルハーネス',
   twin_lanyard: '2丁掛安全帯ランヤード',
   rollip:       'ロリップ',
-  airconwear:   '空調服・ファン・バッテリー'
+  airconwear:   '空調服・ファン・バッテリー',
+  mask:         '防塵マスク（DS-2／DL-2）'
 };
 
 let exchangeRows = null; // 共有側から取った「使用不可あり」の記録
