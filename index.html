@@ -1353,6 +1353,14 @@
         <button type="button" id="exportAllBtn">記録をまとめてコピー</button>
       </div>
     </div>
+
+    <div class="setting-block">
+      <h2>この端末の点検記録を消す</h2>
+      <p class="setting-help">この端末に残っている点検の記録（控え）を消します。名簿・点検者・合言葉は消えません。まだ送れていない記録も消しません。</p>
+      <div class="add-row">
+        <button type="button" id="clearLocalBtn">この端末の点検記録を消す</button>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -3064,6 +3072,17 @@ bindAdd('newUserInput', 'addUserBtn', v => addSetting('users', v));
 bindAdd('newInspectorInput', 'addInspectorBtn', v => addSetting('inspectors', v));
 bindAdd('newBranchInput', 'addBranchBtn', v => addBranch(v));
 document.getElementById('exportAllBtn').addEventListener('click', exportAll);
+// この端末の控えだけを消す。名簿（設定）・合言葉・端末の番号・未送信の記録は残す
+document.getElementById('clearLocalBtn').addEventListener('click', ()=>{
+  const pend = pendingList().map(String);
+  const keys = allRecordKeys().filter(k => !pend.includes(k.slice(STORE_PREFIX.length)));
+  if(!keys.length){ showToast('この端末に消す記録はありません'); return; }
+  if(!confirm('この端末の点検記録 ' + keys.length + ' 件を消します。\n名簿・点検者・合言葉は残ります。\n消した控えは戻せません。よろしいですか？')) return;
+  keys.forEach(k => backing.remove(k));
+  showToast(keys.length + ' 件の記録を消しました');
+  updateExchangeBadge();
+  refreshRecordViews();
+});
 document.getElementById('exportRosterBtn').addEventListener('click', ()=>{
   copyText(rosterToText(), '名簿をコピーしました');
 });
