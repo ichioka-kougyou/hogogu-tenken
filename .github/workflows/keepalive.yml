@@ -1,0 +1,38 @@
+# 記録置き場（Supabase 無料プラン）は、1週間だれも使わないと自動で休止する。
+# 休止させないために、毎日1回ここから記録置き場に問い合わせる。
+# 休止していたら失敗になり、GitHub から会社のメールに「失敗」の知らせが届く。
+name: 記録置き場を休ませない
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # 毎日 朝6時（日本時間）
+  workflow_dispatch:       # 手で動かすこともできる
+
+permissions:
+  contents: write
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 記録置き場に問い合わせる
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" -m 30 \
+            -H "apikey: sb_publishable_uds6_DPJKp0QUeBHOJG7Yg_1IojUAGn" \
+            "https://sqpodqbaujoanqjzfvbo.supabase.co/rest/v1/records?select=ts&limit=1")
+          echo "返事: HTTP $code"
+          test "$code" = "200"
+
+      # GitHub の自動実行は、倉庫に60日間なにも変化がないと止められる。
+      # 月に1回、足あとのファイルを書き換えて、それを防ぐ。
+      - uses: actions/checkout@v4
+      - name: 月に1回、足あとを残す
+        run: |
+          if [ "$(TZ=Asia/Tokyo date +%d)" = "01" ]; then
+            TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M' > keepalive.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add keepalive.txt
+            git commit -m "足あと（自動実行を止めないため）"
+            git push
+          fi
